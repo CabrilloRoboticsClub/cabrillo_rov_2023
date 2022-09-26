@@ -3,5 +3,6 @@ Cabrillo College Robotics Club repo for the MATE ROV 2023 competition
 
 # Software
 
-ROS 2 Humble Hawksbill
-(Ubuntu 22.04 LTS)
+ROS 2 Humble Hawksbill (Ubuntu 22.04 LTS)
+
+[ROS Documentation](http://docs.ros.org/en/humble/index.html)
