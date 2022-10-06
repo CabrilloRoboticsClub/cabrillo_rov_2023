@@ -23,7 +23,9 @@
     ansible.builtin.apt:
       name:
       - python3-pip
-      - 
+      - curl
+      - gnupg
+      - lsb-release
 
   - name: apt remove packages
     ansible.builtin.apt:
@@ -35,4 +37,21 @@
     ansible.builtin.pip:
       state: latest
       name:
+      - ansible
       - adafruit-circuitpython-servokit
+      - adafruit-circuitpython-motorkit
+
+
+  - name: add ros2 humble apt repo key
+    ansible.builtin.apt_key:
+      url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+      
+  - name: add ros2 humble apt repo
+    ansible.builtin.apt_repository:
+      repo: deb http://packages.ros.org/ros2/ubuntu jammy main
+
+  - name: apt install ros2 humble (THIS MAY TAKE A WHILE)
+    ansible.builtin.apt:
+      update_cache: yes
+      name:
+      - ros-humble-desktop
