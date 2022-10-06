@@ -1,0 +1,38 @@
+#
+# ansible_playbook.yml
+#
+---
+
+- name: install dependancies
+  become: yes
+  become_user: root
+  hosts: all
+  tasks:
+
+  - name: apt update
+    ansible.builtin.apt:
+      update_cache: yes
+      allow_unauthenticated: yes
+
+  - name: apt upgrade
+    ansible.builtin.apt:
+      upgrade: yes
+      allow_unauthenticated: yes
+
+  - name: apt install depends
+    ansible.builtin.apt:
+      name:
+      - python3-pip
+      - 
+
+  - name: apt remove packages
+    ansible.builtin.apt:
+      state: absent
+      name:
+      - unattended-upgrades
+
+  - name: pip install depends
+    ansible.builtin.pip:
+      state: latest
+      name:
+      - adafruit-circuitpython-servokit
