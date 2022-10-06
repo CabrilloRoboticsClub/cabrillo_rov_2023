@@ -1,0 +1,19 @@
+ROV:
+  hosts:
+    SeaHawk-1
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_host: 192.168.254.101
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+    SeaHawk-2
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_host: 192.168.254.102
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+DECK:
+  hosts:
+    
