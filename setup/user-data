@@ -1,0 +1,23 @@
+#cloud-config
+
+# ubuntu cloud init file
+# https://cloud-init.io/
+
+# set ubuntu password to funny cabrillo
+chpasswd:
+  expire: false
+  list:
+  - ubuntu:Cabri11o
+
+# enable ssh password auth
+ssh_pwauth: true
+
+# set hostname to hydroza
+hostname: SeaHawk
+
+# update packages (apt)
+packages_update: true
+
+# reboot when finished
+power_state:
+  mode: reboot
