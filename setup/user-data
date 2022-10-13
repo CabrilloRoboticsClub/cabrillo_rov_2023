@@ -9,6 +9,11 @@ chpasswd:
   list:
   - ubuntu:Cabri11o
 
+# import ssh keys from github
+ssh_import_id:
+- ubuntu
+- gh: cabrillorobotics
+
 # enable ssh password auth
 ssh_pwauth: true
 
