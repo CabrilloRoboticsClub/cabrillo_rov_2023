@@ -9,12 +9,12 @@
   hosts: all
   tasks:
 
-  - name: apt update
+  - name: update the apt cache
     ansible.builtin.apt:
       update_cache: yes
       allow_unauthenticated: yes
 
-  - name: apt upgrade
+  - name: install all available apt upgrades
     ansible.builtin.apt:
       upgrade: yes
       allow_unauthenticated: yes
