@@ -53,6 +53,6 @@
     
   - name: Upgrade & Clean
     ansible.builtin.apt:
-      upgradE: yes
+      upgrade: yes
       clean: yes 
       autoremove: yes
