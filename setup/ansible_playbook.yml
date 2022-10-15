@@ -3,55 +3,41 @@
 #
 ---
 
-- name: install dependancies
+- name: Host install & configure
   become: yes
   become_user: root
   hosts: all
   tasks:
 
-  - name: update the apt cache
-    ansible.builtin.apt:
-      update_cache: yes
-      allow_unauthenticated: yes
+  - name: Install ROS2 GPG keys
+    ansible.builtin.apt_key: # TODO: retire depracated tool apt-key
+      url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+ 
+  - name: Add ROS2 Humble apt repo
+    ansible.builtin.apt_repository:
+      repo: deb http://packages.ros.org/ros2/ubuntu jammy main
 
-  - name: install all available apt upgrades
-    ansible.builtin.apt:
-      upgrade: yes
-      allow_unauthenticated: yes
-
-  - name: apt install depends
+  - name: Install components from apt
     ansible.builtin.apt:
       name:
       - python3-pip
       - curl
       - gnupg
       - lsb-release
+      - ros-humble-ros-desktop # TODO: Not everything by default
+        # We should look at what is actually needed on ALL hosts, and only grab that
 
-  - name: apt remove packages
+  - name: Remove unattended-upgrades
     ansible.builtin.apt:
       state: absent
       name:
       - unattended-upgrades
 
-  - name: pip install depends
+  - name: Install components from pip
     ansible.builtin.pip:
       state: latest
       name:
       - ansible
       - adafruit-circuitpython-servokit
       - adafruit-circuitpython-motorkit
-
-
-  - name: add ros2 humble apt repo key
-    ansible.builtin.apt_key:
-      url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
-      
-  - name: add ros2 humble apt repo
-    ansible.builtin.apt_repository:
-      repo: deb http://packages.ros.org/ros2/ubuntu jammy main
-
-  - name: apt install ros2 humble (THIS MAY TAKE A WHILE)
-    ansible.builtin.apt:
-      update_cache: yes
-      name:
-      - ros-humble-desktop
+     
