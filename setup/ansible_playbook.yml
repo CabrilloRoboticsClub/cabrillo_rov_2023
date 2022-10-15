@@ -34,6 +34,8 @@
       - lsb-release
       - ros-humble-ros-desktop # TODO: Not everything by default
         # We should look at what is actually needed on ALL hosts, and only grab that
+      state: present
+      cache_valid_time: 86400
 
   - name: Remove unattended-upgrades
     ansible.builtin.apt:
@@ -48,4 +50,9 @@
       - ansible
       - adafruit-circuitpython-servokit
       - adafruit-circuitpython-motorkit
-     
+    
+  - name: Upgrade & Clean
+    ansible.builtin.apt:
+      upgradE: yes
+      clean: yes 
+      autoremove: yes
