@@ -10,7 +10,7 @@ everything you need to build the rov software stack from scratch
 
 3) Open Raspberry Pi Imager
 
-`CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Core 22 (64-bit)`
+`CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 22.04 LTS (64-bit)`
 
 Choose the Micro SD card as the storage and hit `WRITE`
 
