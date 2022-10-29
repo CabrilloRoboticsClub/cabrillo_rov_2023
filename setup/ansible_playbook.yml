@@ -24,14 +24,15 @@
   - name: Add ROS2 Humble apt repo
     ansible.builtin.apt_repository:
       repo: deb http://packages.ros.org/ros2/ubuntu jammy main
+      # this task assumes that all systems in the inventory are running ubuntu 22.04 lts
 
   - name: Install components from apt
     ansible.builtin.apt:
       name:
-      - python3-pip
-      - curl
-      - gnupg
-      - lsb-release
+      - python3-pip # to install python packages in the next task
+      - curl #for installing ros apt key (might not need)
+      - gnupg #for installing apt key for ros (might not need if we are doing it the ansible way)
+      - lsb-release #(was another dependancy of installing the ros key that im not sure if we need)
       - ros-humble-ros-desktop # TODO: Not everything by default
         # We should look at what is actually needed on ALL hosts, and only grab that
       state: present
@@ -41,18 +42,24 @@
     ansible.builtin.apt:
       state: absent
       name:
-      - unattended-upgrades
+      - unattended-upgrades #remove unatended upgrades so it doesnt randomly hog cpu
 
   - name: Install components from pip
     ansible.builtin.pip:
       state: latest
       name:
-      - ansible
-      - adafruit-circuitpython-servokit
-      - adafruit-circuitpython-motorkit
+      - ansible # so we can run this playbook anywhere
+      # all of these packages below only need to be installed on the computers with the senors attached and/or the dev computers 
+      # but its not much so it should be fine installing everywhere
+      - setuptools # dependancy of adafruit blinka
+      - adafruit-python-shell # dependancy of adafruit blinka
+      - Adafruit-Blinka # to allow us to use circuitpython code on raspberry pi
+      - adafruit-circuitpython-servokit # for talking to servo hat and board
+      - adafruit-circuitpython-motorkit # for talking to motor hat
     
   - name: Upgrade & Clean
     ansible.builtin.apt:
       upgrade: yes
       clean: yes 
       autoremove: yes
+      # remove extra vestigial packages left by upgrades
