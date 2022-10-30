@@ -23,14 +23,10 @@
 #
 ---
 
-- name: pre-tasks
-  become: no
-  hosts: local_deck
-  gather_facts: no
-  vars_prompt:
-    - name: ansible_user_local
-      prompt: what is your local username
-      private: no
+- name: get the username running the deploy
+  become: false
+  local_action: command whoami
+  register: ansible_user_local
 
 - name: Host install & configure
   become: yes

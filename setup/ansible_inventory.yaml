@@ -18,4 +18,4 @@ deck:
   hosts:
     local_deck:
       ansible_connection: local
-      ansible_user: "{{ ansible_user_local }}"
+      ansible_user: {{ ansible_user_local }}
