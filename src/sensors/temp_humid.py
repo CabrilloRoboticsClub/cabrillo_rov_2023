@@ -34,4 +34,4 @@ import board
 from adafruit_bme280 import basic as adafruit_bme280
 
 class temp_humid(Node):
-    
+

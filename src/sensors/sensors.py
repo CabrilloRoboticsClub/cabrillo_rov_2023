@@ -23,10 +23,10 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# dependancies for ROS
-import 
 
-# dependancies for BME280
+
+
+# dependancies for LSM6DSOX + LIS3MDL
 import
 
 # dependancies for LSM6DSOX + LIS3MDL
