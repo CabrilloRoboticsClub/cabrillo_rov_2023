@@ -1,7 +1,7 @@
 '''
 temp_humid.py
 
-this ros2 node component grabs temp and humid sensor data and publishes it 
+this ros2 node grabs temp and humid sensor data and publishes it 
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
