@@ -33,5 +33,46 @@ from std_msgs.msg import String
 import board
 from adafruit_bme280 import basic as adafruit_bme280
 
-class temp_humid(Node):
+import rclpy
+from rclpy.node import Node
 
+from std_msgs.msg import Float
+
+
+class TempHumid(Node):
+
+    def __init__(self):
+        super().__init__('temp_humid')
+        self.publisher_ = self.create_publisher(Float, 'temp', 10)
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+
+        # this code instanciates the sensor
+        i2c = board.I2C()  # uses board.SCL and board.SDA
+        bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+
+    def timer_callback(self):
+        temp = Float()
+        temp.data = bme280.temperature
+        self.publisher_.publish(temp)
+        self.get_logger().info('Publishing: "%s"' % temp.data)
+        self.i += 1
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    minimal_publisher = MinimalPublisher()
+
+    rclpy.spin(minimal_publisher)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    minimal_publisher.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
