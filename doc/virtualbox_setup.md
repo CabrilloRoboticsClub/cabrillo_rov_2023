@@ -52,18 +52,90 @@ Finally we get to set up our storage file. VirtualBox __defaults to a size of 25
 
 Finally we are given a summary screen. If we're happy with all the settings, press "Finish" and we can move on to the Ubuntu installation itself!
 
-### Installing Ubuntu
+## Installing Ubuntu
 
-> Installing Ubuntu? But we just installed the VM? WHy do we need to install it again?
+#### The major beats
 
-We have given VirtualBox a VM configuration, and a disk image to boot as the OS installer. Now we need to power on the VM and do the OS installation. Power up the VM by double clicking it. This will open a new window that shows the GRUB boot menu for Ubuntu. We want to "Try or Install Ubuntu". This is the default option, and will start automatically after a few seconds. At this point, you can do the stanard Ubuntu installation process. There's nothing special that we need to do during this part. If needed, you can find a guide online.
+1. Welcome
+    - Install Ubuntu (not try)
+2. Keyboard layout
+    - English US (unless, ofc, you're not English US)
+3. ???
+4. Updates and other software
+    - Select Minimal Installation (We don't really want or need *Solitaire* and the like)
+    - Download updates
+        - You *could* postpone this, but you'll do it eventually anyway. May as well do it here.
+5. Installation Type
+    - Erase disk and install Ubuntu
+    - Hit "install now" and It'll ask if you're sure. Yes. Yes you are.
+6. Where are you?
+    - Pick your timezone (Cabrillo is Los Angeles)
+7. Who are you?
+    - Name: Your full name (or nothing, if you really want)
+    - Your Computer's Name: Name your computer! Only dashes as special characters, though.
+    - Username: The username for your account.
+    - Password: I highly recommend something short.
+        - this is a virtual guest that already lives behind your normal password. A weak password here is *probably fine.* ~~This is not legal advice. I will not be held accountable for your actions.~~
+    - Automatic Login: Whichever you like
+        - auto/manual login from the graphical login panel. This doesn't let people remote into your VM unauthenticated.
+    - ActiveDirectory server: No. We don't have one of those.
+8. Final:
+    - Beware the Software Updater popup
+        - It will show up shortly after the system hits the desktop.  When it does, click "Remind me later.' We'll handle that in a bit.
+    - Online Accounts: You can sign in to any and all accounts you want to. Including, of course, none at all.
+    - Livepatch: Fancy feature that we don't need, and wont pay for. Just press "next."
+    - Help Improve Ubuntu: No, don't send system info
+    - Welcome to Ubuntu -> Location services: No
+    - Ready to go: Done and done!
 
-### Installing ROS2
+Congratulations! Ubuntu 22.04 LTS is now installed into your virtual machine
+
+## Installing ROS2
 
 With a working Ubuntu 22.04 install, you can get all the tooling we'll be using for our ROV. The big one is ROS2. Unfortunately, the install process is a bit involved. Fortunately, it's already automated as part of our setup scripts!
 
-You'll need to install the following from `apt`:
+### Using apt for package installation
+
+Before we continue, a note on package installation: On Ubuntu one can use the `apt` tool to manage software packages. The important commands you need to know are as follows
+
+- `apt update`
+- `apt upgrade`
+- `apt install [packages...]`
+
+where the `[packages...]` is a space-separated list of packages you want installed.
+
+e.g.:
+```
+apt install git python3
+```
+instructs `apt` to install `git` and `python3`
+
+**Ensure your package lists are up to date** by running `apt update`. This will fetch the lists of packages available from the Ubuntu repositories so you can see if there are updates available (there probably are! that's what the Software Updater popup was asking about earlier)
+
+> A side effect of using an outdated package list is that issuing install commands collects an old(er) copy of the package. This isn't likely to be a problem, but it does mean you'll end up waiting on a re-download and re-upgrade later on when the setup script does a full upgrade.
+
+### Installing the setup utilities
+
+Open your terminal (`ctrl+t` or) "Show Applications" in the bottom left, and then select "Terminal." From here you can use the `apt` tool to install the following:
 
 - git
 - python3
-- python3-pip
+- ansible
+
+# TODO -- Something about setting up the git user config
+
+### Cloning the Cabrillo ROV 2023 code repository
+
+Still from within your terminal, grab a clone of the club code repository:
+
+`git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git`
+
+or, if that complains about invalid access...
+
+`git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git`
+
+...use the HTTPS protocol! (notice the `https://` out front)
+
+This will clone the git repository into a folder named "cabrillo_rov_2023" in the current directory. By default, this will be your home directory. You are free to place this git repo folder wherever you like. It isn't important that it lives in any particular place
+
+> I like to have mine in a `$HOME/projects` folder. It's not a document so "$HOME/Documents" doesn't quite make sense, so I make a new thing. You can do this, or leave it just there in `$HOME` where you were when cloning it. Folder organization is definitely outside the scope of this document, though, so this will be an exercise for the reader.
