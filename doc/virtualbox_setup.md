@@ -130,7 +130,7 @@ Still from within your terminal, grab a clone of the club code repository:
 
 `git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git`
 
-or, if that complains about invalid access...
+This will attempt to reach the repo over ssh, so you'll be prompted to check a host fingerprint. Accept the fingerprint, and it'll continue connecting. **If the connection fails** it's because you don't have an SSH key that GitHub will accept. If you've never set up a key, then the problem is quite obvious: There is no key! If you *did* then you will need to make sure you have that key on your VM (or to set up another just for the VM). If you don't want to do this, you can use option two:
 
 `git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git`
 
@@ -139,3 +139,9 @@ or, if that complains about invalid access...
 This will clone the git repository into a folder named "cabrillo_rov_2023" in the current directory. By default, this will be your home directory. You are free to place this git repo folder wherever you like. It isn't important that it lives in any particular place
 
 > I like to have mine in a `$HOME/projects` folder. It's not a document so "$HOME/Documents" doesn't quite make sense, so I make a new thing. You can do this, or leave it just there in `$HOME` where you were when cloning it. Folder organization is definitely outside the scope of this document, though, so this will be an exercise for the reader.
+
+### Running Ansible for the remaining setup
+
+Finally, we get to the automated bit! With the repository cloned, and ansible installed, we can use the playbook in our repository to finish setting up the system with all the parts we need for writing code.
+
+`ansible 
