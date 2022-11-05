@@ -122,7 +122,39 @@ Open your terminal (`ctrl+t` or) "Show Applications" in the bottom left, and the
 - python3
 - ansible
 
-# TODO -- Something about setting up the git user config
+### Configuring Git
+
+With the `git` tool installed, you can now clone the repository. However, you wont have any ability to push your changes back up to GitHub without some additional configuration.
+
+#### Name and Email
+
+To commit changes, you need to tell git a name and email to attach. Run the following:
+
+`git config --global user.name "Your Name"`
+`git config --global user.email "your.email@host.com"`
+
+Of course, replace the fake name and email with your own. **You should try to make these match the info on your GitHub account.*
+
+> There isn't anything that has a hard requirement on making your git config match your GitHub. It would just look a bit strange if you had commits with one email attached, pushed them up to GitHub, and then merged the branch(es) using a persona with a different email -- Or name, or other metadata. You *should* try to match them, but you're not *required* to do so.
+
+#### SSH Key (optional, recommended)
+
+GitHub lets you upload an SSH key file for authentication when pushing changes. Doing this means you don't need to enter a username and password every time you want to push your changes to the remote repository (to GitHub). For the VM, we'll be generating a new key, and uploading the **public key** to GitHub. **Do not upload the private key.**
+
+1. Generate key pair: `ssh-keygen`
+    * Choose save location (default of $HOME/.ssh/id_rsa) is fine.
+    * Enter passphrase (I recommend none)
+2. Upload public key to GitHub
+    * Navigate to your $HOME/.ssh/ folder, and locate the `id_rsa.pub` file.
+    * Go to GitHub settings page
+    * SSH and GPG keys
+    * New SSH key
+    * Add key:
+        1. Title: Name your key ("ROS VM key" or something)
+        2. Key Type: Authentication Key (this is for pushing changes, not signing them)
+        3. Key: Paste the contents of your `$HOME/.ssh/id_rsa.pub` file here. **Make sure it's the one with a .pub suffix for the public key**
+        4. Press "Add SSH key"
+
 
 ### Cloning the Cabrillo ROV 2023 code repository
 
