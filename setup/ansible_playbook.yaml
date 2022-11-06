@@ -58,7 +58,7 @@
       - curl #for installing ros apt key (might not need)
       - gnupg #for installing apt key for ros (might not need if we are doing it the ansible way)
       - lsb-release #(was another dependancy of installing the ros key that im not sure if we need)
-      - ros-humble-ros-desktop # TODO: Not everything by default
+      - ros-humble-ros-core
         # We should look at what is actually needed on ALL hosts, and only grab that
       state: present
       cache_valid_time: 86400
