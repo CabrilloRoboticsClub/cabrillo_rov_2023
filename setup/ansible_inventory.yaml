@@ -19,3 +19,13 @@ deck:
     local_deck:
       ansible_connection: local
       ansible_user: {{ ansible_user_local }}
+
+devkit:
+  hosts:
+    localhost:
+      ansible_connection: localhost
+
+guihosts:
+  hosts:
+    deck:
+    devkit:
