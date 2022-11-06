@@ -162,13 +162,17 @@ Still from within your terminal, grab a clone of the club code repository:
 
 `git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git`
 
-This will attempt to reach the repo over ssh, so you'll be prompted to check a host fingerprint. Accept the fingerprint, and it'll continue connecting. **If the connection fails** it's because you don't have an SSH key that GitHub will accept. If you've never set up a key, then the problem is quite obvious: There is no key! If you *did* then you will need to make sure you have that key on your VM (or to set up another just for the VM). If you don't want to do this, you can use option two:
+You will be prompted to verify the host fingerprint. You are safe to accept the fingerprint (press enter to continue).
 
-`git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git`
+> The fingerprinting that SSH does is a way to mitigate man-in-the-middle attacks. The basic principal is that you can take a fingerprint on your first connection (the one we've just been prompted to verify), and if it changes for any reason, the connection will be rejected. The idea being that an impostor would have a harder time duplicating the entire fingerprint, and therefore connecting users (us) can know that we're connecting to a fake.
 
-...use the HTTPS protocol! (notice the `https://` out front)
+#### If the connection fails
 
-This will clone the git repository into a folder named "cabrillo_rov_2023" in the current directory. By default, this will be your home directory. You are free to place this git repo folder wherever you like. It isn't important that it lives in any particular place
+Most likely it's because you don't have an SSH key that GitHub will accept. If you've never set up a key, then the problem is quite obvious: There is no key! If you *did* then you will need to make sure you have that key on your VM (or to set up another just for the VM). Either way, please refer to the previous section titled "SSH Key."
+
+#### If the connection succeedes
+
+You are now in possession of a clone of the repository in a folder named `cabrillo_rov_2023` in the current directory.
 
 > I like to have mine in a `$HOME/projects` folder. It's not a document so "$HOME/Documents" doesn't quite make sense, so I make a new thing. You can do this, or leave it just there in `$HOME` where you were when cloning it. Folder organization is definitely outside the scope of this document, though, so this will be an exercise for the reader.
 
