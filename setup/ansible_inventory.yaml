@@ -20,10 +20,11 @@ deck:
 
 devkit:
   hosts:
-    localhost:
-      ansible_connection: localhost
+    local_dev:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ansible_playbook_python}}"
 
 guihosts:
   hosts:
-    deck:
-    devkit:
+    local_deck:
+    local_dev:
