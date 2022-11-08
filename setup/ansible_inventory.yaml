@@ -16,5 +16,5 @@ rov:
 
 deck:
   hosts:
-    local_deck:
-      ansible_connection: local
+#    local_deck:
+#      ansible_connection: local
