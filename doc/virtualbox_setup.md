@@ -178,6 +178,11 @@ You are now in possession of a clone of the repository in a folder named `cabril
 
 ### Running Ansible for the remaining setup
 
-Finally, we get to the automated bit! With the repository cloned, and ansible installed, we can use the playbook in our repository to finish setting up the system with all the parts we need for writing code.
+With the repository cloned, and ansible installed, we can use the playbook in our repository to finish setting up the system with all the parts we need for writing code. Navigate to the `setup/` in the repo for the ansible scripts.
 
-`ansible 
+Execute: `ansible-playbook ansible_inventory.yaml -i ansible_inventory_devkit.yaml`
+
+> **Warning:** The inventory file `ansible_inventory_devkit.yaml` will operate on the local machine. This is the desired behavior to have the VM set itself up, but you should take care to not run it anywhere you don't want (or can't) have ROS2 installed.
+
+This will take a while to finish (upwards of 30 minutes, depending on network and disk speed). Once done, you'll be left with ROS2 installed, as well as a few settings we've decided on for the ROV kit (such as the removal of `unattended-upgrades`)
+
