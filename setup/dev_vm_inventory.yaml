@@ -1,5 +1,0 @@
-devkit:
-  hosts:
-    localhost:
-      ansible_connection: local
-    
