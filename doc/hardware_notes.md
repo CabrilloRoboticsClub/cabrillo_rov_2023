@@ -16,7 +16,7 @@ ubuntu@SeaHawk:~$ i2cdetect -y 1
 ubuntu@SeaHawk:~$ 
 ```
 
-*  Sensors
+* Sensors
 
   * BME280 (unbridged)
 
