@@ -2,6 +2,8 @@
 
 everything you need to build the rov software stack from scratch
 
+`<flesh this out with description of the contents of this folder>`
+
 ## rov setup procedure
 
 1) On your local computer [download](https://www.raspberrypi.com/software/) and install Raspberry Pi Imager
