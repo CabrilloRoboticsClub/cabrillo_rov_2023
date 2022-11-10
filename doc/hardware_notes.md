@@ -34,7 +34,7 @@ Note that address 0x70 is the "all call" address for the controller chip on the 
 
     * 0x40
 
-  *  Motor Driver Hat
+  * Motor Driver Hat
 
     * 0x60
 
