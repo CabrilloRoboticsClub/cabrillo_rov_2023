@@ -83,3 +83,17 @@
       clean: yes 
       autoremove: yes
       # remove extra vestigial packages left by upgrades
+
+- name: Install ROS2 Desktop to parts that want it
+  become: yes
+  become_user: root
+  hosts: guihosts
+  tasks:
+
+    - name: Install ROS2 desktop
+      ansible.builtin.apt:
+        name:
+          ros-humble-desktop
+        state: present
+        cache_valid_time: 86400
+
