@@ -19,3 +19,5 @@ Choose the Micro SD card as the storage and hit `WRITE`
 4) Unplug and repug the MicroSD card and copy the `user-data` file into the `BOOT` volume that shows up (replace existing).
 
 5) Install the sc card into the raspberry pi, Connect the pi to network, plug in the power to the pi.
+
+`<this guide is incomplete>`
