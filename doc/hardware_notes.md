@@ -19,7 +19,7 @@ ubuntu@SeaHawk:~$
 *  Sensors
 
   * BME280 (unbridged)
-  
+
     * 0x77
 
   * BME280 (bridged)
