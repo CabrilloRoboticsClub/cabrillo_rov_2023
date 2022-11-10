@@ -76,6 +76,7 @@
       - Adafruit-Blinka # to allow us to use circuitpython code on raspberry pi
       - adafruit-circuitpython-servokit # for talking to servo hat and board
       - adafruit-circuitpython-motorkit # for talking to motor hat
+      - adafruit-circuitpython-bme280 # pip package for talking to bme280 sensor
     
   - name: Upgrade & Clean
     ansible.builtin.apt:
