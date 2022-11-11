@@ -7,7 +7,7 @@ class Pub(Node):
 
     def __init__(self):
         super().__init__("Dummy Publisher")
-        self.publisher = self.create_publisher(String, "sample topic", 10)
+        self.publisher = self.create_publisher(String, "sample_topic", 10)
         self.timer = self.create_timer(1, self.emit_message)
         self.i = 0
 
