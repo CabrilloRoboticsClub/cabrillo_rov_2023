@@ -86,16 +86,17 @@
       autoremove: yes
       # remove extra vestigial packages left by upgrades
 
-- name: Install ROS2 Desktop to parts that want it
+- name: Install ROS2 Development components
   become: yes
   become_user: root
   hosts: guihosts
   tasks:
 
-    - name: Install ROS2 desktop
+    - name: Install ROS2 desktop & dev-tools
       ansible.builtin.apt:
         name:
           ros-humble-desktop
+          ros-dev-tools
         state: present
         cache_valid_time: 86400
 
