@@ -82,12 +82,14 @@
       autoremove: yes
       # remove extra vestigial packages left by upgrades
 
+# TODO: Deck install play
+
+
 - name: Install ROS2 Development components
   become: yes
   become_user: root
-  hosts: guihosts
+  hosts: devkit
   tasks:
-
     - name: Install ROS2 desktop & dev-tools
       ansible.builtin.apt:
         name:
