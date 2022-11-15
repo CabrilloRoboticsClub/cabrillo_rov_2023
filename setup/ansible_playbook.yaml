@@ -50,11 +50,7 @@
     ansible.builtin.apt:
       name:
       - python3-pip # to install python packages in the next task
-      - curl #for installing ros apt key (might not need)
-      - gnupg #for installing apt key for ros (might not need if we are doing it the ansible way)
-      - lsb-release #(was another dependancy of installing the ros key that im not sure if we need)
       - ros-humble-desktop # TODO: Not everything by default
-      - i2c-tools
         # We should look at what is actually needed on ALL hosts, and only grab that
       state: present
       cache_valid_time: 86400
@@ -63,13 +59,13 @@
     ansible.builtin.apt:
       state: absent
       name:
-      - unattended-upgrades #remove unatended upgrades so it doesnt randomly hog cpu
+      - unattended-upgrades # remove unatended upgrades so it doesn't operate `dpkg` behind our backs.
+        # It'll conflict with execution of the ansible playbook.
 
   - name: Install components from pip
     ansible.builtin.pip:
       state: latest
       name:
-      - ansible # so we can run this playbook anywhere
       # all of these packages below only need to be installed on the computers with the senors attached and/or the dev computers 
       # but its not much so it should be fine installing everywhere
       - setuptools # dependancy of adafruit blinka
