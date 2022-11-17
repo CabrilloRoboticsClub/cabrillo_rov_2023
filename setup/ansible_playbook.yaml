@@ -77,9 +77,9 @@
     
   - name: Upgrade & Clean
     ansible.builtin.apt:
-      upgrade: yes
-      clean: yes 
-      autoremove: yes
+      upgrade: "yes"
+      autoclean: "yes"
+      autoremove: "yes"
       # remove extra vestigial packages left by upgrades
 
 # TODO: Deck install play
@@ -93,8 +93,8 @@
     - name: Install ROS2 desktop & dev-tools
       ansible.builtin.apt:
         name:
-          ros-humble-desktop
-          ros-dev-tools
+          - ros-humble-desktop
+          - ros-dev-tools
         state: present
         cache_valid_time: 86400
 
