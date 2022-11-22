@@ -1,0 +1,56 @@
+# ansible_ros2_install.yaml
+# 
+# ansible playbook for setting up hosts in the cabrill rov for the mate rov 2023 competition
+#
+# Copyright (C) 2022-2023 Cabrillo Robotics Club
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Cabrillo Robotics Club
+# 6500 Soquel Drive Aptos, CA 95003
+# cabrillorobotics@gmail.com
+#
+---
+
+- name: Install ROS2 core components
+  become: yes
+  become_user: root
+  hosts: ros_hosts
+  - name: Ensure systemd and udev upgrades happen first
+    ansible.builtin.apt:
+      name:
+      - systemd
+      state: latest
+      cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
+      # this also sets update_cache: true implicitly, so that can be left out
+
+  - name: Install components from apt
+    ansible.builtin.apt:
+      name:
+      # TODO: Decide where to put the "base-platform" category of things. Here seems good, but this is named for installing *only* ROS2.
+      - python3
+      - python3-pip
+      - ros-humble-ros-core
+      state: present
+      cache_valid_time: 86400
+
+  - name: Remove unwatned parts
+    ansible.builtin.apt:
+      state: absent
+      name:
+      - unattended-upgrades # remove unatended upgrades so it doesn't operate `dpkg` behind our backs.
+      # It'll conflict with execution of the ansible playbook.
+      - ansible # just in case you installed with apt.
+      # The versions aren't identical, and we're going to replace it with the one from pip.
+
