@@ -1,4 +1,4 @@
-# ansible_ros2_configure.yaml
+# roles/common/tasks/main.yaml
 # 
 # ansible playbook for setting up hosts in the cabrill rov for the mate rov 2023 competition
 #
@@ -24,7 +24,7 @@
 ---
 
 - name: Install ROS2 GPG keys
-  ansible.builtin.apt_key: # TODO: retire depracated tool apt-key
+  ansible.builtin.apt_key: # TODO: retire depracated tool apt-key with file copy of stored key in roles/ros/files/$the_key_file when it gets checked in.
     url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
 
 - name: Add ROS2 Humble apt repo
@@ -44,19 +44,7 @@
 - name: Install components from apt
   ansible.builtin.apt:
     name:
-    # TODO: Decide where to put the "base-platform" category of things. Here seems good, but this is named for installing *only* ROS2.
-    - python3
-    - python3-pip
     - ros-humble-ros-core
     state: present
     cache_valid_time: 86400
-
-- name: Remove unwatned parts
-  ansible.builtin.apt:
-    state: absent
-    name:
-    - unattended-upgrades # remove unatended upgrades so it doesn't operate `dpkg` behind our backs.
-    # It'll conflict with execution of the ansible playbook.
-    - ansible # just in case you installed with apt.
-    # The versions aren't identical, and we're going to replace it with the one from pip.
 
