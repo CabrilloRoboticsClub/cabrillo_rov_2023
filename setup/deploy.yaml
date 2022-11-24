@@ -37,7 +37,6 @@
 - name: Deploy Python to Controllers (and devkits)
   hosts: pyparts
   become: true
-  become_user: ubuntu # TODO: Pick a dummy user to operate our code on the endpoints.
-  # "ubuntu" is fine, but we can have our own unique one.
+  become_user: "{{ ansible_user }}"
   roles:
     - mcu
