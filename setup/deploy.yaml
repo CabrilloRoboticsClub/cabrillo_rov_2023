@@ -23,6 +23,17 @@
 # ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
 ---
 
+- name: Deploy common platform
+  hosts: all
+  become: true
+  become_user: root
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "Sudo Password"
+      private: true
+  roles:
+    - common
+
 - name: Deploy ROS to nodes
   hosts: ros_hosts
   become: true
