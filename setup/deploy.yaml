@@ -27,6 +27,10 @@
   hosts: ros_hosts
   become: true
   become_user: root
+  vars_prompt:
+    - name: "ansible_become_pass"
+      prompt: "Sudo Password:"
+      private: yes
   roles:
     - ros
 
