@@ -29,7 +29,7 @@
   become_user: root
   vars_prompt:
     - name: "ansible_become_pass"
-      prompt: "Sudo Password:"
+      prompt: "Sudo Password"
       private: true
   roles:
     - ros
