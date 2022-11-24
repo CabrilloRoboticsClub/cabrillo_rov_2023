@@ -1,6 +1,4 @@
-# hosts_devkit.yaml
-# 
-# ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
+# deploy.yaml
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 # 
@@ -22,24 +20,21 @@
 # cabrillorobotics@gmail.com
 #
 
+# ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
 ---
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# Just as with the main "hosts.yaml" inventory, we define our main categories #
-# up-front, and then add them to groups according to wanted components        #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-# Job groups
-devkits:
-  hosts:
-    local_dev:
-      ansible_connection: local
-      ansible_python_interpreter: "{{ansible_playbook_python}}"
+- name: Deploy ROS to nodes
+  hosts: ros_hosts
+  become: true
+  become_user: root
+  roles:
+    - ros
 
-# Component groups
-ros_hosts:
-  hosts:
-    local_dev:
+- name: Deploy Python to Controllers (and devkits)
+  hosts: pyparts
+  become: true
+  become_user: ubuntu # TODO: Pick a dummy user to operate our code on the endpoints.
+  # "ubuntu" is fine, but we can have our own unique one.
+  roles:
+    - mcu
 
-pyparts:
-  hosts:
-    local_dev:

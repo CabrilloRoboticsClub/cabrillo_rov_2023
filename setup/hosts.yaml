@@ -1,5 +1,5 @@
-# ansible_inventory.yaml
-# 
+# hosts.yaml
+#
 # ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
@@ -21,6 +21,12 @@
 # 6500 Soquel Drive Aptos, CA 95003
 # cabrillorobotics@gmail.com
 #
+---
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Group the hosts according to their jobs. ROV, Deck, Devkits, and any more   #
+# you can think of. These are the main definitions. The authoritative source  #
+# of truth for our inventory.                                                 #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 rov:
   hosts:
     SeaHawk-1:
@@ -42,4 +48,28 @@ deck:
     Deck_Placeholder_Name:
       # TODO: The whole deck computer. Oops.
 
+devkits:
+  hosts:
+    # Empty, for the main inventory file.
+    # If we get a dedicated development machine, we can add it here.
+    # NEVER use the local connection from this main inventory.
+    # For that, use the hosts_devkit.yaml file. It's already set up for self-operation
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# The following groups are for a component-wise separation of roles. Things   #
+# that have "ros-core" will be "ros_hosts". Things with the Python hardware   #
+# interface libraries are "pyparts". etc, etc. Add more as necessary          #
+# !! Take care !! not to re-define hosts here. We're only adding them to      #
+# these secondary groups.                                                     #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+ros_hosts:
+  hosts:
+    SeaHawk-1:
+    SeaHawk-2:
+    Deck_Placeholder_Name: # TODO: duh. Finish the deck
+
+pyparts:
+  hosts:
+    SeaHawk-1:
+    SeaHawk-2:
 
