@@ -21,12 +21,19 @@
 # 6500 Soquel Drive Aptos, CA 95003
 # cabrillorobotics@gmail.com
 #
+
 ---
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Group the hosts according to their jobs. ROV, Deck, Devkits, and any more   #
 # you can think of. These are the main definitions. The authoritative source  #
 # of truth for our inventory.                                                 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+#
+# A host must have the following variables:
+#  ansible_user
+#  ansible_host
+#  ansible_become_pass
+
 rov:
   hosts:
     SeaHawk-1:

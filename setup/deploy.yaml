@@ -27,10 +27,6 @@
   hosts: all
   become: true
   become_user: root
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "Sudo Password"
-      private: true
   roles:
     - common
 
@@ -38,10 +34,6 @@
   hosts: ros_hosts
   become: true
   become_user: root
-  vars_prompt:
-    - name: "ansible_become_pass"
-      prompt: "Sudo Password"
-      private: true
   roles:
     - ros
 
