@@ -1,13 +1,11 @@
-
 # TODO: Enforce non-root install..... somehow
 - name: Install Python libraries
   ansible.builtin.pip:
     state: present
     name:
-    - setuptools
-    - adafruit-python-shell
-    - adafruit-blinka
-    - adafruit-circuitpython-servokit
-    - adafruit-circuitpython-motorkit
-    - adafruit-circuitpython-bme280
-
+      - setuptools
+      - adafruit-python-shell
+      - adafruit-blinka
+      - adafruit-circuitpython-servokit
+      - adafruit-circuitpython-motorkit
+      - adafruit-circuitpython-bme280

@@ -1,7 +1,7 @@
 # deploy.yaml
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +30,7 @@
   vars_prompt:
     - name: "ansible_become_pass"
       prompt: "Sudo Password:"
-      private: yes
+      private: true
   roles:
     - ros
 
@@ -41,4 +41,3 @@
   # "ubuntu" is fine, but we can have our own unique one.
   roles:
     - mcu
-
