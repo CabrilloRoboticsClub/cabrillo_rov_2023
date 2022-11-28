@@ -1,6 +1,9 @@
 # hosts.yaml
 #
-# ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
+# ansible inventory file
+# 
+# configures hosts for Cabrillo ROV 2023
+# main inventory file
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 # 
