@@ -1,6 +1,9 @@
 # roles/common/tasks/main.yaml
 #
-# ansible playbook for setting up hosts in the cabrill rov for the mate rov 2023 competition
+# ansible playbook file
+#
+# configures hosts for Cabrillo ROV 2023
+# sub-playbook for configuring ros
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
