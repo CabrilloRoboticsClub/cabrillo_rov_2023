@@ -3,16 +3,18 @@
 # ubuntu cloud init file
 # https://cloud-init.io/
 
-# set ubuntu password to funny cabrillo
+
+users:
+- name: ubuntu
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  ssh_import_id:
+    - gh: cabrillorobotics
+    - gh: mike-matera
+
 chpasswd:
   expire: false
   list:
   - ubuntu:Cabri11o
-
-# import ssh keys from github
-ssh_import_id:
-- ubuntu
-- gh: cabrillorobotics
 
 # enable ssh password auth
 ssh_pwauth: true
@@ -26,3 +28,10 @@ packages_update: true
 # reboot when finished
 power_state:
   mode: reboot
+
+ansible:
+  install_method: distro
+  pull:
+    url: "https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git"
+    playbook_name: rpi.yml
+    playbook_dir: setup/

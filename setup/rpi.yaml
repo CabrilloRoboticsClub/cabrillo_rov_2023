@@ -1,0 +1,52 @@
+
+- name: Disable automatic upgrades
+  become: yes
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - unattended-upgrades
+
+- name: Update systemd to fix https://bugs.launchpad.net/ubuntu/+source/apt/+bug/1974196
+  become: yes
+  ansible.builtin.apt:
+    state: latest
+    name: systemd
+    cache_valid_time: 86400 
+
+- name: Install ROS2 GPG keys
+  become: yes
+  ansible.builtin.copy:
+    src: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+    dest: /usr/share/keyrings/ros-archive-keyring.gpg
+    owner: root
+    group: root
+    remote_src: yes
+    mode: 0644
+
+- name: Add ROS2 Humble apt repo
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb [arch={{ [ansible_architecture] | map('extract', deb_architecture) | first }}
+      signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
+
+- name: Install components from apt
+  become: yes
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-pip
+      - ros-humble-ros-core
+    state: present
+    cache_valid_time: 86400
+
+- name: Install Python libraries
+  become: yes
+  ansible.builtin.pip:
+    state: present
+    name:
+      - setuptools
+      - adafruit-python-shell
+      - adafruit-blinka
+      - adafruit-circuitpython-servokit
+      - adafruit-circuitpython-motorkit
+      - adafruit-circuitpython-bme280
