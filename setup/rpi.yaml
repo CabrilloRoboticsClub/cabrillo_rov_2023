@@ -34,7 +34,7 @@
         - python3-pip
         - ros-humble-ros-core
       state: present
-      cache_valid_time: 86400
+      update_cache: yes
 
   - name: Install Python libraries
     ansible.builtin.pip:
