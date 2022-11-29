@@ -34,13 +34,13 @@ logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
 
-print("logic tube")
+print("\nlogic tube")
 print("\nTemperature: %0.1f C" % logic_tube_bme280.temperature)
 print("Humidity: %0.1f %%" % logic_tube_bme280.humidity)
 print("Pressure: %0.1f hPa" % logic_tube_bme280.pressure)
 
 
-print("thrust box")
+print("\nthrust box")
 print("\nTemperature: %0.1f C" % thrust_box_bme280.temperature)
 print("Humidity: %0.1f %%" % thrust_box_bme280.humidity)
 print("Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
