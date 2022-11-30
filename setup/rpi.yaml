@@ -2,6 +2,11 @@
 - name: Configure the Raspberry Pi
   hosts: all 
   become: yes
+  vars:
+    deb_architecture: {
+      "aarch64": "arm64",
+      "x86_64": "amd64"
+    }
   tasks:
   - name: Disable automatic upgrades
     ansible.builtin.apt:
