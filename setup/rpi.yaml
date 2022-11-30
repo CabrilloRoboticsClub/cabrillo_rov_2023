@@ -25,7 +25,7 @@
 
   - name: Add ROS2 Humble apt repo
     ansible.builtin.apt_repository:
-      repo: "deb [arch={{ ansible_architecture }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
+      repo: "deb [arch={{ [ansible_architecture] | map('extract', deb_architecture) | first }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
 
   - name: Install components from apt
     ansible.builtin.apt:
