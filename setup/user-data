@@ -1,20 +1,17 @@
 #cloud-config
 
-# ubuntu cloud init file
-# https://cloud-init.io/
-
-
 users:
-- name: ubuntu
-  sudo: ALL=(ALL) NOPASSWD:ALL
-  ssh_import_id:
-    - gh: cabrillorobotics
-    - gh: mike-matera
+  - default
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_import_id:
+        - "gh:mike-matera"
 
 chpasswd:
   expire: false
-  list:
-  - ubuntu:Cabri11o
+  list: 
+    - "ubuntu:Cabri11o"
 
 # enable ssh password auth
 ssh_pwauth: true
@@ -24,14 +21,11 @@ hostname: SeaHawk
 
 # update packages (apt)
 packages_update: true
+packages_upgrade: true
 
-# reboot when finished
-power_state:
-  mode: reboot
+packages:
+  - git
+  - ansible
 
-ansible:
-  install_method: distro
-  pull:
-    url: "https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git"
-    playbook_name: rpi.yml
-    playbook_dir: setup/
+runcmd:
+  - ansible-pull -U https://github.com/mike-matera/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/rpi.yaml
