@@ -1,7 +1,7 @@
 '''
-sensors.py
+i2c_proxy.py
 
-this ros2 node takes sensor data from i2c sensors and publishes it
+this ros2 node acts as a proxy for nodes wanting to access the i2c hardware
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -23,11 +23,15 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+# gives us access to the hardware on the pi
 import board
+
+# grab the i2c interface for us to use
+i2c = board.I2C()  # uses board.SCL and board.SDA
+
 
 from adafruit_bme280 import basic as adafruit_bme280
 
-i2c = board.I2C()  # uses board.SCL and board.SDA
 
 logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
