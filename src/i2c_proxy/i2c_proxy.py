@@ -1,3 +1,4 @@
+
 '''
 i2c_proxy.py
 
@@ -39,10 +40,11 @@ import time
 import board
 
 # import the bme280 circuit python sensor library
-from adafruit_bme280 import basic.Adafruit_BME280_I2C as adafruit_bme280
+from adafruit_bme280 import basic as adafruit_bme280
 
 # inport the bno085 circuit python sensor library
-from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
+import adafruit_bno08x
+from adafruit_bno08x.i2c import BNO08X_I2C
 
 
 # # # # # # # #
@@ -52,19 +54,19 @@ from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
 # # # # # # # #
 
 # grab the i2c interface for us to use
-i2c = board.i2c
+i2c = board.I2C
 
 # instanciate the logic tube bme280
 # enviromental sensor
-logic_tube_bme280 = adafruit_bme280(i2c, 0x77)
+logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
 # instanciate the thrust box bme280
 # enviromental sensor
-thrust_box_bme280 = adafruit_bme280(i2c, 0x76)
+thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
 # instanciate the logic tube bmo085
 # 9dof absolute orientation imu Ssensor
-logic_tube_imu = adafruit_bno08x(i2c)
+logic_tube_imu = BNO08X_I2C(i2c)
 
 
 # # # # # # # #
