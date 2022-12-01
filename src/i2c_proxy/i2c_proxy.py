@@ -23,28 +23,61 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+# # # # # # # # 
+#
+# IMPORTS
+#
+# # # # # # # #
+
 # gives us access to the hardware on the pi
+import time
 import board
+import busio
+
+# import the bme280 library
+from adafruit_bme280 import basic as adafruit_bme280 # from learn.adafruit.com
+
+# inport the bno085 library
+from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
+
+
+# # # # # # # #
+#
+# INSTANCIATIONS
+#
+# # # # # # # #
 
 # grab the i2c interface for us to use
-i2c = board.I2C()  # uses board.SCL and board.SDA
+i2c = board.i2c
 
 
-from adafruit_bme280 import basic as adafruit_bme280
-
-
+# instanciate the logic tube bme280
 logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
+# instanciate the thrust box bme280
 thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
+# instanciate the bmo085 in the logic tube
+logic_tube_imu = adafruit_bno08x(i2c)
 
+
+# # # # # # # #
+#
+# SENSOR DATA GRAB CODE
+#
+# # # # # # # #
+
+# logic tube enviroment
 print("\nlogic tube")
 print("\nTemperature: %0.1f C" % logic_tube_bme280.temperature)
 print("Humidity: %0.1f %%" % logic_tube_bme280.humidity)
 print("Pressure: %0.1f hPa" % logic_tube_bme280.pressure)
 
-
+# thust box enviroment
 print("\nthrust box")
 print("\nTemperature: %0.1f C" % thrust_box_bme280.temperature)
 print("Humidity: %0.1f %%" % thrust_box_bme280.humidity)
 print("Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
+
+# logic tube imu
+print("\n logic tube imu")
