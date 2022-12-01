@@ -29,13 +29,15 @@ cabrillorobotics@gmail.com
 #
 # # # # # # # #
 
-# gives us access to the hardware on the pi
+# sensors need accurite timing so this library is needed
 import time
+
+# gives us access to the hardware on the pi
 import board
-import busio
+import busio #I'm not sure if I need busio
 
 # import the bme280 library
-from adafruit_bme280 import basic as adafruit_bme280 # from learn.adafruit.com
+from adafruit_bme280 import basic.Adafruit_BME280_I2C as adafruit_bme280
 
 # inport the bno085 library
 from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
@@ -52,10 +54,10 @@ i2c = board.i2c
 
 
 # instanciate the logic tube bme280
-logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+logic_tube_bme280 = adafruit_bme280(i2c, 0x77)
 
 # instanciate the thrust box bme280
-thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
+thrust_box_bme280 = adafruit_bme280(i2c, 0x76)
 
 # instanciate the bmo085 in the logic tube
 logic_tube_imu = adafruit_bno08x(i2c)
