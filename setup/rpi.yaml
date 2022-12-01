@@ -38,6 +38,9 @@
         - python3
         - python3-pip
         - ros-humble-ros-core
+        - ros-humble-v4l2-camera
+        - ros-humble-image-transport-plugins
+        - v4l2-utils
       state: present
       update_cache: yes
 
