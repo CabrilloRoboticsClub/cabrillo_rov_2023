@@ -1,5 +1,5 @@
 
-import rcylpy
+import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
@@ -13,6 +13,13 @@ class Sub(Node):
             self.receive,
             10
         )
+        self.subscription2 = self.create_subscription (
+            String,
+            "secondary_topic",
+            self.receive,
+            10
+        )
+
 
     def receive(self, msg):
         self.get_logger().info("I heard a message! : '%s'" % msg.data)

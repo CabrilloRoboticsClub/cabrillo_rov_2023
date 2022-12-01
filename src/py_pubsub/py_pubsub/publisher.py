@@ -6,9 +6,11 @@ from std_msgs.msg import String
 class Pub(Node):
 
     def __init__(self):
-        super().__init__("Dummy Publisher")
+        super().__init__("DummyPublisher")
         self.publisher = self.create_publisher(String, "sample_topic", 10)
+        self.publisher2 = self.create_publisher(String, "secondary_topic", 10)
         self.timer = self.create_timer(1, self.emit_message)
+        self.timer = self.create_timer(2, self.emit_secondary)
         self.i = 0
 
     def emit_message(self):
@@ -17,6 +19,12 @@ class Pub(Node):
         self.publisher.publish(mesg)
         self.get_logger().info("publishing: '%s'" % mesg.data)
         self.i += 1
+
+    def emit_secondary(self):
+        mesg = String()
+        mesg.data = "secondary message %d" % self.i
+        self.publisher2.publish(mesg)
+        self.get_logger().info("secondary emit: '%s'" % mesg.data)
 
 def main(args = None):
     rclpy.init(args=args)
