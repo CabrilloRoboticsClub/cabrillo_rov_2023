@@ -32,12 +32,17 @@ cabrillorobotics@gmail.com
 #
 # # # # # # # #
 
+# ros stuff
+import rclpy
+from rclpy.node import Node
+
 # this library is needed by the bno085
 import time
 
 # library for accessing the raspberry pi board
 # aka /dev/i2c
 import board
+import busio
 
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
