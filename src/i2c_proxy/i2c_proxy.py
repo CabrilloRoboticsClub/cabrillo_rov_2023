@@ -29,17 +29,17 @@ cabrillorobotics@gmail.com
 #
 # # # # # # # #
 
-# sensors need accurite timing so this library is needed
+# this library is needed by the bno085
 import time
 
-# gives us access to the hardware on the pi
+# library for accessing the raspberry pi board
+# aka /dev/i2c
 import board
-import busio #I'm not sure if I need busio
 
-# import the bme280 library
+# import the bme280 circuit python sensor library
 from adafruit_bme280 import basic.Adafruit_BME280_I2C as adafruit_bme280
 
-# inport the bno085 library
+# inport the bno085 circuit python sensor library
 from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
 
 
@@ -52,14 +52,16 @@ from adafruit_bno08x.i2c import BNO08X_I2C as adafruit_bno08x
 # grab the i2c interface for us to use
 i2c = board.i2c
 
-
 # instanciate the logic tube bme280
+# enviromental sensor
 logic_tube_bme280 = adafruit_bme280(i2c, 0x77)
 
 # instanciate the thrust box bme280
+# enviromental sensor
 thrust_box_bme280 = adafruit_bme280(i2c, 0x76)
 
-# instanciate the bmo085 in the logic tube
+# instanciate the logic tube bmo085
+# 9dof absolute orientation imu Ssensor
 logic_tube_imu = adafruit_bno08x(i2c)
 
 
@@ -83,3 +85,4 @@ print("Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
 
 # logic tube imu
 print("\n logic tube imu")
+# insert snesor reading code here
