@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>seahawk_control</name>
+  <name>seahawk_rov</name>
   <version>0.0.1</version>
-  <description>Controller for the SeaHawk Motors and Sensors</description>
+  <description>Package for SeaHawk nodes</description>
   <maintainer email="michael.matera@cabrillo.edu">Mike Matera</maintainer>
   <license>TODO: License declaration</license>
 
