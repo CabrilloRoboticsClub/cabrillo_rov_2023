@@ -1,6 +1,9 @@
-# ansible_inventory.yaml
+# hosts_devkit.yaml
 # 
-# ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
+# ansible inventory file
+#
+# Configures hosts for Cabrillo ROV 2023
+# devkit inventory file
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 # 
@@ -22,9 +25,25 @@
 # cabrillorobotics@gmail.com
 #
 
-devkit:
+---
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# Just as with the main "hosts.yaml" inventory, we define our main categories #
+# up-front, and then add them to groups according to wanted components        #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# Job groups
+devkits:
   hosts:
     local_dev:
+      ansible_user: # blank user. The variable just needs to be present to feed to the Deploy Python and Micros... task.
       ansible_connection: local
       ansible_python_interpreter: "{{ansible_playbook_python}}"
 
+# Component groups
+ros_hosts:
+  hosts:
+    local_dev:
+
+pyparts:
+  hosts:
+    local_dev:
