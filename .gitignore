@@ -53,3 +53,7 @@ CATKIN_IGNORE
 #vscode dev container
 ./devcontainer/
 ./devcontainer/*
+
+# From colcon build 
+install/
+log/
