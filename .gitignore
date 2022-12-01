@@ -52,3 +52,7 @@ CATKIN_IGNORE
 
 # vscode dev docker container
 .devcontainer/devcontainer.json
+
+# From colcon build 
+install/
+log/
