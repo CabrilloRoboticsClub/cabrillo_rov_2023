@@ -1,7 +1,8 @@
 '''
 i2c_proxy.py
 
-this ros2 node acts as a proxy for nodes wanting to access the i2c hardware
+this is the node with the loc on /dev/i2c
+everything using the i2c bus goes through this node
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
