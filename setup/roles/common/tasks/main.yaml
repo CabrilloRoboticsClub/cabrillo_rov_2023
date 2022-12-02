@@ -1,9 +1,12 @@
-# ansible_inventory.yaml
-# 
-# ansible inventory for setting up hosts in the cabrill rov for the mate rov 2023 competition
+# /setup/roles/common/tasks/main.yml
+#
+# ansible playbook file
+#
+# configures hosts for Cabrillo ROV 2023
+# sub-playbook for common configuration
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -21,10 +24,21 @@
 # 6500 Soquel Drive Aptos, CA 95003
 # cabrillorobotics@gmail.com
 #
+---
 
-devkit:
-  hosts:
-    local_dev:
-      ansible_connection: local
-      ansible_python_interpreter: "{{ansible_playbook_python}}"
+- name: Install basic parts
+  ansible.builtin.apt:
+    state: present
+    name:
+      - python3
+      - python3-pip
+    cache_valid_time: 86400
+    upgrade: "yes"
+    autoremove: true
+    clean: true
 
+- name: No unattended upgrades!
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - unattended-upgrades

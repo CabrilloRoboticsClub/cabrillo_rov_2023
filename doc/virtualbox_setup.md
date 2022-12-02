@@ -1,3 +1,28 @@
+<!--
+doc/virtualbox_setup.md
+
+guide for setting up virtualbox for a dev enviroment
+
+Copyright (C) 2022-2023 Cabrillo Robotics Club
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Cabrillo Robotics Club
+6500 Soquel Drive Aptos, CA 95003
+cabrillorobotics@gmail.com
+-->
+
 # Development VM Setup
 
 I've decided to use Oracle VirtualBox for the VM tooling because it is relatively easy to use, and exists on all major platforms. This is *not* a general purpose guide for using VirtualBox, or a guide for getting started with Linux. Ideally, this will be a lits of procedures that can be understood by someone with zero experience with either so that they can begin working on the robot code as fast as possible. **If a wider understanding is needed, this is the wrong document.**
@@ -120,7 +145,19 @@ Open your terminal (`ctrl+t` or) "Show Applications" in the bottom left, and the
 
 - git
 - python3
-- ansible
+- python3-pip
+
+#### Installing Ansible
+
+We'll be using `pip` for this, as it is the way recommended by the Ansible team. Run the following:
+
+```
+pip install ansible
+echo "PATH=$PATH:$HOME/.local/bin/" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+> The second command writes the text "PATH=$PATH...bin/" into the end of your .bashrc file. This code instructs te shell to set the `PATH` variable to be its current value, plus ":$HOME/.local/bin" and so includes your Python install location. Sourcing the .bashrc makes the change take effect in the currently running shell. Restarting the terminal window also works.
 
 ### Configuring Git
 
@@ -180,9 +217,9 @@ You are now in possession of a clone of the repository in a folder named `cabril
 
 With the repository cloned, and ansible installed, we can use the playbook in our repository to finish setting up the system with all the parts we need for writing code. Navigate to the `setup/` in the repo for the ansible scripts.
 
-Execute: `ansible-playbook ansible_playbook.yaml -i ansible_inventory_devkit.yaml`
+Execute: `ansible-playbook deploy.yaml -i hosts_devkit.yaml`
 
-> **Warning:** The inventory file `ansible_inventory_devkit.yaml` will operate on the local machine. This is the desired behavior to have the VM set itself up, but you should take care to not run it anywhere you don't want (or can't) have ROS2 installed.
+> **Warning:** The inventory file `hosts_devkit.yaml` will operate on the local machine. This is the desired behavior to have the VM set itself up, but you should take care to not run it anywhere you don't want (or can't) have ROS2 installed.
 
 This will take a while to finish (upwards of 30 minutes, depending on network and disk speed). Once done, you'll be left with ROS2 installed, as well as a few settings we've decided on for the ROV kit (such as the removal of `unattended-upgrades`)
 
