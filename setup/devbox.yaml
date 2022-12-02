@@ -14,4 +14,6 @@
     apt:
       name:
         - ros-humble-desktop-full
+        - rviz
+        - python3-colcon-common-extensions
       state: present
