@@ -2,3 +2,16 @@
 - name: Include a play after another play
   ansible.builtin.import_playbook: rpi.yaml
 
+- name: Install development box tools.
+  hosts: all 
+  become: yes
+  tasks:
+  - name: Install vscode
+    community.general.snap:
+      name: code
+      classic: true
+  - name: Install extra ROS packages.
+    apt:
+      name:
+        - ros-humble-desktop-full
+      state: present
