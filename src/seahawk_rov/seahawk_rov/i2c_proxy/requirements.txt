@@ -1,0 +1,5 @@
+# requirements.txt
+#
+RPi.GPIO
+adafruit-circuitpython-bme280
+adafruit-circuitpython-bno08x
