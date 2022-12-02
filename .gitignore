@@ -50,9 +50,8 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
-#vscode dev container
-./devcontainer/
-./devcontainer/*
+# vscode dev docker container
+.devcontainer/devcontainer.json
 
 # From colcon build 
 install/
