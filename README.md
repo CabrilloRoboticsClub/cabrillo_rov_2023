@@ -28,7 +28,21 @@ Clean the build with:
 $ make clean 
 ``` 
 
-## Running the Nodes 
+## Launching all Nodes 
+
+There are launch configurations in the `launch` directory. To run all the configured nodes on the ROV:
+
+```console 
+ros2 launch ./launch/rov.yaml  
+```
+
+To launch all the nodes on the laptop:
+
+```console 
+ros2 launch ./launch/laptop.yaml  
+```
+
+## Running Individual Nodes 
 
 The built nodes are a part of a local build area. Source the following script to setup your paths:
 
@@ -86,7 +100,6 @@ The following configuration must be present on the Pi in order to use the `imx21
 ```
 camera_auto_detect=0
 display_auto_detect=1
-dtoverlay=imx219,media-controller=1
 start_x=1
 ```
 
