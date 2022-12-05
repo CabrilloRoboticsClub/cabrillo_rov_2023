@@ -36,10 +36,10 @@ There are launch configurations in the `launch` directory. To run all the config
 ros2 launch ./launch/rov.yaml  
 ```
 
-To launch all the nodes on the laptop:
+To launch all the nodes on the deck:
 
 ```console 
-ros2 launch ./launch/laptop.yaml  
+ros2 launch ./launch/deck.yaml  
 ```
 
 ## Running Individual Nodes 
@@ -84,7 +84,7 @@ The [h264_image_transport](https://github.com/clydemcqueen/h264_image_transport)
 ```console 
 rov$ ros2 run image_transport h264_cam_node --ros-args -p input_fn:='/dev/video0' -p fps:=30 -p size:='640x480'
 
-laptop$ ros2 run image_transport republish h264 raw --ros-args -r in/h264:=/image_raw/h264 -r out:=/repub_raw
+deck$ ros2 run image_transport republish h264 raw --ros-args -r in/h264:=/image_raw/h264 -r out:=/repub_raw
 ```
 
 In order to compile the `h264_image_transport` node the following packages have to be installed: 
