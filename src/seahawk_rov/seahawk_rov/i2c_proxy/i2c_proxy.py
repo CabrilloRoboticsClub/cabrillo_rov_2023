@@ -76,6 +76,17 @@ logic_tube_imu = BNO08X_I2C(i2c)
 
 # # # # # # # #
 #
+# main
+#
+# # # # # # # #
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    
+
+# # # # # # # #
+#
 # SENSOR DATA GRAB CODE
 #
 # # # # # # # #
@@ -95,3 +106,10 @@ print("Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
 # logic tube imu
 print("\n logic tube imu")
 # insert snesor reading code here
+
+
+
+
+
+if __name__ == '__main__':
+    main()
