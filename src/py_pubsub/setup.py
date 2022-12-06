@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='dummy',
-    maintainer_email='dummy@todo.todo',
-    description='God why are there so many individual files that need to match but dont or cant',
-    license='I said get out of my house. This is proprietary software (that I stole fair and square from the ROS docs)',
+    maintainer='Robert Garrett',
+    maintainer_email='robertgarrett404@gmail.com',
+    description='A toy package for learning the very basics of ROS packaging and the RCLPY API'
+    license='APGLv3',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

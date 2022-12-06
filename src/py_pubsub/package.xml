@@ -4,8 +4,8 @@
   <name>py_pubsub</name>
   <version>0.0.0</version>
   <description>Robert's own following of the ROS example docs</description>
-  <maintainer email="dummy@todo.todo">dummy</maintainer>
-  <license>Nothing. You can't use this. How did you get into my house?</license>
+  <maintainer email="robertgarrett404@gmail.com">Robert Garrett</maintainer>
+  <license>AGPLv3</license>
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
