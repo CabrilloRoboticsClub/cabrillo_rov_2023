@@ -32,6 +32,9 @@ cabrillorobotics@gmail.com
 #
 # # # # # # # #
 
+# enable command line arguments
+import sys
+
 # ros stuff
 import rclpy
 from rclpy.node import Node
@@ -98,13 +101,29 @@ def main(args=None):
 
     publisher_thrust_box_bme280_tempurature = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_tempurature', 8)
 
+    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_humidity', 8)
+
+    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_pressure', 8)
+
     def poll_sensors():
-        sensor_data = dict()
+        msg = Float32()
 
-        sensor_data["logic_tube_bme280_tempurature"] = logic_tube_bme280.temperature
-        sensor_data["logic_tube_bme280_humidity"] = logic_tube_bme280.humidity
-        sensor_data["logic_tube_bme280_pressure"]= logic_tube_bme280.pressure
+        msg.data = logic_tube_bme280.temperature
+        publisher_logic_tube_bme280_tempurature.publish(msg)
 
+        msg.data = logic_tube_bme280.humidity
+        publisher_logic_tube_bme280_humidity.publish(msg)
+
+        msg.data = logic_tube_bme280.pressure
+        publisher_logic_tube_bme280_pressure.publish(msg)
+
+        msg.data = thrust_box_bme280.tempurature
+        publisher_thrust_box_bme280_tempurature.publish(msg)
+
+    # create the timer for the i2c proxy node
+    timer = node_i2c_proxy.create_timer(0.1, poll_sensors)
+
+    rclpy.spin(node_i2c_proxy)
 
 # # # # # # # #
 #
@@ -113,16 +132,14 @@ def main(args=None):
 # # # # # # # #
 
 # logic tube enviroment
-print("\nlogic tube")
-print("\nTemperature: %0.1f C" % logic_tube_bme280.temperature)
-print("Humidity: %0.1f %%" % logic_tube_bme280.humidity)
-print("Pressure: %0.1f hPa" % logic_tube_bme280.pressure)
+print("logic tube Temperature: %0.1f C" % logic_tube_bme280.temperature)
+print("logic tube Humidity: %0.1f %%" % logic_tube_bme280.humidity)
+print("logic tube Pressure: %0.1f hPa" % logic_tube_bme280.pressure)
 
 # thust box enviroment
-print("\nthrust box")
-print("\nTemperature: %0.1f C" % thrust_box_bme280.temperature)
-print("Humidity: %0.1f %%" % thrust_box_bme280.humidity)
-print("Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
+print("thrust box Temperature: %0.1f C" % thrust_box_bme280.temperature)
+print("thrust box Humidity: %0.1f %%" % thrust_box_bme280.humidity)
+print("thrust box Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
 
 # logic tube imu
 print("\n logic tube imu")
@@ -133,4 +150,4 @@ print("\n logic tube imu")
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
