@@ -36,6 +36,9 @@ cabrillorobotics@gmail.com
 import rclpy
 from rclpy.node import Node
 
+# message types
+from std_msgs.msg import Float32
+
 # this library is needed by the bno085
 import time
 
@@ -83,7 +86,25 @@ logic_tube_imu = BNO08X_I2C(i2c)
 def main(args=None):
     rclpy.init(args=args)
 
-    
+    # this creates the node "i2c_proxy"
+    node_i2c_proxy = rclpy.create_node('i2c_proxy')
+
+    # this creates a publisher for logic tube bme280 temp of message type Float32 with name "logic_tube_bme280_tempurature" with a history of 8 messages
+    publisher_logic_tube_bme280_tempurature = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_tempurature', 8)
+
+    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_humidity', 8)
+
+    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_pressure', 8)
+
+    publisher_thrust_box_bme280_tempurature = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_tempurature', 8)
+
+    def poll_sensors():
+        sensor_data = dict()
+
+        sensor_data["logic_tube_bme280_tempurature"] = logic_tube_bme280.temperature
+        sensor_data["logic_tube_bme280_humidity"] = logic_tube_bme280.humidity
+        sensor_data["logic_tube_bme280_pressure"]= logic_tube_bme280.pressure
+
 
 # # # # # # # #
 #
