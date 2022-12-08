@@ -134,7 +134,7 @@ def main(args=None):
         publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
         
     # create the timer for the i2c proxy node
-    timer = node_i2c_proxy.create_timer(0.1, poll_sensors)
+    timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
 
     rclpy.spin(node_i2c_proxy)
 
