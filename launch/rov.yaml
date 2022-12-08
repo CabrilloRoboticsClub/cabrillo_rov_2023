@@ -21,4 +21,9 @@ launch:
     remap:
       - from: image_raw/h264
         to: front_camera/h264
-      
+
+- node:
+    pkg: seahawk_rov
+    exec: control_bridge
+    name: control_bridge
+    output: screen
