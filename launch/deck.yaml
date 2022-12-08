@@ -16,3 +16,14 @@ launch:
       - from: out
         to: front_camera/image
 
+- node:
+    pkg: seahawk_deck
+    exec: motion_controller
+    name: motion_controller
+    output: screen
+
+- node:
+    pkg: joy
+    exec: joy_node
+    name: joy_node
+    output: screen
