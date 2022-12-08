@@ -106,7 +106,6 @@ def main(args=None):
     publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
     def poll_sensors():
-        msg = Float32()
 
         # instanciate the messages
         message_logic_tube_bme280_temperature = Temperature()
