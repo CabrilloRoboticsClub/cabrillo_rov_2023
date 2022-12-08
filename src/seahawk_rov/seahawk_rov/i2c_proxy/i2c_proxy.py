@@ -41,6 +41,10 @@ from rclpy.node import Node
 
 # message types
 from std_msgs.msg import Float32
+from sensor_msgs.msg import Temperature
+from sensor_msgs.msg import RelativeHumidity
+from sensor_msgs.msg import FluidPressure
+from sensor_msgs.msg import Imu
 
 # this library is needed by the bno085
 import time
@@ -92,34 +96,43 @@ def main(args=None):
     # this creates the node "i2c_proxy"
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
-    # this creates a publisher for logic tube bme280 temp of message type Float32 with name "logic_tube_bme280_tempurature" with a history of 8 messages
-    publisher_logic_tube_bme280_tempurature = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_tempurature', 8)
-
-    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_humidity', 8)
-
-    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(Float32,'logic_tube_bme280_pressure', 8)
-
-    publisher_thrust_box_bme280_tempurature = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_tempurature', 8)
-
-    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_humidity', 8)
-
-    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(Float32,'thrust_box_bme280_pressure', 8)
+    # instanciate sensor publishers
+    publisher_logic_tube_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'logic_tube_bme280_temperature', 8)
+    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'logic_tube_bme280_humidity', 8)
+    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'logic_tube_bme280_pressure', 8)
+    publisher_thrust_box_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'thrust_box_bme280_temperature', 8)
+    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box_bme280_humidity', 8)
+    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box_bme280_pressure', 8)
+    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
     def poll_sensors():
         msg = Float32()
 
-        msg.data = logic_tube_bme280.temperature
-        publisher_logic_tube_bme280_tempurature.publish(msg)
+        # instanciate the messages
+        message_logic_tube_bme280_temperature = Temperature()
+        message_logic_tube_bme280_humidity = RelativeHumidity()
+        message_logic_tube_bme280_pressure = FluidPressure()
+        message_thrust_box_bme280_temperature = Temperature()
+        message_thrust_box_bme280_humidity = RelativeHumidity()
+        message_thrust_box_bme280_pressure = FluidPressure()
+        message_logic_tube_imu = Imu()
 
-        msg.data = logic_tube_bme280.humidity
-        publisher_logic_tube_bme280_humidity.publish(msg)
+        # grab the data from the sensors
+        message_logic_tube_bme280_temperature.temperature = logic_tube_bme280.temperature
+        message_logic_tube_bme280_humidity.relative_humidity = logic_tube_bme280.humidity
+        message_logic_tube_bme280_pressure.fluid_pressure = logic_tube_bme280.pressure
+        message_thrust_box_bme280_temperature.temperature = thrust_box_bme280.temperature
+        message_thrust_box_bme280_humidity.relative_humidity = thrust_box_bme280.humidity
+        message_thrust_box_bme280_pressure.fluid_pressure = thrust_box_bme280.pressure
 
-        msg.data = logic_tube_bme280.pressure
-        publisher_logic_tube_bme280_pressure.publish(msg)
-
-        msg.data = thrust_box_bme280.tempurature
-        publisher_thrust_box_bme280_tempurature.publish(msg)
-
+        # pubblish the data
+        publisher_logic_tube_bme280_temperature.publish(message_logic_tube_bme280_temperature)
+        publisher_logic_tube_bme280_humidity.publish(message_logic_tube_bme280_humidity)
+        publisher_logic_tube_bme280_pressure.publish(message_logic_tube_bme280_pressure)
+        publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_humidity)
+        publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
+        publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
+        
     # create the timer for the i2c proxy node
     timer = node_i2c_proxy.create_timer(0.1, poll_sensors)
 
