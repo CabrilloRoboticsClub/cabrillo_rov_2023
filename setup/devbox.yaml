@@ -27,3 +27,17 @@
       name: student
       groups: docker
       append: yes
+  - name: Make sudo passwordless 
+    lineinfile:
+      path: /etc/suoders
+      regexp: "^%sudo"
+      line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
+  - name: Update user's config.
+    ansible.builtin.blockinfile:
+      path: /home/student/.bashrc
+      block: |
+        source /opt/ros/humble/setup.bash
+        if [ -f ~/cabrillo_rov_2023/install/local_setup.bash ]; then
+          source ~/cabrillo_rov_2023/install/local_setup.bash
+        fi
+        alias cabrillo-update='sudo ansible-pull -U https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/devbox.yaml'
