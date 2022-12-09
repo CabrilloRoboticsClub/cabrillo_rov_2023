@@ -29,7 +29,7 @@
       append: yes
   - name: Make sudo passwordless 
     lineinfile:
-      path: /etc/suoders
+      path: /etc/sudoers
       regexp: "^%sudo"
       line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
   - name: Update user's config.
