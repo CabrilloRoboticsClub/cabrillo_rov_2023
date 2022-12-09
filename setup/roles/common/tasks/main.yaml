@@ -36,9 +36,3 @@
     upgrade: "yes"
     autoremove: true
     clean: true
-
-- name: No unattended upgrades!
-  ansible.builtin.apt:
-    state: absent
-    name:
-      - unattended-upgrades
