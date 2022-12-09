@@ -33,4 +33,3 @@
       - python3
       - python3-pip
     cache_valid_time: 86400
-    upgrade: "yes"
