@@ -27,8 +27,8 @@
 ---
 
 - name: Install ROS2 GPG keys
-  ansible.builtin.copy:
-    src: ros.key
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
     dest: /usr/share/keyrings/ros-archive-keyring.gpg
     owner: root
     group: root
