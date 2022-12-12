@@ -26,6 +26,12 @@
 #
 ---
 
+- name: No unattended upgrades!
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - unattended-upgrades
+
 # TODO: Enforce non-root install..... somehow
 - name: Install Python libraries
   ansible.builtin.pip:
