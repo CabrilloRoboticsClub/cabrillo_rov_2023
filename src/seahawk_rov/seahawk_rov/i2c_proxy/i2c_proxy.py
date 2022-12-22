@@ -69,7 +69,7 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 # # # # # # # #
 
 # grab the i2c interface for us to use
-i2c = busio.I2C(board.SCL, board.SDA)
+i2c = board.I2C()
 
 # instanciate the logic tube bme280
 # enviromental sensor
@@ -128,7 +128,7 @@ def main(args=None):
         publisher_logic_tube_bme280_temperature.publish(message_logic_tube_bme280_temperature)
         publisher_logic_tube_bme280_humidity.publish(message_logic_tube_bme280_humidity)
         publisher_logic_tube_bme280_pressure.publish(message_logic_tube_bme280_pressure)
-        publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_humidity)
+        publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_temperature)
         publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
         publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
         
