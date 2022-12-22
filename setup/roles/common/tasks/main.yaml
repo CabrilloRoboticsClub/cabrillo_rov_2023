@@ -33,3 +33,15 @@
       - python3
       - python3-pip
     cache_valid_time: 86400
+
+- name: No unattended upgrades!
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - unattended-upgrades
+
+- name: But still do those upgrades
+  ansible.builtin.apt:
+    upgrade: "yes"
+    autoremove: true
+    clean: true
