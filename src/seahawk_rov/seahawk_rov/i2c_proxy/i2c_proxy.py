@@ -69,7 +69,7 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 # # # # # # # #
 
 # grab the i2c interface for us to use
-i2c = board.I2C
+i2c = busio.I2C(board.SCL, board.SDA)
 
 # instanciate the logic tube bme280
 # enviromental sensor
