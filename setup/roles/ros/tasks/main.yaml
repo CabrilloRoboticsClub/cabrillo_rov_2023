@@ -60,5 +60,6 @@
   ansible.builtin.apt:
     name:
       - ros-humble-ros-core
+      - ros-humble-rclpy
     state: present
     cache_valid_time: 86400
