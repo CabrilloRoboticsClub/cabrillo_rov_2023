@@ -123,6 +123,9 @@ def main(args=None):
         message_thrust_box_bme280_temperature.temperature = thrust_box_bme280.temperature
         message_thrust_box_bme280_humidity.relative_humidity = thrust_box_bme280.humidity
         message_thrust_box_bme280_pressure.fluid_pressure = thrust_box_bme280.pressure
+        message_logic_tube_imu.linear_acceleration = logic_tube_imu.linear_acceleration
+        message_logic_tube_imu.angular_velocity = logic_tube_imu.gyro
+        message_logic_tube_imu.orientation = logic_tube_imu.quaternion
 
         # pubblish the data
         publisher_logic_tube_bme280_temperature.publish(message_logic_tube_bme280_temperature)
@@ -131,6 +134,7 @@ def main(args=None):
         publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_temperature)
         publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
         publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
+        publisher_logic_tube_imu.publish(message_logic_tube_imu)
         
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
