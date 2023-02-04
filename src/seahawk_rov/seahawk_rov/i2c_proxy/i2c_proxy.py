@@ -141,28 +141,6 @@ def main(args=None):
 
     rclpy.spin(node_i2c_proxy)
 
-# # # # # # # #
-#
-# SENSOR DATA GRAB CODE
-#
-# # # # # # # #
-
-# logic tube enviroment
-#print("logic tube Temperature: %0.1f C" % logic_tube_bme280.temperature)
-#print("logic tube Humidity: %0.1f %%" % logic_tube_bme280.humidity)
-#print("logic tube Pressure: %0.1f hPa" % logic_tube_bme280.pressure)
-
-# thust box enviroment
-#print("thrust box Temperature: %0.1f C" % thrust_box_bme280.temperature)
-#print("thrust box Humidity: %0.1f %%" % thrust_box_bme280.humidity)
-#print("thrust box Pressure: %0.1f hPa" % thrust_box_bme280.pressure)
-
-# logic tube imu
-#print("\n logic tube imu")
-# insert snesor reading code here
-
-
-
 
 
 if __name__ == '__main__':
