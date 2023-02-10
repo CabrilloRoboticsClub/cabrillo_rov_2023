@@ -123,7 +123,7 @@ def main(args=None):
         message_thrust_box_bme280_temperature.temperature = thrust_box_bme280.temperature
         message_thrust_box_bme280_humidity.relative_humidity = thrust_box_bme280.humidity
         message_thrust_box_bme280_pressure.fluid_pressure = thrust_box_bme280.pressure
-        message_logic_tube_imu.linear_acceleration = logic_tube_imu.linear_acceleration
+        message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
         message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
         message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
 
