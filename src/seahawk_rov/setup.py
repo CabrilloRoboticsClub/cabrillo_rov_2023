@@ -40,7 +40,7 @@ setup(
     # scripts here.
     entry_points={
         'console_scripts': [
-            'control_bridge = seahawk_rov.control_bridge:main',
+            'i2c_proxy = seahawk_rov.i2c_proxy:main',
             'example_pub = seahawk_rov.example_pub:main',
             'example_sub = seahawk_rov.example_sub:main',
         ],
