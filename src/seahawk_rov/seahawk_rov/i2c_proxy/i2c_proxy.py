@@ -89,6 +89,29 @@ logic_tube_imu = BNO08X_I2C(i2c)
 # instanciate thrust box pwm
 thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 
+#### THRUSTERS PARAMS
+# hard limit thrusters so they can all run at 100% no issues
+# 8 motors
+# 2x 30a buck
+# 8/60 = 7.5
+# t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
+thrust_box_pwm.servo[0].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[0].actuation_range = 6535
+thrust_box_pwm.servo[1].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[1].actuation_range = 6535
+thrust_box_pwm.servo[2].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[2].actuation_range = 6535
+thrust_box_pwm.servo[3].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[3].actuation_range = 6535
+thrust_box_pwm.servo[4].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[4].actuation_range = 6535
+thrust_box_pwm.servo[5].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[5].actuation_range = 6535
+thrust_box_pwm.servo[6].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[6].actuation_range = 6535
+thrust_box_pwm.servo[7].set_pulse_width_range(1220,1780)
+thrust_box_pwm.servo[7].actuation_range = 6535
+
 
 # # # # # # # #
 #
@@ -112,7 +135,7 @@ def main(args=None):
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
     # instanciate output subscribers
-    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', push_outputs, 10)
+    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
 
     def poll_sensors():
 
@@ -156,8 +179,16 @@ def main(args=None):
         publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
 #        publisher_logic_tube_imu.publish(message_logic_tube_imu)
 
-    def push_outputs():
-        
+    def thrusters_callback(msg_thrusters):
+        thrusters_throttle_array = msg_thrusters.data
+        thrust_box_pwm.servo[0].angle = thrusters_throttle_array[0] + 32,767
+        thrust_box_pwm.servo[1].angle = thrusters_throttle_array[1] + 32,767
+        thrust_box_pwm.servo[2].angle = thrusters_throttle_array[2] + 32,767
+        thrust_box_pwm.servo[3].angle = thrusters_throttle_array[3] + 32,767
+        thrust_box_pwm.servo[4].angle = thrusters_throttle_array[4] + 32,767
+        thrust_box_pwm.servo[5].angle = thrusters_throttle_array[5] + 32,767
+        thrust_box_pwm.servo[6].angle = thrusters_throttle_array[6] + 32,767
+        thrust_box_pwm.servo[7].angle = thrusters_throttle_array[7] + 32,767
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
