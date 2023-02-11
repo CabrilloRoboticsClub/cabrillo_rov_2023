@@ -116,6 +116,9 @@ def main(args=None):
         message_thrust_box_bme280_pressure = FluidPressure()
 #        message_logic_tube_imu = Imu()
 
+        # insert fame id
+        message_logic_tube_bme280_temperature.header.frame-id = "logic_tube"
+
         # grab the data from the sensors
         message_logic_tube_bme280_temperature.temperature = logic_tube_bme280.temperature
         message_logic_tube_bme280_humidity.relative_humidity = logic_tube_bme280.humidity
