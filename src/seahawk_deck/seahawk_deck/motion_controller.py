@@ -18,7 +18,7 @@ class MotionController(Node):
         """Initialize this node"""
         super().__init__('motion_controller')
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
-        self.motor_pub = self.create_publisher(Int16MultiArray, 'drive/motors', 10)
+        self.motor_pub = self.create_publisher(Int16MultiArray, 'drive/motors', 10) # subscription to this in rov/i2c_proxy
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
 
     def _callback(self, joy_msg):
@@ -51,6 +51,7 @@ class MotionController(Node):
             0,  # Motor 7 thrust
             0,  # Motor 8 thrust
         ]
+        # int16. A 16-bit signed integer whose values exist on the interval [−32,767, +32,767] .
 
         # Validate motor power. Limit the sum of power to groups of motors. 
         motor_msg.data[0] = 1 
