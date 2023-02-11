@@ -45,6 +45,7 @@ from sensor_msgs.msg import Temperature
 from sensor_msgs.msg import RelativeHumidity
 from sensor_msgs.msg import FluidPressure
 from sensor_msgs.msg import Imu
+from std_msgs.msg import Int16MultiArray
 
 # this library is needed by the bno085
 import time
@@ -61,6 +62,8 @@ from adafruit_bme280 import basic as adafruit_bme280
 import adafruit_bno08x
 from adafruit_bno08x.i2c import BNO08X_I2C
 
+# import servokit for the pwm hats
+from adafruit_servokit import ServoKit
 
 # # # # # # # #
 #
@@ -83,6 +86,9 @@ thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 # 9dof absolute orientation imu Ssensor
 logic_tube_imu = BNO08X_I2C(i2c)
 
+# instanciate thrust box pwm
+thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
+
 
 # # # # # # # #
 #
@@ -104,6 +110,9 @@ def main(args=None):
     publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box_bme280_humidity', 8)
     publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box_bme280_pressure', 8)
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
+
+    # instanciate output subscribers
+    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', push_outputs, 10)
 
     def poll_sensors():
 
@@ -146,7 +155,10 @@ def main(args=None):
         publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
         publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
 #        publisher_logic_tube_imu.publish(message_logic_tube_imu)
+
+    def push_outputs():
         
+
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
 
