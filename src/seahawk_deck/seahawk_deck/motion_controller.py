@@ -44,15 +44,26 @@ class MotionController(Node):
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
         motor_msg = Int16MultiArray()
+        # +1 = Full thrust, Forwards
+        #  0 = Off
+        # -1 = Full thrust, Backwards
+        # Even are on bottom
+        # ^FRONT^
+        # 6/^ ^\0
+        # 4\, ,/2
+        # Odd are on top; thrust forward is down
+        # ^FRONT^
+        #  7   1
+        #  5   3
         motor_msg.data = [
-            0,  # Motor 1 thrust 
+            0,  # Motor 0 thrust 
+            0,  # Motor 1 thrust
             0,  # Motor 2 thrust
             0,  # Motor 3 thrust
             0,  # Motor 4 thrust
             0,  # Motor 5 thrust
             0,  # Motor 6 thrust
             0,  # Motor 7 thrust
-            0,  # Motor 8 thrust
         ]
 
         # Validate motor power. Limit the sum of power to groups of motors. 
