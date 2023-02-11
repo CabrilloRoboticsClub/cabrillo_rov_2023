@@ -103,4 +103,8 @@ display_auto_detect=1
 start_x=1
 ```
 
+## Launching the deck
 
+ros2 launch ./launch/deck.yaml
+
+ros2 topic echo /drive/twist

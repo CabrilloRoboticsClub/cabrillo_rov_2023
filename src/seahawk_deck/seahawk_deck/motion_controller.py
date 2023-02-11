@@ -31,6 +31,7 @@ class MotionController(Node):
         # Message index 3 and 4 are the right stick left/right and forward/back
         # Yaw is at position 2 and 5. Domain is [-1, 1]
 
+        """
         twist_msg = Twist()
         twist_msg.linear.x  = joy_msg.axes[4] # X 
         twist_msg.linear.y  = -joy_msg.axes[3]# Y Direction was inverted. Negative added so negative is to the left and positive is to the right
@@ -38,6 +39,15 @@ class MotionController(Node):
         twist_msg.angular.x = 0.0 # R 
         twist_msg.angular.y = 0.0 # P 
         twist_msg.angular.z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Y 
+        """
+
+        twist_msg = Twist()
+        twist_msg.linear.x  = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # X 
+        twist_msg.linear.y  = -joy_msg.axes[0] # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
+        twist_msg.linear.z  = joy_msg.axes[1] # Z 
+        twist_msg.angular.x = 0.0 # R 
+        twist_msg.angular.y = joy_msg.axes[4] # P 
+        twist_msg.angular.z = -joy_msg.axes[3] # Y 
 
         # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
