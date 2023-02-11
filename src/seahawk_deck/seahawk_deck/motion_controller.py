@@ -58,13 +58,23 @@ class MotionController(Node):
         #  0 = Off
         # -1 = Full thrust, Backwards
         # Even are on bottom
+        # 45° angle(π/4)
         # ^FRONT^
         # 6/^ ^\0
         # 4\, ,/2
         # Odd are on top; thrust forward is down
+        # 35° angle(7π/36)
         # ^FRONT^
         #  7   1
         #  5   3
+
+        # What needs to happen:
+        #    Y+        Y-
+        # [0- 2-]   [0+ 2+]
+        # [4+ 6+]   [4- 6-]
+        #    X+        X-
+        # [0+ 2-]   [0- 2+]
+        # [4- 6+]   [4+ 6-]
         motor_msg.data = [
             0,  # Motor 0 thrust 
             0,  # Motor 1 thrust
