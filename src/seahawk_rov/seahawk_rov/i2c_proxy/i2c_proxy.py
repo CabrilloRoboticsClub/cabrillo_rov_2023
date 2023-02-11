@@ -180,15 +180,19 @@ def main(args=None):
 #        publisher_logic_tube_imu.publish(message_logic_tube_imu)
 
     def thrusters_callback(msg_thrusters):
+        # get the message data
         thrusters_throttle_array = msg_thrusters.data
-        thrust_box_pwm.servo[0].angle = thrusters_throttle_array[0] + 32,767
-        thrust_box_pwm.servo[1].angle = thrusters_throttle_array[1] + 32,767
-        thrust_box_pwm.servo[2].angle = thrusters_throttle_array[2] + 32,767
-        thrust_box_pwm.servo[3].angle = thrusters_throttle_array[3] + 32,767
-        thrust_box_pwm.servo[4].angle = thrusters_throttle_array[4] + 32,767
-        thrust_box_pwm.servo[5].angle = thrusters_throttle_array[5] + 32,767
-        thrust_box_pwm.servo[6].angle = thrusters_throttle_array[6] + 32,767
-        thrust_box_pwm.servo[7].angle = thrusters_throttle_array[7] + 32,767
+        # set all the pwm outputs
+        # im adding 32767 to the value to turn the signed int to a unsigned int
+        # servo kit only works with unsigned
+        thrust_box_pwm.servo[0].angle = thrusters_throttle_array[0] + 32767
+        thrust_box_pwm.servo[1].angle = thrusters_throttle_array[1] + 32767
+        thrust_box_pwm.servo[2].angle = thrusters_throttle_array[2] + 32767
+        thrust_box_pwm.servo[3].angle = thrusters_throttle_array[3] + 32767
+        thrust_box_pwm.servo[4].angle = thrusters_throttle_array[4] + 32767
+        thrust_box_pwm.servo[5].angle = thrusters_throttle_array[5] + 32767
+        thrust_box_pwm.servo[6].angle = thrusters_throttle_array[6] + 32767
+        thrust_box_pwm.servo[7].angle = thrusters_throttle_array[7] + 32767
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
