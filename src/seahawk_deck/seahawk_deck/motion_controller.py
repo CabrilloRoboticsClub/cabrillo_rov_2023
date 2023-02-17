@@ -68,13 +68,6 @@ class MotionController(Node):
         #  7   1
         #  5   3
 
-        # What needs to happen:
-        #    Y+        Y-
-        # [0- 2-]   [0+ 2+]
-        # [4+ 6+]   [4- 6-]
-        #    X+        X-
-        # [0+ 2-]   [0- 2+]
-        # [4- 6+]   [4+ 6-]
         motor_msg.data = [
             0,  # Motor 0 thrust 
             0,  # Motor 1 thrust
@@ -92,6 +85,38 @@ class MotionController(Node):
         # Publish data to the motors
         self.motor_pub.publish(motor_msg)
 
+"""
+def linear_x(input_data):
+    # Forward and Backward
+    #   LX+:             LX-:
+    # [0+ 2-]          [0- 2+]
+    # [4- 6+]          [4+ 6-]
+
+def linear_y(input_data):
+    # Side to Side
+    #   LY+:             LY-:
+    # [0- 2-]          [0+ 2+]
+    # [4+ 6+]          [4- 6-]
+
+def linear_z(input_data):
+    # Dive and Surface
+    #   LZ+:             LZ-
+    # [1+ 3+]          [1- 3-]
+    # [5+ 7+]          [5- 7-]
+
+def angular_y(input_data):
+    # Pitch (aim up/down)
+    #   AY+:             AY-:
+    # [1+ 3-]          [1- 3+]
+    # [5- 7+]          [5+ 7-]
+
+def angular_z(input_data):
+    # Yaw (turning)
+    #   AZ+:             AZ-:
+    # [0- 2+]          [0+ 2-]
+    # [4- 6+]          [4+ 6-]
+
+"""
 
 def main(args=None):
     rclpy.init(args=args)
