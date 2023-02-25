@@ -42,14 +42,22 @@ class MotionController(Node):
         twist_msg.angular.y = 0.0 # P 
         twist_msg.angular.z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Y 
         """
-        # theta = math.atan(twist_msg.linear.y/twist_msg.linear.x)
+
+        joy_lin_x = joy_msg.axes[1] # left y
+        joy_lin_y = -joy_msg.axes[0] # left x
+        joy_lin_z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Triggers
+        joy_ang_x = 0.0 # no roll
+        joy_ang_y = joy_msg.axes[4] # right y
+        joy_ang_z = joy_msg.axes[3] # right x
+
+        theta = math.atan(joy_lin_y/joy_lin_x)
         twist_msg = Twist()
-        twist_msg.linear.x  = joy_msg.axes[1] # X 
-        twist_msg.linear.y  = -joy_msg.axes[0] # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Z
-        twist_msg.angular.x = 0.0 # R 
-        twist_msg.angular.y = joy_msg.axes[4] # P 
-        twist_msg.angular.z = -joy_msg.axes[3] # Y 
+        twist_msg.linear.x  = joy_lin_x # X 
+        twist_msg.linear.y  = joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
+        twist_msg.linear.z  = joy_lin_z # Z
+        twist_msg.angular.x = joy_ang_x # R 
+        twist_msg.angular.y = joy_ang_y # P 
+        twist_msg.angular.z = joy_ang_z # Y 
 
         # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
@@ -83,7 +91,7 @@ class MotionController(Node):
         ]
         
         # No roll, we do not want cartwheels 
-        motor_msg.data[0] = max(min(twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z, 1), -1)  
+        motor_msg.data[0] = twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z
         # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
         motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
         # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
