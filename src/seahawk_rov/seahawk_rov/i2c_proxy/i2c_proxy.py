@@ -134,9 +134,6 @@ def main(args=None):
     publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box_bme280_pressure', 8)
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
-    # instanciate output subscribers
-    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
-
     def poll_sensors():
 
         # instanciate the messages
@@ -193,6 +190,9 @@ def main(args=None):
         thrust_box_pwm.servo[5].angle = thrusters_throttle_array[5] + 32767
         thrust_box_pwm.servo[6].angle = thrusters_throttle_array[6] + 32767
         thrust_box_pwm.servo[7].angle = thrusters_throttle_array[7] + 32767
+
+    # instanciate output subscribers
+    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
