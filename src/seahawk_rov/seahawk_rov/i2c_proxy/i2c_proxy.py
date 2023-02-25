@@ -201,11 +201,13 @@ def main(args=None):
 
     rclpy.spin(node_i2c_proxy)
 
+# gracefully shutdown
 def signal_handler(sig, frame):
     rclpy.shutdown()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
+
 
 if __name__ == '__main__':
     main(sys.argv)
