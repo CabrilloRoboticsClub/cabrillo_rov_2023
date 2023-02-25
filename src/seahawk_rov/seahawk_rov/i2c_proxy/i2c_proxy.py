@@ -34,6 +34,8 @@ cabrillorobotics@gmail.com
 
 # enable command line arguments
 import sys
+# enable signal handling
+import signal
 
 # ros stuff
 import rclpy
@@ -126,12 +128,12 @@ def main(args=None):
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
     # instanciate sensor publishers
-    publisher_logic_tube_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'logic_tube_bme280_temperature', 8)
-    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'logic_tube_bme280_humidity', 8)
-    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'logic_tube_bme280_pressure', 8)
-    publisher_thrust_box_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'thrust_box_bme280_temperature', 8)
-    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box_bme280_humidity', 8)
-    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box_bme280_pressure', 8)
+    publisher_logic_tube_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'logic_tube/bme280/temperature', 8)
+    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'logic_tube/bme280/humidity', 8)
+    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'logic_tube/bme280/pressure', 8)
+    publisher_thrust_box_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'thrust_box/bme280/temperature', 8)
+    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box/bme280/humidity', 8)
+    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box/bme280/pressure', 8)
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
     def poll_sensors():
@@ -199,7 +201,11 @@ def main(args=None):
 
     rclpy.spin(node_i2c_proxy)
 
+def signal_handler(sig, frame):
+    rclpy.shutdown()
+    sys.exit(0)
 
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
     main(sys.argv)
