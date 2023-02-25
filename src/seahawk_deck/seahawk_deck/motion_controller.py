@@ -1,13 +1,15 @@
 
 import sys 
 
+import math
+
 import rclpy
 
 from rclpy.node import Node 
 
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy 
-from std_msgs.msg import Int16MultiArray
+from std_msgs.msg import Float32MultiArray
 
 class MotionController(Node):
     """
@@ -18,7 +20,7 @@ class MotionController(Node):
         """Initialize this node"""
         super().__init__('motion_controller')
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
-        self.motor_pub = self.create_publisher(Int16MultiArray, 'drive/motors', 10)
+        self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
 
     def _callback(self, joy_msg):
@@ -40,11 +42,11 @@ class MotionController(Node):
         twist_msg.angular.y = 0.0 # P 
         twist_msg.angular.z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Y 
         """
-
+        # theta = math.atan(twist_msg.linear.y/twist_msg.linear.x)
         twist_msg = Twist()
-        twist_msg.linear.x  = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # X 
+        twist_msg.linear.x  = joy_msg.axes[1] # X 
         twist_msg.linear.y  = -joy_msg.axes[0] # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = joy_msg.axes[1] # Z 
+        twist_msg.linear.z  = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Z
         twist_msg.angular.x = 0.0 # R 
         twist_msg.angular.y = joy_msg.axes[4] # P 
         twist_msg.angular.z = -joy_msg.axes[3] # Y 
@@ -53,7 +55,7 @@ class MotionController(Node):
         self.twist_pub.publish(twist_msg)
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
-        motor_msg = Int16MultiArray()
+        motor_msg = Float32MultiArray()
         # +1 = Full thrust, Forwards
         #  0 = Off
         # -1 = Full thrust, Backwards
@@ -68,19 +70,27 @@ class MotionController(Node):
         #  7   1
         #  5   3
 
-        motor_msg.data = [
-            0,  # Motor 0 thrust 
-            0,  # Motor 1 thrust
-            0,  # Motor 2 thrust
-            0,  # Motor 3 thrust
-            0,  # Motor 4 thrust
-            0,  # Motor 5 thrust
-            0,  # Motor 6 thrust
-            0,  # Motor 7 thrust
-        ]
 
-        # Validate motor power. Limit the sum of power to groups of motors. 
-        motor_msg.data[0] = 1 
+        motor_msg.data = [
+            0.0,  # Motor 0 thrust 
+            0.0,  # Motor 1 thrust
+            0.0,  # Motor 2 thrust
+            0.0,  # Motor 3 thrust
+            0.0,  # Motor 4 thrust
+            0.0,  # Motor 5 thrust
+            0.0,  # Motor 6 thrust
+            0.0,  # Motor 7 thrust
+        ]
+        
+        # No roll, we do not want cartwheels 
+        motor_msg.data[0] = max(min(twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z, 1), -1)  
+        # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
+        motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
+        # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
+        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
+        # motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
+        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
+        # motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
 
         # Publish data to the motors
         self.motor_pub.publish(motor_msg)
