@@ -203,7 +203,6 @@ def main(args=None):
 
 # gracefully shutdown
 def signal_handler(sig, frame):
-    rclpy.shutdown()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
