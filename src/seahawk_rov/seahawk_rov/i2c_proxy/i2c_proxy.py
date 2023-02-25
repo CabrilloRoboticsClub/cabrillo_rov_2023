@@ -149,12 +149,12 @@ def main(args=None):
 #        message_logic_tube_imu = Imu()
 
         # insert fame id
-        message_logic_tube_bme280_temperature.header.frame-id = "base_link"
-        message_logic_tube_bme280_humidity.header.frame-id = "base_link"
-        message_logic_tube_bme280_pressure.header.frame-id = "base_link"
-        message_thrust_box_bme280_temperature.header.frame-id = "base_link"
-        message_thrust_box_bme280_humidity.header.frame-id = "base_link"
-        message_thrust_box_bme280_pressure.header.frame-id = "base_link"
+        message_logic_tube_bme280_temperature.header.frame_id = "base_link"
+        message_logic_tube_bme280_humidity.header.frame_id = "base_link"
+        message_logic_tube_bme280_pressure.header.frame_id = "base_link"
+        message_thrust_box_bme280_temperature.header.frame_id = "base_link"
+        message_thrust_box_bme280_humidity.header.frame_id = "base_link"
+        message_thrust_box_bme280_pressure.header.frame_id = "base_link"
 
         # grab the data from the sensors
         message_logic_tube_bme280_temperature.temperature = logic_tube_bme280.temperature
@@ -184,7 +184,7 @@ def main(args=None):
         thrusters_throttle_array = msg_thrusters.data
         # set all the pwm outputs
         # im adding 32767 to the value to turn the signed int to a unsigned int
-        # servo kit only works with unsigned
+        # servo kit only works with unsigned``
         thrust_box_pwm.servo[0].angle = thrusters_throttle_array[0] + 32767
         thrust_box_pwm.servo[1].angle = thrusters_throttle_array[1] + 32767
         thrust_box_pwm.servo[2].angle = thrusters_throttle_array[2] + 32767
