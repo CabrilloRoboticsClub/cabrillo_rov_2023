@@ -97,23 +97,9 @@ thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 # 2x 30a buck
 # 8/60 = 7.5
 # t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
-thrust_box_pwm.servo[0].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[0].actuation_range = 6535
-thrust_box_pwm.servo[1].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[1].actuation_range = 6535
-thrust_box_pwm.servo[2].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[2].actuation_range = 6535
-thrust_box_pwm.servo[3].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[3].actuation_range = 6535
-thrust_box_pwm.servo[4].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[4].actuation_range = 6535
-thrust_box_pwm.servo[5].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[5].actuation_range = 6535
-thrust_box_pwm.servo[6].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[6].actuation_range = 6535
-thrust_box_pwm.servo[7].set_pulse_width_range(1220,1780)
-thrust_box_pwm.servo[7].actuation_range = 6535
-
+for channel in thrust_box_pwm.servo:
+    thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
+    thrust_box_pwm.servo[channel].actuation_range = 3000
 
 # # # # # # # #
 #
