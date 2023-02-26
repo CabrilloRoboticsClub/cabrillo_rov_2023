@@ -170,14 +170,8 @@ def main(args=None):
         # set all the pwm outputs
         # im adding 32767 to the value to turn the signed int to a unsigned int
         # servo kit only works with unsigned``
-        thrust_box_pwm.servo[0].angle = thrusters_throttle_array[0] + 32767
-        thrust_box_pwm.servo[1].angle = thrusters_throttle_array[1] + 32767
-        thrust_box_pwm.servo[2].angle = thrusters_throttle_array[2] + 32767
-        thrust_box_pwm.servo[3].angle = thrusters_throttle_array[3] + 32767
-        thrust_box_pwm.servo[4].angle = thrusters_throttle_array[4] + 32767
-        thrust_box_pwm.servo[5].angle = thrusters_throttle_array[5] + 32767
-        thrust_box_pwm.servo[6].angle = thrusters_throttle_array[6] + 32767
-        thrust_box_pwm.servo[7].angle = thrusters_throttle_array[7] + 32767
+        for channel in thrust_box_pwm.servo:
+            thrust_box_pwm.servo[channel].angle = thrusters_throttle_array[0] + 1500
 
     # instanciate output subscribers
     subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
