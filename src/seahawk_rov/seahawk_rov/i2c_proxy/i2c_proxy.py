@@ -47,7 +47,7 @@ from sensor_msgs.msg import Temperature
 from sensor_msgs.msg import RelativeHumidity
 from sensor_msgs.msg import FluidPressure
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Int16MultiArray
+from std_msgs.msg import Float32MultiArray
 
 # this library is needed by the bno085
 import time
@@ -180,7 +180,7 @@ def main(args=None):
             thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
     # instanciate output subscribers
-    subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
+    subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
