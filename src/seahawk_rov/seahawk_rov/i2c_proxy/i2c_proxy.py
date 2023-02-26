@@ -101,6 +101,12 @@ for channel in thrust_box_pwm.servo:
     thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
 
+def lerp(old_min, old_max, new_min, new_max, old_value):
+    old_range = old_max - old_min
+    new_range = new_max - new_min
+    new_value = (((old_value - old_min) * new_range) / old_range) + new_min
+    return new_value
+
 # # # # # # # #
 #
 # main
@@ -171,7 +177,7 @@ def main(args=None):
         # im adding 32767 to the value to turn the signed int to a unsigned int
         # servo kit only works with unsigned``
         for channel in thrust_box_pwm.servo:
-            thrust_box_pwm.servo[channel].angle = thrusters_throttle_array[0] + 1500
+            thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
     # instanciate output subscribers
     subscriber_thrusters = node_i2c_proxy.create_subscription(Int16MultiArray, 'drive/motors', thrusters_callback, 10)
