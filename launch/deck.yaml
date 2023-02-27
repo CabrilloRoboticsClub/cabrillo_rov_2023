@@ -23,6 +23,12 @@ launch:
     output: screen
 
 - node:
+    pkg: seahawk_deck
+    exec: rviz_markers
+    name: rviz_markers
+    output: screen
+
+- node:
     pkg: joy
     exec: joy_node
     name: joy_node
