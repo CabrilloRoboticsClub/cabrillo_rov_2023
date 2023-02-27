@@ -50,20 +50,18 @@ class MotionController(Node):
         joy_ang_y = joy_msg.axes[4] # right y
         joy_ang_z = joy_msg.axes[3] # right x
 
-        if joy_lin_x > joy_lin_y:
-            scale = math.sqrt(pow(joy_lin_y / joy_lin_x - joy_lin_y, 2) + pow(1 - joy_lin_x, 2))
-        elif joy_lin_y > joy_lin_x:
-            scale = math.sqrt(pow(joy_lin_x / joy_lin_y - joy_lin_x, 2) + pow(1 - joy_lin_y, 2))
-        elif joy_lin_x == joy_lin_y:
-            scale = math.sqrt(2) - 1
+        if  not joy_lin_x * joy_lin_y:
+            scale = 1
+        else:
+            scale = (pow(joy_lin_x, 2) + pow(joy_lin_y, 2)) * (math.sqrt(pow(joy_lin_x + joy_lin_y, 2)) - (math.sqrt(pow(joy_lin_x - joy_lin_y, 2)))) / (2 * joy_lin_x * joy_lin_y)
 
         twist_msg = Twist()
-        twist_msg.linear.x  = joy_lin_x # X 
-        twist_msg.linear.y  = joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
+        twist_msg.linear.x  = scale * joy_lin_x # X 
+        twist_msg.linear.y  = scale * joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
         twist_msg.linear.z  = joy_lin_z # Z
-        twist_msg.angular.x = joy_ang_x # R 
-        twist_msg.angular.y = joy_ang_y # P 
-        twist_msg.angular.z = joy_ang_z # Y 
+        twist_msg.angular.x = scale * joy_ang_x # R 
+        twist_msg.angular.y = scale * joy_ang_y # P 
+        twist_msg.angular.z = scale * joy_ang_z # Y 
 
         # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
@@ -97,13 +95,13 @@ class MotionController(Node):
         ]
         
         # No roll, we do not want cartwheels 
-        motor_msg.data[0] = 1 / scale * (twist_msg.linear.x - twist_msg.linear.y) + twist_msg.angular.z
+        motor_msg.data[0] = twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z
         # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
-        motor_msg.data[2] = 1 / scale * (-twist_msg.linear.x - twist_msg.linear.y) - twist_msg.angular.z
+        motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
         # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[4] = 1 / scale * (-twist_msg.linear.x + twist_msg.linear.y) - twist_msg.angular.z
+        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
         # motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[6] = 1 / scale * (twist_msg.linear.x + twist_msg.linear.y) + twist_msg.angular.z
+        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
         # motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
 
         # Publish data to the motors
