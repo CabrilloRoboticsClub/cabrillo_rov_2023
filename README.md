@@ -90,7 +90,7 @@ deck$ ros2 run image_transport republish h264 raw --ros-args -r in/h264:=/image_
 In order to compile the `h264_image_transport` node the following packages have to be installed: 
 
 ```console
-$ sudo apt install libavdevice-dev libavformat-dev libavcodec-dev libavutil-dev libswscale-dev
+$ sudo apt install libavdevice-dev libavformat-dev libavcodec-dev libavutil-dev libswscale-dev ros-humble-camera-calibration ros-humble-camera-calibration-parsers ros-humble-image-transport-plugins
 ```
 
 ## Pi Camera Module 2.1 on RPi4 
