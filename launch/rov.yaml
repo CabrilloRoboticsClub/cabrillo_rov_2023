@@ -24,6 +24,6 @@ launch:
 
 - node:
     pkg: seahawk_rov
-    exec: control_bridge
-    name: control_bridge
+    exec: i2c_proxy
+    name: i2c_proxy
     output: screen
