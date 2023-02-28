@@ -59,6 +59,13 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /drive/motors_debug
       Value: true
+    - Class: rviz_default_plugins/Axes
+      Enabled: true
+      Length: 1
+      Name: Axes
+      Radius: 0.10000000149011612
+      Reference Frame: <Fixed Frame>
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -105,7 +112,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 5.277319431304932
+      Distance: 8.303964614868164
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -120,10 +127,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.37039777636528015
+      Pitch: 0.5603975653648376
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.1053977012634277
+      Yaw: 6.193578720092773
     Saved: ~
 Window Geometry:
   Displays:
