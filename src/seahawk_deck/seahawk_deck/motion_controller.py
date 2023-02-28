@@ -46,19 +46,18 @@ class MotionController(Node):
         joy_lin_x = joy_msg.axes[1] # left y
         joy_lin_y = -joy_msg.axes[0] # left x
         joy_lin_z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Triggers
-        joy_ang_x = 0.0 # no roll
+        joy_ang_x  = 0.0 # no roll
         joy_ang_y = joy_msg.axes[4] # right y
         joy_ang_z = joy_msg.axes[3] # right x
 
-        if  not joy_lin_x * joy_lin_y:
-            scale = 1
-        else:
-            scale = (pow(joy_lin_x, 2) + pow(joy_lin_y, 2)) * (math.sqrt(pow(joy_lin_x + joy_lin_y, 2)) - (math.sqrt(pow(joy_lin_x - joy_lin_y, 2)))) / (2 * joy_lin_x * joy_lin_y)
+        scale_acc = 10 * 2 # must be even
+        angle = math.atan(joy_lin_y / joy_lin_x)
+        scale = (math.cos(angle)**scale_acc + math.sin(angle)**scale_acc)**(1/scale_acc)
 
         twist_msg = Twist()
         twist_msg.linear.x  = scale * joy_lin_x # X 
         twist_msg.linear.y  = scale * joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = joy_lin_z # Z
+        twist_msg.linear.z  = scale * joy_lin_z # Z
         twist_msg.angular.x = scale * joy_ang_x # R 
         twist_msg.angular.y = scale * joy_ang_y # P 
         twist_msg.angular.z = scale * joy_ang_z # Y 
