@@ -105,6 +105,17 @@ start_x=1
 
 ## Launching the deck
 
-ros2 launch ./launch/deck.yaml
+Do this to launch the deck nodes: 
 
-ros2 topic echo /drive/twist
+```console 
+$ ros2 launch ./launch/deck.yaml
+$ ros2 topic echo /drive/twist
+```
+
+## Launching the Kinematics Debug Nodes
+
+Do this to launch the debug nodes. It also starts RViz:
+
+```console 
+$ ros2 launch launch/debug.py
+```
