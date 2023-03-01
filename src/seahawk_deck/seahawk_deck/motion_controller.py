@@ -43,24 +43,36 @@ class MotionController(Node):
         twist_msg.angular.z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Y 
         """
 
-        joy_lin_x = joy_msg.axes[1] # left y
-        joy_lin_y = -joy_msg.axes[0] # left x
-        joy_lin_z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Triggers
+        joy = {
+            'left_stick': {'x':scale*-joy_msg.axes[0],'y':joy_msg.axes[1]},
+            'right_stick':{}
+        }
+
+
+
+
+
+
+        joy_ls_y = joy_msg.axes[1] # left y
+        joy_ls_x = -joy_msg.axes[0] # left x
+        joy_lt = joy_msg.axes[2] # Triggers
+        joy_rt = joy_msg.axes[5]
         joy_ang_x  = 0.0 # no roll
-        joy_ang_y = joy_msg.axes[4] # right y
-        joy_ang_z = joy_msg.axes[3] # right x
+        joy_rs_y = joy_msg.axes[4] # right y
+        joy_rs_x = joy_msg.axes[3] # right x
 
         scale_acc = 10 * 2 # must be even
-        angle = math.atan(joy_lin_y / joy_lin_x)
+        angle = math.atan(-joy_msg.axes[0] / (joy_msg.axes[1] + 0.0000000000000001))
         scale = (math.cos(angle)**scale_acc + math.sin(angle)**scale_acc)**(1/scale_acc)
 
+        # INPUTS
         twist_msg = Twist()
-        twist_msg.linear.x  = scale * joy_lin_x # X 
-        twist_msg.linear.y  = scale * joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = scale * joy_lin_z # Z
-        twist_msg.angular.x = scale * joy_ang_x # R 
-        twist_msg.angular.y = scale * joy_ang_y # P 
-        twist_msg.angular.z = scale * joy_ang_z # Y 
+        twist_msg.linear.x  = scale * joy_ls_y # X (forward)
+        twist_msg.linear.y  = scale * joy_ls_x # Y (right)
+        twist_msg.linear.z  = (joy_lt - joy_rt) / 2 # Z
+        twist_msg.angular.x = joy_ang_x # R 
+        twist_msg.angular.y = joy_rs_y # P 
+        twist_msg.angular.z = joy_rs_x # Y 
 
         # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
@@ -92,15 +104,20 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
-        
+        AXIS_SCALE = {
+            'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
+            'angular': {'x': 0, 'y': 1, 'z': 0.1},  # roll, pitch, yaw
+        }
+
+
         # No roll, we do not want cartwheels 
         motor_msg.data[0] = twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z
         # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
         motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
         # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
+        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
         # motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
+        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
         # motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
 
         # Publish data to the motors
