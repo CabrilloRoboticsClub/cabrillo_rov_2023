@@ -97,7 +97,8 @@ thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 # 2x 30a buck
 # 8/60 = 7.5
 # t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
-for channel in thrust_box_pwm.servo:
+thruster_channels = (0,1,2,3,4,5,6,7)
+for channel in thruster_channels:
     thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
 
@@ -176,7 +177,7 @@ def main(args=None):
         # set all the pwm outputs
         # im adding 32767 to the value to turn the signed int to a unsigned int
         # servo kit only works with unsigned``
-        for channel in thrust_box_pwm.servo:
+        for channel in thruster_channels:
             thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
     # instanciate output subscribers
