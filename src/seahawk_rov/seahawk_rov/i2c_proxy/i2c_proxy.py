@@ -88,6 +88,9 @@ thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 # 9dof absolute orientation imu Ssensor
 logic_tube_imu = BNO08X_I2C(i2c)
 
+# instanciate the logic tube pwm hat
+logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
+
 # instanciate thrust box pwm
 thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 
