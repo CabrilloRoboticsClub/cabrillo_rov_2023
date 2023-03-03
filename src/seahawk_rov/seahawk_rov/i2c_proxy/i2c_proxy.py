@@ -101,6 +101,7 @@ thruster_channels = (0,1,2,3,4,5,6,7)
 for channel in thruster_channels:
     thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
+    thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
 
 def lerp(old_min, old_max, new_min, new_max, old_value):
     old_range = old_max - old_min
