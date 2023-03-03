@@ -22,6 +22,12 @@ class MotionController(Node):
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
+    
+    def thrust_control(a, b, c):
+        ab = a + b - (a*b)
+        result = ab + c - (ab * c)
+        return result
+
 
     def _callback(self, joy_msg):
         """
