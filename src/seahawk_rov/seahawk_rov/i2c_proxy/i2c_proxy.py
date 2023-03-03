@@ -94,6 +94,12 @@ logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
 # instanciate thrust box pwm
 thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 
+# # # # # # # #
+#
+# Hardware Calibrations
+#
+# # # # # # # #
+
 #### THRUSTERS PARAMS
 # hard limit thrusters so they can all run at 100% no issues
 # 8 motors
@@ -105,6 +111,12 @@ for channel in thruster_channels:
     thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
     thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
+
+# # # # # # # #
+#
+# Helper Functions
+#
+# # # # # # # #
 
 def lerp(old_min, old_max, new_min, new_max, old_value):
     old_range = old_max - old_min
@@ -133,6 +145,12 @@ def main(args=None):
     publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box/bme280/pressure', 8)
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
+    # # # # # # # #
+    #
+    # Callbacks
+    #
+    # # # # # # # #
+    
     def poll_sensors():
 
         # instanciate the messages
@@ -185,6 +203,14 @@ def main(args=None):
         for channel in thruster_channels:
             thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
+    def camera_servo_callback(msg_drive_cam_servo)
+
+    # # # # # # # #
+    #
+    # Pubs & Subs
+    #
+    # # # # # # 3 #
+
     # instanciate output subscribers
     subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
 
@@ -193,7 +219,11 @@ def main(args=None):
 
     rclpy.spin(node_i2c_proxy)
 
-# gracefully shutdown
+# # # # # # # #
+#
+# gracefull shutdown
+#
+# # # # # # # #
 def signal_handler(sig, frame):
     sys.exit(0)
 
