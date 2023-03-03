@@ -74,12 +74,12 @@ class MotionController(Node):
 
         # BINDINGS
         twist_msg = Twist()
-        twist_msg.linear.x  = controller['left_stick']['y'] # X (forward)
-        twist_msg.linear.y  = controller['left_stick']['x']# Y (right)
-        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z
-        twist_msg.angular.x = 0.0 # R 
-        twist_msg.angular.y = controller['right_stick']['y'] # P 
-        twist_msg.angular.z = controller['right_stick']['x'] # Y 
+        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
+        twist_msg.linear.y  = controller['left_stick']['x']# Y (sideways)
+        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
+        twist_msg.angular.x = 0.0 # R (roll)
+        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
+        twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
 
         # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
@@ -100,7 +100,6 @@ class MotionController(Node):
         #  7   1
         #  5   3
 
-
         motor_msg.data = [
             0.0,  # Motor 0 thrust 
             0.0,  # Motor 1 thrust
@@ -111,57 +110,28 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
+
         AXIS_SCALE = {
             'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
             'angular': {'x': 0, 'y': 1, 'z': 0.1},  # roll, pitch, yaw
         }
 
 
-        # No roll, we do not want cartwheels 
-        motor_msg.data[0] = twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
-        # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
-        motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z
-        # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
-        # motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
-        # motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
+        # Lower motors 
+        motor_msg.data[0] = min(max((twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z), -1), 1)
+        motor_msg.data[2] = min(max((-twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z), -1), 1)
+        motor_msg.data[4] = min(max((-twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z), -1), 1)
+        motor_msg.data[6] = min(max((twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z), -1), 1)
+
+        # Upper motors
+        motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
+        motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
+        motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
+        motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
 
         # Publish data to the motors
         self.motor_pub.publish(motor_msg)
 
-"""
-def linear_x(input_data):
-    # Forward and Backward
-    #   LX+:             LX-:
-    # [0+ 2-]          [0- 2+]
-    # [4- 6+]          [4+ 6-]
-
-def linear_y(input_data):
-    # Side to Side
-    #   LY+:             LY-:
-    # [0- 2-]          [0+ 2+]
-    # [4+ 6+]          [4- 6-]
-
-def linear_z(input_data):
-    # Dive and Surface
-    #   LZ+:             LZ-
-    # [1+ 3+]          [1- 3-]
-    # [5+ 7+]          [5- 7-]
-
-def angular_y(input_data):
-    # Pitch (aim up/down)
-    #   AY+:             AY-:
-    # [1+ 3-]          [1- 3+]
-    # [5- 7+]          [5+ 7-]
-
-def angular_z(input_data):
-    # Yaw (turning)
-    #   AZ+:             AZ-:
-    # [0- 2+]          [0+ 2-]
-    # [4- 6+]          [4+ 6-]
-
-"""
 
 def main(args=None):
     rclpy.init(args=args)
