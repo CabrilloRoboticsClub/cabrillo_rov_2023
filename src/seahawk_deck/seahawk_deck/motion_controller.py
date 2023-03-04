@@ -23,12 +23,12 @@ class MotionController(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
     
-    def lower_thrust_control(self, a:float, b:float, c:float):
-        """Adds three floats as percents, ensures not over 100% or 1"""
-        ab = a + b - (a*b)
-        return ab + c - (ab * c)
+    # def thrust_control(self, a:float, b:float, c:float):
+    #     """Adds three floats as percents, ensures not over 100% or 1"""
+    #     ab = a + b - (a*b)
+    #     return ab + c - (ab * c)
 
-    def upper_thrust_control(self, a:float, b:float):
+    def thrust_control(self, a:float, b:float):
         """Add two floats as percents, ensures not over 100% or 1"""
         return a + b - (a*b)
 
@@ -127,16 +127,16 @@ class MotionController(Node):
 
 
         # Lower motors 
-        motor_msg.data[0] = self.lower_thrust_control(twist_msg.linear.x, -twist_msg.linear.y, -twist_msg.angular.z)
-        motor_msg.data[2] = self.lower_thrust_control(-twist_msg.linear.x, -twist_msg.linear.y, twist_msg.angular.z)
-        motor_msg.data[4] = self.lower_thrust_control(-twist_msg.linear.x, twist_msg.linear.y, -twist_msg.angular.z)
-        motor_msg.data[6] = self.lower_thrust_control(twist_msg.linear.x, twist_msg.linear.y, twist_msg.angular.z)
+        motor_msg.data[0] = self.thrust_control(self.thrust_control(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[2] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
+        motor_msg.data[4] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[6] = self.thrust_control(self.thrust_control(twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
 
         # Upper motors
-        motor_msg.data[1] = self.upper_thrust_control(twist_msg.linear.z, twist_msg.angular.y)
-        motor_msg.data[3] = self.upper_thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[5] = self.upper_thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[7] = self.upper_thrust_control(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[1] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[3] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[5] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[7] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
         
 
         # Publish data to the motors
