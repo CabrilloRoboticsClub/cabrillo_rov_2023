@@ -23,14 +23,15 @@ class MotionController(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
     
-    # def thrust_control(self, a:float, b:float, c:float):
-    #     """Adds three floats as percents, ensures not over 100% or 1"""
-    #     ab = a + b - (a*b)
-    #     return ab + c - (ab * c)
-
     def thrust_control(self, a:float, b:float):
         """Add two floats as percents, ensures not over 100% or 1"""
-        return a + b - (a*b)
+        if (a >= 0 and b >= 0):
+            return_val = a + b - (a*b)
+        elif (a < 0 and b < 0):
+            return_val = a + b + (a*b)
+        else:
+            return_val = a + b        
+        return return_val
 
     def _callback(self, joy_msg):
         """
