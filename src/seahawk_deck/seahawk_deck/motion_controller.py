@@ -126,10 +126,10 @@ class MotionController(Node):
 
         # Lower motors 
         fact_lower = self.thrust_control(twist_msg.linear.x, twist_msg.linear.y, twist_msg.angular.z)
-        motor_msg.data[0] = min(max((twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z), -1), 1)
-        motor_msg.data[2] = min(max((-twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z), -1), 1)
-        motor_msg.data[4] = min(max((-twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z), -1), 1)
-        motor_msg.data[6] = min(max((twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z), -1), 1)
+        motor_msg.data[0] = twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z
+        motor_msg.data[2] = -twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z
+        motor_msg.data[4] = -twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z
+        motor_msg.data[6] = twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z
 
         # Upper motors
         fact_upper = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
