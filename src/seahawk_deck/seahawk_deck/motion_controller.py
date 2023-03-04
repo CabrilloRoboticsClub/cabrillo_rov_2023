@@ -127,18 +127,16 @@ class MotionController(Node):
 
 
         # Lower motors 
-        fact_lower = self.thrust_control(twist_msg.linear.x, twist_msg.linear.y, twist_msg.angular.z)
-        motor_msg.data[0] = min(max((twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z), -1), 1)
-        motor_msg.data[2] = min(max((-twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z), -1), 1)
-        motor_msg.data[4] = min(max((-twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z), -1), 1)
-        motor_msg.data[6] = min(max((twist_msg.linear.x + twist_msg.linear.y + twist_msg.angular.z), -1), 1)
+        motor_msg.data[0] = self.lower_thrust_control(twist_msg.linear.x, -twist_msg.linear.y, -twist_msg.angular.z)
+        motor_msg.data[2] = self.lower_thrust_control(-twist_msg.linear.x, -twist_msg.linear.y, twist_msg.angular.z)
+        motor_msg.data[4] = self.lower_thrust_control(-twist_msg.linear.x, twist_msg.linear.y, -twist_msg.angular.z)
+        motor_msg.data[6] = self.lower_thrust_control(twist_msg.linear.x, twist_msg.linear.y, twist_msg.angular.z)
 
         # Upper motors
-        fact_upper = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
-        motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
-        motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
+        motor_msg.data[1] = self.upper_thrust_control(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[3] = self.upper_thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[5] = self.upper_thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[7] = self.upper_thrust_control(twist_msg.linear.z, twist_msg.angular.y)
         
 
         # Publish data to the motors
