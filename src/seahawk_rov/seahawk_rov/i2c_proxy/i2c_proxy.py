@@ -126,9 +126,9 @@ class sensor_publisher:
         message_thrust_box_humidity.relative_humidity = self.thrust_box_bme280.humidity
         message_thrust_box_pressure.fluid_pressure = self.thrust_box_bme280.pressure
 
-        message_logic_tube_imu.linear_acceleration = self.logic_tube_imu.raw_acceleration
-        message_logic_tube_imu.angular_velocity = self.logic_tube_imu.raw_gyro
-        message_logic_tube_imu.orientation = self.logic_tube_imu.raw_quaternion
+        #message_logic_tube_imu.linear_acceleration = self.logic_tube_imu.raw_acceleration
+        #message_logic_tube_imu.angular_velocity = self.logic_tube_imu.raw_gyro
+        #message_logic_tube_imu.orientation = self.logic_tube_imu.raw_quaternion
 
         # publish the data
         self.logic_tube_temperature.publish(message_logic_tube_temperature)
@@ -137,7 +137,7 @@ class sensor_publisher:
         self.thrust_box_temperature.publish(message_thrust_box_temperature)
         self.thrust_box_humidity.publish(message_thrust_box_humidity)
         self.thrust_box_pressure.publish(message_thrust_box_pressure)
-        self.logic_tube_imu.publish(message_logic_tube_imu)
+        #self.logic_tube_imu.publish(message_logic_tube_imu)
 
 
 
