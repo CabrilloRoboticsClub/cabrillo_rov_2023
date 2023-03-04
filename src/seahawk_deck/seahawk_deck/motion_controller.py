@@ -25,9 +25,10 @@ class MotionController(Node):
     
     def thrust_control(a:float, b:float, c:float):
         ab = a + b - (a*b)
-        result = ab + c - (ab * c)
-        return result
+        return ab + c - (ab * c)
 
+    def thrust_control(a:float, b:float):
+        return a + b - (a*b)
 
     def _callback(self, joy_msg):
         """
