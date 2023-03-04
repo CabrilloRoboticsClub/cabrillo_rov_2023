@@ -113,7 +113,7 @@ for channel in thruster_channels:
     thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
 
 servo_cam_channel = 15
-logic_tube_pwm.servo[servo_cam_channel].set_width_range(0, 3000)
+logic_tube_pwm.servo[servo_cam_channel].set_pulse_width_range(0, 3000)
 logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
 logic_tube_pwm.servo[servo_cam_channel].angle = 1500
 
