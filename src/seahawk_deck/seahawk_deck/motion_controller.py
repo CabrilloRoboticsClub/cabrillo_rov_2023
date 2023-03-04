@@ -74,13 +74,13 @@ class MotionController(Node):
         }
 
         # NORMALIZE CONTROLLER AXES
-        SCALE_ACCURACY = 10 * 2 # must be even
-        for axis in controller['axes']:
-            angle = math.atan(controller[axis]['x'] / (controller[axis]['y'] + 0.0000000000000001)) # don't want to divide by zero!
-            scale = pow(pow(math.cos(angle), SCALE_ACCURACY) + pow(math.sin(angle), SCALE_ACCURACY), 1 / SCALE_ACCURACY) 
+        # SCALE_ACCURACY = 10 * 2 # must be even
+        # for axis in controller['axes']:
+        #     angle = math.atan(controller[axis]['x'] / (controller[axis]['y'] + 0.0000000000000001)) # don't want to divide by zero!
+        #     scale = pow(pow(math.cos(angle), SCALE_ACCURACY) + pow(math.sin(angle), SCALE_ACCURACY), 1 / SCALE_ACCURACY) 
             
-            controller[axis]['x'] *= scale
-            controller[axis]['y'] *= scale
+        #     controller[axis]['x'] *= scale
+        #     controller[axis]['y'] *= scale
 
         # BINDINGS
         twist_msg = Twist()
