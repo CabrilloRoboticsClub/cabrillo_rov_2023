@@ -23,7 +23,7 @@ class MotionController(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
     
-    def thrust_control(a, b, c):
+    def thrust_control(a:float, b:float, c:float):
         ab = a + b - (a*b)
         result = ab + c - (ab * c)
         return result
@@ -124,6 +124,8 @@ class MotionController(Node):
 
 
         # Lower motors 
+        fact_lower = self.thrust_control(twist_msg.linear.x, twist_msg.linear.y, twist_msg.angular.z)
+
         motor_msg.data[0] = min(max((twist_msg.linear.x - twist_msg.linear.y - twist_msg.angular.z), -1), 1)
         motor_msg.data[2] = min(max((-twist_msg.linear.x - twist_msg.linear.y + twist_msg.angular.z), -1), 1)
         motor_msg.data[4] = min(max((-twist_msg.linear.x + twist_msg.linear.y - twist_msg.angular.z), -1), 1)
@@ -134,6 +136,7 @@ class MotionController(Node):
         motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
         motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
         motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
+        fact_upper = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
 
         # Publish data to the motors
         self.motor_pub.publish(motor_msg)
