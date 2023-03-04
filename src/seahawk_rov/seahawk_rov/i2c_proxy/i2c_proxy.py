@@ -108,9 +108,14 @@ thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 # t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
 thruster_channels = (0,1,2,3,4,5,6,7)
 for channel in thruster_channels:
-    thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
+    thrust_box_pwm.servo[channel].set_pulse_width_range(1220, 1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
     thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
+
+servo_cam_channel = 15
+logic_tube_pwm.servo[servo_cam_channel].set_width_range(0, 3000)
+logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
+logic_tube_pwm.servo[servo_cam_channel].angle = 1500
 
 # # # # # # # #
 #
@@ -203,7 +208,9 @@ def main(args=None):
         for channel in thruster_channels:
             thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
-    def camera_servo_callback(msg_drive_cam_servo)
+    def camera_servo_callback(msg_drive_cam_servo):
+        camera_angle = msg_drive_cam_servo.data
+        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, camera_angle))
 
     # # # # # # # #
     #
@@ -213,6 +220,9 @@ def main(args=None):
 
     # instanciate output subscribers
     subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
+
+    # drive cam servo subscriber
+    subscriber_drive_cam = node_i2c_proxy.create_subscription(Float32, 'camera_control', camera_servo_callback, 10)
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
