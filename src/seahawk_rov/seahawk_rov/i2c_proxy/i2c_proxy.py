@@ -72,7 +72,7 @@ i2c = board.I2C()
 
 # # # # # # # #
 #
-# publisher class
+# sensor publisher class
 #
 # # # # # # # #
 
@@ -115,11 +115,9 @@ class sensor_publisher:
         message_thrust_box_humidity.relative_humidity = thrust_box_bme280.humidity
         message_thrust_box_pressure.fluid_pressure = thrust_box_bme280.pressure
 
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+        
         message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
         message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
         message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
 
         # publish the data
@@ -179,6 +177,10 @@ servo_cam_channel = 15
 logic_tube_pwm.servo[servo_cam_channel].set_pulse_width_range(0, 3000)
 logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
 logic_tube_pwm.servo[servo_cam_channel].angle = 1500
+
+logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
+logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
 # # # # # # # #
 #
