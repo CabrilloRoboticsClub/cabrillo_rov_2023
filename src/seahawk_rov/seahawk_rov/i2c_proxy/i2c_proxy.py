@@ -67,10 +67,6 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 # import servokit for the pwm hats
 from adafruit_servokit import ServoKit
 
-# grab the i2c interface for us to use
-i2c = board.I2C()
-
-
 # # # # # # # #
 #
 # sensor publisher class
@@ -78,7 +74,7 @@ i2c = board.I2C()
 # # # # # # # #
 
 class sensor_publisher:
-    def __init__(self, node:Node):
+    def __init__(self, node, i2c):
         # instanciate sensor publishers
         self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
         self.logic_tube_humidity = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
@@ -87,6 +83,20 @@ class sensor_publisher:
         self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
         self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
         self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
+
+        # instanciate sensors
+        self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+        self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
+        self.logic_tube_imu = BNO08X_I2C(i2c)
+
+        # configure sensors
+        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
+        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+
+        # instanciate timer
+        self.timer = node.create_timer(0.1, self.publish)
+
  
     def publish(self):
 
@@ -109,16 +119,16 @@ class sensor_publisher:
         message_logic_tube_imu.header.frame_id = "base_link"
 
         # grab the data from the sensors
-        message_logic_tube_temperature.temperature = logic_tube_bme280.temperature
-        message_logic_tube_humidity.relative_humidity = logic_tube_bme280.humidity
-        message_logic_tube_pressure.fluid_pressure = logic_tube_bme280.pressure
-        message_thrust_box_temperature.temperature = thrust_box_bme280.temperature
-        message_thrust_box_humidity.relative_humidity = thrust_box_bme280.humidity
-        message_thrust_box_pressure.fluid_pressure = thrust_box_bme280.pressure
+        message_logic_tube_temperature.temperature = self.logic_tube_bme280.temperature
+        message_logic_tube_humidity.relative_humidity = self.logic_tube_bme280.humidity
+        message_logic_tube_pressure.fluid_pressure = self.logic_tube_bme280.pressure
+        message_thrust_box_temperature.temperature = self.thrust_box_bme280.temperature
+        message_thrust_box_humidity.relative_humidity = self.thrust_box_bme280.humidity
+        message_thrust_box_pressure.fluid_pressure = self.thrust_box_bme280.pressure
 
-        message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
-        message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
-        message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
+        message_logic_tube_imu.linear_acceleration = self.logic_tube_imu.raw_acceleration
+        message_logic_tube_imu.angular_velocity = self.logic_tube_imu.raw_gyro
+        message_logic_tube_imu.orientation = self.logic_tube_imu.raw_quaternion
 
         # publish the data
         self.logic_tube_temperature.publish(message_logic_tube_temperature)
@@ -130,6 +140,7 @@ class sensor_publisher:
         self.logic_tube_imu.publish(message_logic_tube_imu)
 
 
+
 # # # # # # # # #
 #
 # output subscriber class
@@ -137,70 +148,36 @@ class sensor_publisher:
 # # # # # # # # #
 
 class output_subscriber:
-    def __init__(self, node:Node, thrusters, drive_cam_servo):
+    def __init__(self, node, i2c):
+        # create subscribers
         self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
-        subscriber_drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10)
-        self.thrusters = thrusters
-        self.drive_cam_servo = drive_cam_servo
+        self.drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10)
 
-    def receive_thruster(self, message:Float32MultiArray):
+        # create member variables
+        self.drive_cam_servo = 15
+        self.thrusters = (0,1,2,3,4,5,6,7)
+
+        # instanciate outputs
+        self.logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
+        self.thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
+
+        # configure outputs
         for thruster in self.thrusters:
-            thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
+            self.thrust_box_pwm.servo[thruster].set_pulse_width_range(1220, 1780)
+            self.thrust_box_pwm.servo[thruster].actuation_range = 3000
+            self.thrust_box_pwm.servo[thruster].angle = 1500 # zero throttle at bootup
+        self.logic_tube_pwm.servo[self.drive_cam_servo].set_pulse_width_range(0, 3000)
+        self.logic_tube_pwm.servo[self.drive_cam_servo].actuation_range = 3000
+        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = 1500
 
-    def receive_drive_camera(self, message):
-        logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
 
+        def receive_thruster(self, message:Float32MultiArray):
+            for thruster in self.thrusters:
+                self.thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
 
-# # # # # # # #
-#
-# INSTANCIATIONS
-#
-# # # # # # # #
+        def receive_drive_camera(self, message:Float32):
+            self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
 
-# instanciate the logic tube bme280
-# enviromental sensor
-logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
-
-# instanciate the thrust box bme280
-# enviromental sensor
-thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-
-# instanciate the logic tube bmo085
-# 9dof absolute orientation imu Ssensor
-logic_tube_imu = BNO08X_I2C(i2c)
-
-# instanciate the logic tube pwm hat
-logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
-
-# instanciate thrust box pwm
-thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
-
-# # # # # # # #
-#
-# Hardware Calibrations
-#
-# # # # # # # #
-
-#### THRUSTERS PARAMS
-# hard limit thrusters so they can all run at 100% no issues
-# 8 motors
-# 2x 30a buck
-# 8/60 = 7.5
-# t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
-thruster_channels = (0,1,2,3,4,5,6,7)
-for channel in thruster_channels:
-    thrust_box_pwm.servo[channel].set_pulse_width_range(1220, 1780)
-    thrust_box_pwm.servo[channel].actuation_range = 3000
-    thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
-
-servo_cam_channel = 15
-logic_tube_pwm.servo[servo_cam_channel].set_pulse_width_range(0, 3000)
-logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
-logic_tube_pwm.servo[servo_cam_channel].angle = 1500
-
-logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
 # # # # # # # #
 #
@@ -224,25 +201,28 @@ def clamp(num, minimum, maximum):
 # # # # # # # #
 
 def main(args=None):
+
+    # # # # # # # #
+    #
+    # INSTANCIATIONS
+    #
+    # # # # # # # #
+
     rclpy.init(args=args)
 
     # this creates the node "i2c_proxy"
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
+    # grab the i2c interface for us to use
+    i2c = board.I2C()
+
+
     # # # # # # # #
     #
-    # Pubs & Subs
+    # ROS STUFF
     #
-    # # # # # # 3 #
+    # # # # # # # # 
 
-    # instanciate output subscribers
-    
-
-    # drive cam servo subscriber
-    
-
-    # create the timer for the i2c proxy node
-    timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
 
     rclpy.spin(node_i2c_proxy)
 
