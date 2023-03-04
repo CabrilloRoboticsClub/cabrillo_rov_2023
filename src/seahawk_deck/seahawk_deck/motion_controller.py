@@ -118,6 +118,7 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
+        # int16. A 16-bit signed integer whose values exist on the interval [−32,767, +32,767] .
 
         # Lower motors 
         motor_msg.data[0] = self.thrust_control(self.thrust_control(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)

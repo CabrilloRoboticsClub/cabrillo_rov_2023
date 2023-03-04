@@ -33,13 +33,13 @@ $ make clean
 There are launch configurations in the `launch` directory. To run all the configured nodes on the ROV:
 
 ```console 
-ros2 launch ./launch/rov.yaml  
+ros2 launch ./launch/rov.py  
 ```
 
 To launch all the nodes on the deck:
 
 ```console 
-ros2 launch ./launch/deck.yaml  
+ros2 launch ./launch/deck.py  
 ```
 
 ## Running Individual Nodes 
