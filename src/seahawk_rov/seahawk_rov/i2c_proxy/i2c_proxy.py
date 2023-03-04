@@ -86,6 +86,51 @@ class sensor_publisher:
         self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
         self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
         self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
+ 
+    def publish(self):
+
+        # instanciate the messages
+        message_logic_tube_temperature = Temperature()
+        message_logic_tube_humidity = RelativeHumidity()
+        message_logic_tube_pressure = FluidPressure()
+        message_thrust_box_temperature = Temperature()
+        message_thrust_box_humidity = RelativeHumidity()
+        message_thrust_box_pressure = FluidPressure()
+        message_logic_tube_imu = Imu()
+
+        # insert fame id
+        message_logic_tube_temperature.header.frame_id = "base_link"
+        message_logic_tube_humidity.header.frame_id = "base_link"
+        message_logic_tube_pressure.header.frame_id = "base_link"
+        message_thrust_box_temperature.header.frame_id = "base_link"
+        message_thrust_box_humidity.header.frame_id = "base_link"
+        message_thrust_box_pressure.header.frame_id = "base_link"
+        message_logic_tube_imu.header.frame_id = "base_link"
+
+        # grab the data from the sensors
+        message_logic_tube_temperature.temperature = logic_tube_bme280.temperature
+        message_logic_tube_humidity.relative_humidity = logic_tube_bme280.humidity
+        message_logic_tube_pressure.fluid_pressure = logic_tube_bme280.pressure
+        message_thrust_box_temperature.temperature = thrust_box_bme280.temperature
+        message_thrust_box_humidity.relative_humidity = thrust_box_bme280.humidity
+        message_thrust_box_pressure.fluid_pressure = thrust_box_bme280.pressure
+
+        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+        message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
+        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
+        message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
+        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+        message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
+
+        # publish the data
+        self.logic_tube_temperature.publish(message_logic_tube_temperature)
+        self.logic_tube_humidity.publish(message_logic_tube_humidity)
+        self.logic_tube_pressure.publish(message_logic_tube_pressure)
+        self.thrust_box_temperature.publish(message_thrust_box_temperature)
+        self.thrust_box_humidity.publish(message_thrust_box_humidity)
+        self.thrust_box_pressure.publish(message_thrust_box_pressure)
+        self.logic_tube_imu.publish(message_logic_tube_imu)
+
 
 
 # # # # # # # #
@@ -169,50 +214,7 @@ def main(args=None):
     # Callbacks
     #
     # # # # # # # #
-    
-    def poll_sensors():
-
-        # instanciate the messages
-        message_logic_tube_bme280_temperature = Temperature()
-        message_logic_tube_bme280_humidity = RelativeHumidity()
-        message_logic_tube_bme280_pressure = FluidPressure()
-        message_thrust_box_bme280_temperature = Temperature()
-        message_thrust_box_bme280_humidity = RelativeHumidity()
-        message_thrust_box_bme280_pressure = FluidPressure()
-        message_logic_tube_imu = Imu()
-
-        # insert fame id
-        message_logic_tube_bme280_temperature.header.frame_id = "base_link"
-        message_logic_tube_bme280_humidity.header.frame_id = "base_link"
-        message_logic_tube_bme280_pressure.header.frame_id = "base_link"
-        message_thrust_box_bme280_temperature.header.frame_id = "base_link"
-        message_thrust_box_bme280_humidity.header.frame_id = "base_link"
-        message_thrust_box_bme280_pressure.header.frame_id = "base_link"
-        message_logic_tube_imu.header.frame_id = "base_link"
-
-        # grab the data from the sensors
-        message_logic_tube_bme280_temperature.temperature = logic_tube_bme280.temperature
-        message_logic_tube_bme280_humidity.relative_humidity = logic_tube_bme280.humidity
-        message_logic_tube_bme280_pressure.fluid_pressure = logic_tube_bme280.pressure
-        message_thrust_box_bme280_temperature.temperature = thrust_box_bme280.temperature
-        message_thrust_box_bme280_humidity.relative_humidity = thrust_box_bme280.humidity
-        message_thrust_box_bme280_pressure.fluid_pressure = thrust_box_bme280.pressure
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
-        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
-        message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
-
-        # pubblish the data
-        publisher_logic_tube_bme280_temperature.publish(message_logic_tube_bme280_temperature)
-        publisher_logic_tube_bme280_humidity.publish(message_logic_tube_bme280_humidity)
-        publisher_logic_tube_bme280_pressure.publish(message_logic_tube_bme280_pressure)
-        publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_temperature)
-        publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
-        publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
-        publisher_logic_tube_imu.publish(message_logic_tube_imu)
-
+   
     def thrusters_callback(msg_thrusters):
         # get the message data
         thrusters_throttle_array = msg_thrusters.data
