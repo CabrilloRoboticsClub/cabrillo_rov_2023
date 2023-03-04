@@ -70,6 +70,7 @@ from adafruit_servokit import ServoKit
 # grab the i2c interface for us to use
 i2c = board.I2C()
 
+
 # # # # # # # #
 #
 # sensor publisher class
@@ -115,7 +116,6 @@ class sensor_publisher:
         message_thrust_box_humidity.relative_humidity = thrust_box_bme280.humidity
         message_thrust_box_pressure.fluid_pressure = thrust_box_bme280.pressure
 
-        
         message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
         message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
         message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
@@ -129,6 +129,26 @@ class sensor_publisher:
         self.thrust_box_pressure.publish(message_thrust_box_pressure)
         self.logic_tube_imu.publish(message_logic_tube_imu)
 
+
+# # # # # # # # #
+#
+# output subscriber class
+#
+# # # # # # # # #
+
+class output_subscriber:
+    def __init__(self, node:Node, thrusters, drive_cam_servo):
+        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
+        subscriber_drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10)
+        self.thrusters = thrusters
+        self.drive_cam_servo = drive_cam_servo
+
+    def receive_thruster(self, message:Float32MultiArray):
+        for thruster in self.thrusters:
+            thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
+
+    def receive_drive_camera(self, message):
+        logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
 
 
 # # # # # # # #
@@ -209,27 +229,6 @@ def main(args=None):
     # this creates the node "i2c_proxy"
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
-
-
-    # # # # # # # #
-    #
-    # Callbacks
-    #
-    # # # # # # # #
-   
-    def thrusters_callback(msg_thrusters):
-        # get the message data
-        thrusters_throttle_array = msg_thrusters.data
-        # set all the pwm outputs
-        # im adding 32767 to the value to turn the signed int to a unsigned int
-        # servo kit only works with unsigned``
-        for channel in thruster_channels:
-            thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(thrusters_throttle_array[channel], -1, 1)))
-
-    def camera_servo_callback(msg_drive_cam_servo):
-        camera_angle = msg_drive_cam_servo.data
-        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(camera_angle, -1, 1)))
-
     # # # # # # # #
     #
     # Pubs & Subs
@@ -237,10 +236,10 @@ def main(args=None):
     # # # # # # 3 #
 
     # instanciate output subscribers
-    subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
+    
 
     # drive cam servo subscriber
-    subscriber_drive_cam = node_i2c_proxy.create_subscription(Float32, 'camera_control', camera_servo_callback, 10)
+    
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
