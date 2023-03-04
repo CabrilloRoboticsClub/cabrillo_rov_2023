@@ -88,8 +88,17 @@ thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 # 9dof absolute orientation imu Ssensor
 logic_tube_imu = BNO08X_I2C(i2c)
 
+# instanciate the logic tube pwm hat
+logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
+
 # instanciate thrust box pwm
 thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
+
+# # # # # # # #
+#
+# Hardware Calibrations
+#
+# # # # # # # #
 
 #### THRUSTERS PARAMS
 # hard limit thrusters so they can all run at 100% no issues
@@ -99,9 +108,20 @@ thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 # t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
 thruster_channels = (0,1,2,3,4,5,6,7)
 for channel in thruster_channels:
-    thrust_box_pwm.servo[channel].set_pulse_width_range(1220,1780)
+    thrust_box_pwm.servo[channel].set_pulse_width_range(1220, 1780)
     thrust_box_pwm.servo[channel].actuation_range = 3000
     thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
+
+servo_cam_channel = 15
+logic_tube_pwm.servo[servo_cam_channel].set_width_range(0, 3000)
+logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
+logic_tube_pwm.servo[servo_cam_channel].angle = 1500
+
+# # # # # # # #
+#
+# Helper Functions
+#
+# # # # # # # #
 
 def lerp(old_min, old_max, new_min, new_max, old_value):
     old_range = old_max - old_min
@@ -130,6 +150,12 @@ def main(args=None):
     publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box/bme280/pressure', 8)
 #    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
 
+    # # # # # # # #
+    #
+    # Callbacks
+    #
+    # # # # # # # #
+    
     def poll_sensors():
 
         # instanciate the messages
@@ -182,15 +208,32 @@ def main(args=None):
         for channel in thruster_channels:
             thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
 
+    def camera_servo_callback(msg_drive_cam_servo):
+        camera_angle = msg_drive_cam_servo.data
+        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, camera_angle))
+
+    # # # # # # # #
+    #
+    # Pubs & Subs
+    #
+    # # # # # # 3 #
+
     # instanciate output subscribers
     subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
+
+    # drive cam servo subscriber
+    subscriber_drive_cam = node_i2c_proxy.create_subscription(Float32, 'camera_control', camera_servo_callback, 10)
 
     # create the timer for the i2c proxy node
     timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
 
     rclpy.spin(node_i2c_proxy)
 
-# gracefully shutdown
+# # # # # # # #
+#
+# gracefull shutdown
+#
+# # # # # # # #
 def signal_handler(sig, frame):
     sys.exit(0)
 
