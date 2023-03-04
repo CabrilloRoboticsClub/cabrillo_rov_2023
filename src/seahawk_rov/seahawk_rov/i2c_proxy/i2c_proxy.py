@@ -77,7 +77,7 @@ i2c = board.I2C()
 # # # # # # # #
 
 class sensor_publisher:
-    def __init__(self, node):
+    def __init__(self, node:Node):
         # instanciate sensor publishers
         self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
         self.logic_tube_humidity = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
@@ -141,11 +141,14 @@ logic_tube_pwm.servo[servo_cam_channel].angle = 1500
 #
 # # # # # # # #
 
-def lerp(old_min, old_max, new_min, new_max, old_value):
+def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
     old_range = old_max - old_min
     new_range = new_max - new_min
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
     return new_value
+
+def clamp(num, minimum, maximum):
+  return max(min(minimum, num), maximum)
 
 # # # # # # # #
 #
@@ -217,7 +220,7 @@ def main(args=None):
         # im adding 32767 to the value to turn the signed int to a unsigned int
         # servo kit only works with unsigned``
         for channel in thruster_channels:
-            thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
+            thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(thrusters_throttle_array[channel], -1, 1)))
 
     def camera_servo_callback(msg_drive_cam_servo):
         camera_angle = msg_drive_cam_servo.data
