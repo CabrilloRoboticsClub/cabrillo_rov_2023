@@ -67,14 +67,32 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 # import servokit for the pwm hats
 from adafruit_servokit import ServoKit
 
+# grab the i2c interface for us to use
+i2c = board.I2C()
+
+# # # # # # # #
+#
+# publisher class
+#
+# # # # # # # #
+
+class sensor_publisher:
+    def __init__(self, node):
+        # instanciate sensor publishers
+        self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
+        self.logic_tube_humidity = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
+        self.logic_tube_pressure = node.create_publisher(FluidPressure,'logic_tube/pressure', 8)
+        self.thrust_box_temperature = node.create_publisher(Temperature,'thrust_box/temperature', 8)
+        self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
+        self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
+        self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
+
+
 # # # # # # # #
 #
 # INSTANCIATIONS
 #
 # # # # # # # #
-
-# grab the i2c interface for us to use
-i2c = board.I2C()
 
 # instanciate the logic tube bme280
 # enviromental sensor
@@ -113,7 +131,7 @@ for channel in thruster_channels:
     thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
 
 servo_cam_channel = 15
-logic_tube_pwm.servo[servo_cam_channel].set_width_range(0, 3000)
+logic_tube_pwm.servo[servo_cam_channel].set_pulse_width_range(0, 3000)
 logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
 logic_tube_pwm.servo[servo_cam_channel].angle = 1500
 
@@ -141,14 +159,7 @@ def main(args=None):
     # this creates the node "i2c_proxy"
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
-    # instanciate sensor publishers
-    publisher_logic_tube_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'logic_tube/bme280/temperature', 8)
-    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'logic_tube/bme280/humidity', 8)
-    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'logic_tube/bme280/pressure', 8)
-    publisher_thrust_box_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'thrust_box/bme280/temperature', 8)
-    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box/bme280/humidity', 8)
-    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box/bme280/pressure', 8)
-    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
+
 
     # # # # # # # #
     #
