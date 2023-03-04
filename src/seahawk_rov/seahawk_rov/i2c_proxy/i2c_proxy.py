@@ -201,13 +201,6 @@ def clamp(num, minimum, maximum):
 # # # # # # # #
 
 def main(args=None):
-
-    # # # # # # # #
-    #
-    # INSTANCIATIONS
-    #
-    # # # # # # # #
-
     rclpy.init(args=args)
 
     # this creates the node "i2c_proxy"
@@ -216,13 +209,9 @@ def main(args=None):
     # grab the i2c interface for us to use
     i2c = board.I2C()
 
+    sensor_publisher = sensor_publisher()
 
-    # # # # # # # #
-    #
-    # ROS STUFF
-    #
-    # # # # # # # # 
-
+    output_subscriber = output_subscriber()
 
     rclpy.spin(node_i2c_proxy)
 
