@@ -1,4 +1,3 @@
-
 import sys 
 
 import math
@@ -23,20 +22,17 @@ class MotionController(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
     
-    def thrust_control(self, a:float, b:float):
-        """Add two floats as percents, ensures not over 100% or 1"""
-        if (a >= 0 and b >= 0):
-            return_val = a + b - (a*b)
-        elif (a < 0 and b < 0):
-            return_val = a + b + (a*b)
+    def thrust_control(self, direction1:float, direction2:float)->float:
+        """Add two directions in such a way that they do not fall outside [-1, 1]"""
+        if (direction1 >= 0 and direction2 >= 0):
+            return direction1 + direction2 - (direction1 * direction2)
+        elif (direction1 < 0 and direction2 < 0):
+            return direction1 + direction2 + (direction1 * direction2)
         else:
-            return_val = a + b        
-        return return_val
+            return direction1 + direction2
 
     def _callback(self, joy_msg):
-        """
-        Called every time the joystick publishes a message. 
-        """
+        """Called every time the joystick publishes a message. """
         self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Compute desired motion in <x, y, z, r, p, y>
@@ -73,15 +69,6 @@ class MotionController(Node):
             'xbox':         joy_msg.buttons[8],
         }
 
-        # NORMALIZE CONTROLLER AXES
-        # SCALE_ACCURACY = 10 * 2 # must be even
-        # for axis in controller['axes']:
-        #     angle = math.atan(controller[axis]['x'] / (controller[axis]['y'] + 0.0000000000000001)) # don't want to divide by zero!
-        #     scale = pow(pow(math.cos(angle), SCALE_ACCURACY) + pow(math.sin(angle), SCALE_ACCURACY), 1 / SCALE_ACCURACY) 
-            
-        #     controller[axis]['x'] *= scale
-        #     controller[axis]['y'] *= scale
-
         # BINDINGS
         twist_msg = Twist()
         twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
@@ -91,7 +78,18 @@ class MotionController(Node):
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
 
-        # Send the twist message for debugging.
+        # CONSTANT AXIS SCALING
+        AXIS_SCALE = {
+            'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
+            'angular': {'x': 0, 'y': 0.5, 'z': 0.5},  # roll, pitch, yaw
+        }
+        twist_msg.linear.y  *= AXIS_SCALE['linear']['x']
+        twist_msg.linear.x  *= AXIS_SCALE['linear']['y']
+        twist_msg.linear.z  *= AXIS_SCALE['linear']['z']
+        twist_msg.angular.x *= AXIS_SCALE['angular']['x']
+        twist_msg.angular.y *= AXIS_SCALE['angular']['y']
+        twist_msg.angular.z *= AXIS_SCALE['angular']['z']
+
         self.twist_pub.publish(twist_msg)
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
@@ -120,12 +118,6 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
-
-        AXIS_SCALE = {
-            'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
-            'angular': {'x': 0, 'y': 1, 'z': 0.1},  # roll, pitch, yaw
-        }
-
 
         # Lower motors 
         motor_msg.data[0] = self.thrust_control(self.thrust_control(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
