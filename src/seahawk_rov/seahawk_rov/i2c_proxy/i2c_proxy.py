@@ -224,7 +224,7 @@ def main(args=None):
 
     def camera_servo_callback(msg_drive_cam_servo):
         camera_angle = msg_drive_cam_servo.data
-        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, camera_angle))
+        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(camera_angle, -1, 1)))
 
     # # # # # # # #
     #
