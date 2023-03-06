@@ -73,7 +73,7 @@ from adafruit_servokit import ServoKit
 #
 # # # # # # # #
 
-class sensor_publisher:
+class SensorPublisher:
     def __init__(self, node, i2c):
         # instanciate sensor publishers
         self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
@@ -147,7 +147,7 @@ class sensor_publisher:
 #
 # # # # # # # # #
 
-class output_subscriber:
+class OutputSubscriber:
     def __init__(self, node, i2c):
         # create subscribers
         self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
@@ -209,9 +209,9 @@ def main(args=None):
     # grab the i2c interface for us to use
     i2c = board.I2C()
 
-    object_sensor_publisher = sensor_publisher(node_i2c_proxy, i2c)
+    sensor_publisher = SensorPublisher(node_i2c_proxy, i2c)
 
-    object_output_subscriber = output_subscriber(node_i2c_proxy, i2c)
+    output_subscriber = OutputSubscriber(node_i2c_proxy, i2c)
 
     rclpy.spin(node_i2c_proxy)
 
