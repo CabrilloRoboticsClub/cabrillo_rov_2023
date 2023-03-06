@@ -209,9 +209,9 @@ def main(args=None):
     # grab the i2c interface for us to use
     i2c = board.I2C()
 
-    sensor_publisher = sensor_publisher(node_i2c_proxy, i2c)
+    object_sensor_publisher = sensor_publisher(node_i2c_proxy, i2c)
 
-    output_subscriber = output_subscriber(node_i2c_proxy, i2c)
+    object_output_subscriber = output_subscriber(node_i2c_proxy, i2c)
 
     rclpy.spin(node_i2c_proxy)
 
