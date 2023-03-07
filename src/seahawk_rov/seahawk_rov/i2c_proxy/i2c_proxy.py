@@ -171,12 +171,12 @@ class OutputSubscriber:
         self.logic_tube_pwm.servo[self.drive_cam_servo].angle = 1500
 
 
-        def receive_thruster(self, message:Float32MultiArray):
-            for thruster in self.thrusters:
-                self.thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
+    def receive_thruster(self, message:Float32MultiArray):
+        for thruster in self.thrusters:
+            self.thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
 
-        def receive_drive_camera(self, message:Float32):
-            self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
+    def receive_drive_camera(self, message:Float32):
+        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
 
 
 # # # # # # # #
