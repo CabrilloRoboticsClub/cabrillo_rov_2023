@@ -38,8 +38,9 @@ class MotionController(Node):
         # Compute desired motion in <x, y, z, r, p, y>
 
         # CONTROLLER KEYMAPPINGS
+        # for more controller mappings see commit 4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06 motion_controller.py line 41
+        # https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06/src/seahawk_deck/seahawk_deck/motion_controller.py#LL41
         controller = {
-            'axes': ['left_stick', 'right_stick'],
             'left_stick': {
                 'x':        -joy_msg.axes[0],
                 'y':        joy_msg.axes[1],
@@ -52,22 +53,7 @@ class MotionController(Node):
             },
             'left_trigger': joy_msg.axes[2],
             'right_trigger':joy_msg.axes[5],
-            'dpad': {
-                'up':       max(joy_msg.axes[7], 0), # +
-                'down':     min(joy_msg.axes[7], 0), # -
-                'right':    max(joy_msg.axes[6], 0), # +
-                'left':     min(joy_msg.axes[6], 0), # -
-            },
-            'a':            joy_msg.buttons[0],
-            'b':            joy_msg.buttons[1],
-            'x':            joy_msg.buttons[2],
-            'y':            joy_msg.buttons[3],
-            'left_bumper':  joy_msg.buttons[4],
-            'right_bumper': joy_msg.buttons[5],
-            'window':       joy_msg.buttons[6],
-            'menu':         joy_msg.buttons[7],
-            'xbox':         joy_msg.buttons[8],
-        }
+        } 
 
         # BINDINGS
         twist_msg = Twist()
