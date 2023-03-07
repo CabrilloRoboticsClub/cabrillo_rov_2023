@@ -1,4 +1,5 @@
 
+.PHONY: all clean
 all:
 	colcon build --symlink
 
