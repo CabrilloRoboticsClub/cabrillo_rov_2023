@@ -1,0 +1,7 @@
+setuptools
+adafruit-python-shell
+RPi.GPIO
+adafruit-blinka
+adafruit-circuitpython-ssd1306
+adafruit-circuitpython-framebuf
+adafruit-circuitpython-rfm9x
