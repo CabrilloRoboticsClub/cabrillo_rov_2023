@@ -92,7 +92,7 @@ def clamp(num, minimum, maximum):
 
 class SensorPublisher:
     def __init__(self, node, i2c):
-        # instanciate sensor publishers
+        # instantiate sensor publishers
         self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
         self.logic_tube_humidity = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
         self.logic_tube_pressure = node.create_publisher(FluidPressure,'logic_tube/pressure', 8)
@@ -101,7 +101,7 @@ class SensorPublisher:
         self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
         self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
 
-        # instanciate sensors
+        # instantiate sensors
         self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
         self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
         self.logic_tube_bno085 = BNO08X_I2C(i2c)
@@ -111,13 +111,13 @@ class SensorPublisher:
         self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
         self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
-        # instanciate timer
+        # instantiate timer
         self.timer = node.create_timer(0.1, self.publish)
 
  
     def publish(self):
 
-        # instanciate the messages
+        # instantiate the messages
         message_logic_tube_temperature = Temperature()
         message_logic_tube_humidity = RelativeHumidity()
         message_logic_tube_pressure = FluidPressure()
@@ -174,7 +174,7 @@ class OutputSubscriber:
         self.drive_cam_servo = 15
         self.thrusters = (0,1,2,3,4,5,6,7)
 
-        # instanciate outputs
+        # instantiate outputs
         self.logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
         self.thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
 
@@ -219,7 +219,7 @@ def main(args=None):
 
 # # # # # # # #
 #
-# gracefull shutdown
+# graceful shutdown
 #
 # # # # # # # #
 def signal_handler(sig, frame):
