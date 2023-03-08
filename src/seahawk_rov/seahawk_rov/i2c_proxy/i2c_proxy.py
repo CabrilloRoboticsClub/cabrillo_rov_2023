@@ -67,6 +67,23 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 # import servokit for the pwm hats
 from adafruit_servokit import ServoKit
 
+
+# # # # # # # #
+#
+# Helper Functions
+#
+# # # # # # # #
+
+def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
+    old_range = old_max - old_min
+    new_range = new_max - new_min
+    new_value = (((old_value - old_min) * new_range) / old_range) + new_min
+    return new_value
+
+def clamp(num, minimum, maximum):
+  return max(min(minimum, num), maximum)
+
+
 # # # # # # # #
 #
 # sensor publisher class
@@ -178,21 +195,6 @@ class OutputSubscriber:
     def receive_drive_camera(self, message:Float32):
         self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
 
-
-# # # # # # # #
-#
-# Helper Functions
-#
-# # # # # # # #
-
-def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
-    old_range = old_max - old_min
-    new_range = new_max - new_min
-    new_value = (((old_value - old_min) * new_range) / old_range) + new_min
-    return new_value
-
-def clamp(num, minimum, maximum):
-  return max(min(minimum, num), maximum)
 
 # # # # # # # #
 #
