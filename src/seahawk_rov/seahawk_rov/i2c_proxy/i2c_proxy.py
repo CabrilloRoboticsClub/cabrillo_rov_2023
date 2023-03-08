@@ -99,17 +99,17 @@ class SensorPublisher:
         self.thrust_box_temperature = node.create_publisher(Temperature,'thrust_box/temperature', 8)
         self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
         self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
-        self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
+        #self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
 
         # instanciate sensors
         self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
         self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-        self.logic_tube_bno085 = BNO08X_I2C(i2c)
+        #self.logic_tube_bno085 = BNO08X_I2C(i2c)
 
         # configure sensors
-        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
+        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
         # instanciate timer
         self.timer = node.create_timer(0.1, self.publish)
@@ -124,7 +124,7 @@ class SensorPublisher:
         message_thrust_box_temperature = Temperature()
         message_thrust_box_humidity = RelativeHumidity()
         message_thrust_box_pressure = FluidPressure()
-        message_logic_tube_imu = Imu()
+        #message_logic_tube_imu = Imu()
 
         # insert fame id
         message_logic_tube_temperature.header.frame_id = "base_link"
@@ -133,7 +133,7 @@ class SensorPublisher:
         message_thrust_box_temperature.header.frame_id = "base_link"
         message_thrust_box_humidity.header.frame_id = "base_link"
         message_thrust_box_pressure.header.frame_id = "base_link"
-        message_logic_tube_imu.header.frame_id = "base_link"
+        #message_logic_tube_imu.header.frame_id = "base_link"
 
         # grab the data from the sensors
         message_logic_tube_temperature.temperature = self.logic_tube_bme280.temperature
