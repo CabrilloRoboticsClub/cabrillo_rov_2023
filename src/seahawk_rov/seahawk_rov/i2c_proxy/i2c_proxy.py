@@ -104,12 +104,12 @@ class SensorPublisher:
         # instanciate sensors
         self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
         self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-        self.logic_tube_imu = BNO08X_I2C(i2c)
+        self.logic_tube_bno085 = BNO08X_I2C(i2c)
 
         # configure sensors
-        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        self.logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
+        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
+        self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
         # instanciate timer
         self.timer = node.create_timer(0.1, self.publish)
@@ -143,9 +143,9 @@ class SensorPublisher:
         message_thrust_box_humidity.relative_humidity = self.thrust_box_bme280.humidity
         message_thrust_box_pressure.fluid_pressure = self.thrust_box_bme280.pressure
 
-        #message_logic_tube_imu.linear_acceleration = self.logic_tube_imu.raw_acceleration
-        #message_logic_tube_imu.angular_velocity = self.logic_tube_imu.raw_gyro
-        #message_logic_tube_imu.orientation = self.logic_tube_imu.raw_quaternion
+        #message_logic_tube_imu.linear_acceleration = self.logic_tube_bno085.raw_acceleration
+        #message_logic_tube_imu.angular_velocity = self.logic_tube_bno085.raw_gyro
+        #message_logic_tube_imu.orientation = self.logic_tube_bno085.raw_quaternion
 
         # publish the data
         self.logic_tube_temperature.publish(message_logic_tube_temperature)
