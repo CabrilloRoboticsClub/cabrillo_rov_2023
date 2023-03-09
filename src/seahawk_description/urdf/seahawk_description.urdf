@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="seahawk_description">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.0206930700678135 0.00341026375918563 -0.0414859116104987"
+        rpy="0 0 0" />
+      <mass
+        value="6.91657871127401" />
+      <inertia
+        ixx="0.0143666413178029"
+        ixy="3.93272056525135E-06"
+        ixz="-2.87914525039085E-05"
+        iyy="0.0152232941277146"
+        iyz="9.84703382535022E-07"
+        izz="0.0226843964008807" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://seahawk_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://seahawk_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+</robot>
