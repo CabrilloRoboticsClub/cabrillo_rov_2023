@@ -2,30 +2,33 @@
 import rclpy
 from rclpy.node import Node 
 
-from geometry_msgs.msg import Twist 
-from sensor_msgs.msg import Joy 
-from std_msgs.msg import Float32MultiArray, ColorRGBA
-from geometry_msgs.msg import Pose, Point, Quaternion
+from std_msgs.msg import Float32MultiArray
+from geometry_msgs.msg import Quaternion
 from visualization_msgs.msg import Marker, MarkerArray
 
 import sys 
 import math 
-import numpy
 
 class MarkerMaker(Node):
     """
     Visualize the motor controls of the robot using RViz markers
     """
 
+    MOTOR_X = 0.22
+    MOTOR_Y = 0.22
+    TOP_Z = 0.10
+    BOT_Z = -0.05
+    TOP_P = 47*math.pi/36
+
     MOTORS = [
-        ((1,-1,0),       (0,0,5*math.pi/4)),  
-        ((1,-1,0.5),     (0,45*math.pi/36,7*math.pi/4)),
-        ((-1,-1,0),      (0,0,7*math.pi/4)),
-        ((-1,-1,0.5),    (0,45*math.pi/36,5*math.pi/4)),
-        ((-1,1,0),       (0,0,math.pi/4)),
-        ((-1,1,0.5),     (0,45*math.pi/36,3*math.pi/4)),
-        ((1,1,0),        (0,0,3*math.pi/4)),
-        ((1,1,0.5),      (0,45*math.pi/36,math.pi/4)),
+        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,5*math.pi/4)),  
+        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,7*math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,7*math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,5*math.pi/4)),
+        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,math.pi/4)),
+        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,3*math.pi/4)),
+        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,3*math.pi/4)),
+        (( MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,math.pi/4)),
     ]
 
     def __init__(self):
@@ -42,17 +45,17 @@ class MarkerMaker(Node):
 
         # Set IDs 
         for i, marker in enumerate(self.markers.markers):
-            marker.header.frame_id = 'map' # Wrong but works
+            marker.header.frame_id = 'base_link' 
             marker.id = i 
 
         for i in range(8):
             self.labels[i].type = 9 # Text 
             self.labels[i].action = 0 # Add/Modify
-            self.labels[i].scale.x = 0.2
-            self.labels[i].scale.y = 0.2
-            self.labels[i].scale.z = 0.2
-            self.labels[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
-            self.labels[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
+            self.labels[i].scale.x = 0.1
+            self.labels[i].scale.y = 0.1
+            self.labels[i].scale.z = 0.1
+            self.labels[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0]) + 0.5 * MarkerMaker.MOTORS[i][0][0] 
+            self.labels[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1]) + 0.5 * MarkerMaker.MOTORS[i][0][1]
             self.labels[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
             self.labels[i].color.r = 1.0
             self.labels[i].color.g = 1.0
@@ -62,9 +65,9 @@ class MarkerMaker(Node):
 
             self.boxes[i].type = 1 # Cube 
             self.boxes[i].action = 0 # Add/Modify
-            self.boxes[i].scale.x = 0.2
-            self.boxes[i].scale.y = 0.2
-            self.boxes[i].scale.z = 0.2
+            self.boxes[i].scale.x = 0.05
+            self.boxes[i].scale.y = 0.05
+            self.boxes[i].scale.z = 0.05
             self.boxes[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
             self.boxes[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
             self.boxes[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
@@ -77,8 +80,8 @@ class MarkerMaker(Node):
             self.arrows[i].type = 0 # Arrow 
             self.arrows[i].action = 0 # Add/Modify
             self.arrows[i].scale.x = 0.0
-            self.arrows[i].scale.y = 0.1
-            self.arrows[i].scale.z = 0.1
+            self.arrows[i].scale.y = 0.05
+            self.arrows[i].scale.z = 0.05
             self.arrows[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
             self.arrows[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
             self.arrows[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
@@ -91,26 +94,26 @@ class MarkerMaker(Node):
 
     def _callback(self, motor_msg):
         """
-        When I see ne new message on drive/motors
+        When I see new message on drive/motors
         """
         self.get_logger().info(f"Motor Message: {motor_msg.data}")
         for i, motor in enumerate(motor_msg.data):
-            self.markers.markers[i].scale.x = motor
-            self.labels.markers[i].text = f"{i}: {round(motor,2)}"
+            self.arrows[i].scale.x = motor
+            self.labels[i].text = f"{i}:{round(motor,2)}"
             if motor < -1 or motor > 1:
-                arrow.color.r = 1.0
-                arrow.color.g = 0.0
-                arrow.color.b = 0.0
-                label.color.r = 1.0
-                label.color.g = 0.0
-                label.color.b = 0.0
+                self.arrows[i].color.r = 1.0
+                self.arrows[i].color.g = 0.0
+                self.arrows[i].color.b = 0.0
+                self.labels[i].color.r = 1.0
+                self.labels[i].color.g = 0.0
+                self.labels[i].color.b = 0.0
             else:
-                arrow.color.r = 0.0
-                arrow.color.g = 1.0
-                arrow.color.b = 1.0
-                label.color.r = 1.0
-                label.color.g = 1.0
-                label.color.b = 1.0
+                self.arrows[i].color.r = 0.0
+                self.arrows[i].color.g = 1.0
+                self.arrows[i].color.b = 1.0
+                self.labels[i].color.r = 1.0
+                self.labels[i].color.g = 1.0
+                self.labels[i].color.b = 1.0
 
         self.marker_pub.publish(self.markers)
 
