@@ -1,4 +1,3 @@
-
 import sys 
 
 import math
@@ -22,50 +21,61 @@ class MotionController(Node):
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
+    
+    def thrust_control(self, direction1:float, direction2:float)->float:
+        """Add two directions in such a way that they do not fall outside [-1, 1]"""
+        if (direction1 >= 0 and direction2 >= 0):
+            return direction1 + direction2 - (direction1 * direction2)
+        elif (direction1 < 0 and direction2 < 0):
+            return direction1 + direction2 + (direction1 * direction2)
+        else:
+            return direction1 + direction2
 
     def _callback(self, joy_msg):
-        """
-        Called every time the joystick publishes a message. 
-        """
+        """Called every time the joystick publishes a message. """
         self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Compute desired motion in <x, y, z, r, p, y>
-        # Message index 3 and 4 are the right stick left/right and forward/back
-        # Yaw is at position 2 and 5. Domain is [-1, 1]
 
-        """
+        # CONTROLLER KEYMAPPINGS
+        # for more controller mappings see commit 4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06 motion_controller.py line 41
+        # https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06/src/seahawk_deck/seahawk_deck/motion_controller.py#LL41
+        controller = {
+            'left_stick': {
+                'x':        -joy_msg.axes[0],
+                'y':        joy_msg.axes[1],
+                'press':    joy_msg.buttons[9],
+            },
+            'right_stick': {
+                'x':        -joy_msg.axes[3],
+                'y':        joy_msg.axes[4],
+                'press':    joy_msg.buttons[10],
+            },
+            'left_trigger': joy_msg.axes[2],
+            'right_trigger':joy_msg.axes[5],
+        } 
+
+        # BINDINGS
         twist_msg = Twist()
-        twist_msg.linear.x  = joy_msg.axes[4] # X 
-        twist_msg.linear.y  = -joy_msg.axes[3]# Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = joy_msg.axes[1] # Z 
-        twist_msg.angular.x = 0.0 # R 
-        twist_msg.angular.y = 0.0 # P 
-        twist_msg.angular.z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Y 
-        """
+        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
+        twist_msg.linear.y  = controller['left_stick']['x']# Y (sideways)
+        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
+        twist_msg.angular.x = 0.0 # R (roll)
+        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
+        twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
 
-        joy_lin_x = joy_msg.axes[1] # left y
-        joy_lin_y = -joy_msg.axes[0] # left x
-        joy_lin_z = (joy_msg.axes[2] - joy_msg.axes[5]) / 2 # Triggers
-        joy_ang_x = 0.0 # no roll
-        joy_ang_y = joy_msg.axes[4] # right y
-        joy_ang_z = joy_msg.axes[3] # right x
+        # CONSTANT AXIS SCALING
+        AXIS_SCALE = {
+            'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
+            'angular': {'x': 0, 'y': 0.5, 'z': 0.5},  # roll, pitch, yaw
+        }
+        twist_msg.linear.y  *= AXIS_SCALE['linear']['x']
+        twist_msg.linear.x  *= AXIS_SCALE['linear']['y']
+        twist_msg.linear.z  *= AXIS_SCALE['linear']['z']
+        twist_msg.angular.x *= AXIS_SCALE['angular']['x']
+        twist_msg.angular.y *= AXIS_SCALE['angular']['y']
+        twist_msg.angular.z *= AXIS_SCALE['angular']['z']
 
-        if joy_lin_x > joy_lin_y:
-            scale = math.sqrt(pow(joy_lin_y / joy_lin_x - joy_lin_y, 2) + pow(1 - joy_lin_x, 2))
-        elif joy_lin_y > joy_lin_x:
-            scale = math.sqrt(pow(joy_lin_x / joy_lin_y - joy_lin_x, 2) + pow(1 - joy_lin_y, 2))
-        elif joy_lin_x == joy_lin_y:
-            scale = math.sqrt(2) - 1
-
-        twist_msg = Twist()
-        twist_msg.linear.x  = joy_lin_x # X 
-        twist_msg.linear.y  = joy_lin_y # Y Direction was inverted. Negative added so negative is to the left and positive is to the right
-        twist_msg.linear.z  = joy_lin_z # Z
-        twist_msg.angular.x = joy_ang_x # R 
-        twist_msg.angular.y = joy_ang_y # P 
-        twist_msg.angular.z = joy_ang_z # Y 
-
-        # Send the twist message for debugging.
         self.twist_pub.publish(twist_msg)
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
@@ -84,7 +94,6 @@ class MotionController(Node):
         #  7   1
         #  5   3
 
-
         motor_msg.data = [
             0.0,  # Motor 0 thrust 
             0.0,  # Motor 1 thrust
@@ -95,52 +104,24 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
+        # int16. A 16-bit signed integer whose values exist on the interval [−32,767, +32,767] .
+
+        # Lower motors 
+        motor_msg.data[0] = self.thrust_control(self.thrust_control(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[2] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
+        motor_msg.data[4] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[6] = self.thrust_control(self.thrust_control(twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
+
+        # Upper motors
+        motor_msg.data[1] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[3] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[5] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[7] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
         
-        # No roll, we do not want cartwheels 
-        motor_msg.data[0] = 1 / scale * (twist_msg.linear.x - twist_msg.linear.y) + twist_msg.angular.z
-        # motor_msg.data[1] = twist_msg.linear.z + twist_msg.angular.y
-        motor_msg.data[2] = 1 / scale * (-twist_msg.linear.x - twist_msg.linear.y) - twist_msg.angular.z
-        # motor_msg.data[3] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[4] = 1 / scale * (-twist_msg.linear.x + twist_msg.linear.y) - twist_msg.angular.z
-        # motor_msg.data[5] = twist_msg.linear.z - twist_msg.angular.y
-        motor_msg.data[6] = 1 / scale * (twist_msg.linear.x + twist_msg.linear.y) + twist_msg.angular.z
-        # motor_msg.data[7] = twist_msg.linear.z + twist_msg.angular.y
 
         # Publish data to the motors
         self.motor_pub.publish(motor_msg)
 
-"""
-def linear_x(input_data):
-    # Forward and Backward
-    #   LX+:             LX-:
-    # [0+ 2-]          [0- 2+]
-    # [4- 6+]          [4+ 6-]
-
-def linear_y(input_data):
-    # Side to Side
-    #   LY+:             LY-:
-    # [0- 2-]          [0+ 2+]
-    # [4+ 6+]          [4- 6-]
-
-def linear_z(input_data):
-    # Dive and Surface
-    #   LZ+:             LZ-
-    # [1+ 3+]          [1- 3-]
-    # [5+ 7+]          [5- 7-]
-
-def angular_y(input_data):
-    # Pitch (aim up/down)
-    #   AY+:             AY-:
-    # [1+ 3-]          [1- 3+]
-    # [5- 7+]          [5+ 7-]
-
-def angular_z(input_data):
-    # Yaw (turning)
-    #   AZ+:             AZ-:
-    # [0- 2+]          [0+ 2-]
-    # [4- 6+]          [4+ 6-]
-
-"""
 
 def main(args=None):
     rclpy.init(args=args)

@@ -18,14 +18,14 @@ class MarkerMaker(Node):
     """
 
     MOTORS = [
-        ((1,1,0),       (0,0,7*math.pi/4)),  
-        ((1,1,0.5),     (0,7*math.pi/36,math.pi/4)),
-        ((1,-1,0),      (0,0,math.pi/4)),
-        ((1,-1,0.5),    (0,7*math.pi/36,7*math.pi/4)),
-        ((-1,-1,0),     (0,0,3*math.pi/4)),
-        ((-1,-1,0.5),   (0,7*math.pi/36,5*math.pi/4)),
-        ((-1,1,0),      (0,0,5*math.pi/4)),
-        ((-1,1,0.5),    (0,7*math.pi/36,3*math.pi/4)),
+        ((1,-1,0),       (0,0,5*math.pi/4)),  
+        ((1,-1,0.5),     (0,45*math.pi/36,7*math.pi/4)),
+        ((-1,-1,0),      (0,0,7*math.pi/4)),
+        ((-1,-1,0.5),    (0,45*math.pi/36,5*math.pi/4)),
+        ((-1,1,0),       (0,0,math.pi/4)),
+        ((-1,1,0.5),     (0,45*math.pi/36,3*math.pi/4)),
+        ((1,1,0),        (0,0,3*math.pi/4)),
+        ((1,1,0.5),      (0,45*math.pi/36,math.pi/4)),
     ]
 
     def __init__(self):
@@ -95,10 +95,8 @@ class MarkerMaker(Node):
         """
         self.get_logger().info(f"Motor Message: {motor_msg.data}")
         for i, motor in enumerate(motor_msg.data):
-            arrow = self.arrows[i]
-            label = self.labels[i]
-            arrow.scale.x = motor
-            label.text = f"{i}: {motor}"
+            self.markers.markers[i].scale.x = motor
+            self.labels.markers[i].text = f"{i}: {round(motor,2)}"
             if motor < -1 or motor > 1:
                 arrow.color.r = 1.0
                 arrow.color.g = 0.0

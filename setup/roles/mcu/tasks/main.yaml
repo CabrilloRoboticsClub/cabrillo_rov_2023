@@ -43,3 +43,4 @@
       - adafruit-circuitpython-servokit
       - adafruit-circuitpython-motorkit
       - adafruit-circuitpython-bme280
+      - adafruit-circuitpython-bno08x
