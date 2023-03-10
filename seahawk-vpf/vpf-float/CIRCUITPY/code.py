@@ -27,8 +27,8 @@ if "Particle Xenon" in board_type:
     CS = digitalio.DigitalInOut(board.D2)
     RESET = digitalio.DigitalInOut(board.D3)
 elif "RFM9x" in board_type:
-    cs = digitalio.DigitalInOut(board.RFM9X_CS)
-    reset = digitalio.DigitalInOut(board.RFM9X_RST)
+    CS = digitalio.DigitalInOut(board.RFM9X_CS)
+    RESET = digitalio.DigitalInOut(board.RFM9X_RST)
 else:
     CS = digitalio.DigitalInOut(board.D5)
     RESET = digitalio.DigitalInOut(board.D6)
@@ -47,4 +47,4 @@ rfm9x.node = 100
 rfm9x.destination = 50
 
 
-rfm9x.send()
+rfm9x.send("Hello World")
