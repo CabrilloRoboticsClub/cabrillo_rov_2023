@@ -1,1 +1,5 @@
 adafruit-circuitpython-rfm9x
+adafruit-circuitpython-displayio-ssd1306
+adafruit-blinka-displayio
+adafruit-circuitpython-display-text
+adafruit-circuitpython-display_shapes
