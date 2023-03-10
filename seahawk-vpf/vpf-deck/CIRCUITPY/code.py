@@ -1,13 +1,103 @@
+# Cabrillo Robotics Club
+# Vertical Profiling Float
+# Deck
+
+# python hardware interfaces
 import board
 import busio
 import digitalio
+import os
+
+# lora radio library
 import adafruit_rfm9x
 
+# oled display library
+import displayio
+import terminalio
+import adafruit_displayio_sh1107
+from adafruit_display_text import label
+from adafruit_display_shapes.rect import Rect
+
+# get board details
+board_type = os.uname().machine
+
+# instanciate the spi interface
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
-cs = digitalio.DigitalInOut(board.RFM9X_CS)
-reset = digitalio.DigitalInOut(board.RFM9X_RST)
+# instanciate the i2c interface
+i2c = board.I2C()
 
-rfm9x = adafruit_rfm9x.RFM9x(spi, cs, reset, 915.0)
+#
+# LoRa Radio Feather SETUP
+#
+
+# set the Chip Select and Reset pins based on board type
+if "Particle Xenon" in board_type:
+    CS = digitalio.DigitalInOut(board.D2)
+    RESET = digitalio.DigitalInOut(board.D3)
+else:
+    CS = digitalio.DigitalInOut(board.D5)
+    RESET = digitalio.DigitalInOut(board.D6)
+
+# set the radio frequency to 915mhz
+RADIO_FREQ_MHZ = 915.0 
+
+# instanciate the lora radio in 915mhz mode
+rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
+
+# set my node ID
+rfm9x.node = 50
+
+#
+# OLED Wing SETUP
+#
+
+# reset display to cleanly handle soft reset
+displayio.release_displays()
+
+# instanciate a displayio display bus for the oled screen
+display_bus = displayio.I2CDisplay(i2c, device_address=0x3c)
+
+# instanciate the display
+display = adafruit_displayio_sh1107.SH1107(
+    display_bus, width=128, height=64, rotation=0
+)
+
+# create a layer for switing to the display
+display_group = displayio.Group()
+# show the layer on the display
+display.show(display_group)
+
+# draw outline for club name
+display_group.append(
+    Rect(
+        0, 
+        0, 
+        128, 
+        16, 
+        fill=0x000000,
+        outline=0xFFFFFF
+    )   
+)
+
+# Draw the club name at the top of the display
+display_group.append(
+    label.Label(
+        terminalio.FONT, 
+        text="Cabrillo Robotics", 
+        color=0xFFFFFF, 
+        x=14, 
+        y=8
+    )
+)
 
 
+
+text2 = "SH1107"
+text_area2 = label.Label(
+    terminalio.FONT, text=text2, scale=2, color=0xFFFFFF, x=9, y=44
+)
+display_group.append(text_area2)
+
+while True:
+    pass
