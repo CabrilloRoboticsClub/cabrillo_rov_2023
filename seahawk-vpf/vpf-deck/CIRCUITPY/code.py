@@ -112,8 +112,20 @@ while True:
     if packet is None:
         pass
     else:
+        # blank screen to display new packet
+        display_group.append(
+            Rect(
+                0,
+                20,
+                128,
+                64,
+                fill=0x000000
+            )
+        )
+        # write packet data to screen
         display_group.append(
             label.Label(
+                terminalio.FONT, 
                 text=str(packet, "ascii"),
                 color=0xFFFFFF,
                 x=8,

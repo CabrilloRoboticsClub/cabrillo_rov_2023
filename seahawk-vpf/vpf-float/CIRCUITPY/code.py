@@ -11,6 +11,8 @@ import os
 # lora radio library
 import adafruit_rfm9x
 
+import time
+
 # get board details
 board_type = os.uname().machine
 
@@ -46,5 +48,12 @@ rfm9x.node = 100
 # destination is deck
 rfm9x.destination = 50
 
+while True:
 
-rfm9x.send("Hello World")
+    rfm9x.send(bytes("Message 1\r\n", "utf-8"))
+
+    time.sleep(5)
+
+    rfm9x.send(bytes("Message 2\r\n", "utf-8"))
+
+    time.sleep(5)
