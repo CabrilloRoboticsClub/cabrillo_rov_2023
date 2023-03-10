@@ -60,6 +60,8 @@ def generate_launch_description():
     )
 
     # TODO: Make sure the world argument matches the world you're using above
+    # TODO: You might be able to load the xml from the robot_description topic:
+    #   https://github.com/gazebosim/ros_gz/blob/27f20ffbb2331a5c87685c62053d7eb20544e09a/ros_gz_sim_demos/launch/joint_states.launch.py#L68
     spawn_model_node = Node(
         name='spawn_model',
         package='ros_gz_sim',
