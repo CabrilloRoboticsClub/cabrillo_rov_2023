@@ -35,6 +35,9 @@ i2c = board.I2C()
 if "Particle Xenon" in board_type:
     CS = digitalio.DigitalInOut(board.D2)
     RESET = digitalio.DigitalInOut(board.D3)
+elif "RFM9x" in board_type:
+    cs = digitalio.DigitalInOut(board.RFM9X_CS)
+    reset = digitalio.DigitalInOut(board.RFM9X_RST)
 else:
     CS = digitalio.DigitalInOut(board.D5)
     RESET = digitalio.DigitalInOut(board.D6)
@@ -91,13 +94,9 @@ display_group.append(
     )
 )
 
-
-
-text2 = "SH1107"
-text_area2 = label.Label(
-    terminalio.FONT, text=text2, scale=2, color=0xFFFFFF, x=9, y=44
-)
-display_group.append(text_area2)
+#
+# Recieve data from radio and display it
+#
 
 while True:
     pass
