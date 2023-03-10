@@ -9,7 +9,7 @@
     <inertial>
       <origin
         xyz="-0.0206930700678135 0.00341026375918563 -0.0414859116104987"
-        rpy="0 0 0" />
+        rpy="1.5707 0 3.14159" />
       <mass
         value="6.91657871127401" />
       <inertia
@@ -23,7 +23,7 @@
     <visual>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="1.5707 0 3.14159" />
       <geometry>
         <mesh
           filename="package://seahawk_description/meshes/base_link.STL" />
@@ -37,7 +37,7 @@
     <collision>
       <origin
         xyz="0 0 0"
-        rpy="0 0 0" />
+        rpy="1.5707 0 3.14159" />
       <geometry>
         <mesh
           filename="package://seahawk_description/meshes/base_link.STL" />
