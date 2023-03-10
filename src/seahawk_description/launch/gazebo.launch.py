@@ -48,7 +48,14 @@ def generate_launch_description():
         package='tf2_ros',
         executable='static_transform_publisher',
         arguments=[
-            '0', '0', '0', '0', '0', '0', 'base_link', 'base_footprint', '40'
+            '--frame-id', 'base_link',
+            '--child-frame-id', 'base_footprint',
+            '--x', '0',
+            '--y', '0',
+            '--z', '0',
+            '--roll', '0',
+            '--pitch', '0',
+            '--yaw', '0'
         ]
     )
 
