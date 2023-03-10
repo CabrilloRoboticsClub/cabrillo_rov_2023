@@ -10,7 +10,7 @@ from visualization_msgs.msg import Marker, MarkerArray
 
 import sys 
 import math 
-
+import numpy
 
 class MarkerMaker(Node):
     """
@@ -33,120 +33,87 @@ class MarkerMaker(Node):
         super().__init__('marker_maker')
         self.marker_pub = self.create_publisher(MarkerArray, 'drive/motors_debug', 10)
         self.subscription = self.create_subscription(Float32MultiArray, 'drive/motors', self._callback, 10)
-        self.labels = MarkerArray()
-        self.labels.markers = [
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-        ]
-        self.boxes = MarkerArray()
-        self.boxes.markers = [
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-        ]
+
         self.markers = MarkerArray()
-        self.markers.markers = [
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-            Marker(),
-        ]
+        self.markers.markers = [ Marker() for x in range(8*3) ]   
+        self.boxes = self.markers.markers[0::3]
+        self.labels = self.markers.markers[1::3]
+        self.arrows = self.markers.markers[2::3]
 
-        # Show motor labels
-        for id, marker in enumerate(self.labels.markers):
-            marker.header.frame_id = 'map' # Broken but easy
-            marker.id = id + 20
-            marker.type = 9 # Text 
-            marker.action = 0 # Add/Modify
-            marker.scale.x = 0.2
-            marker.scale.y = 0.2
-            marker.scale.z = 0.2
-            marker.pose.position.x = float(MarkerMaker.MOTORS[id][0][0])
-            marker.pose.position.y = float(MarkerMaker.MOTORS[id][0][1])
-            marker.pose.position.z = float(MarkerMaker.MOTORS[id][0][2])
-            #marker.pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[id][1])
-            marker.color.r = 1.0
-            marker.color.g = 1.0
-            marker.color.b = 1.0
-            marker.color.a = 1.0
-            marker.text = str(id)
+        # Set IDs 
+        for i, marker in enumerate(self.markers.markers):
+            marker.header.frame_id = 'map' # Wrong but works
+            marker.id = i 
 
-        # Show motor positions
-        for id, marker in enumerate(self.boxes.markers):
-            marker.header.frame_id = 'map' # Broken but easy
-            marker.id = id + 10
-            marker.type = 1 # Cube 
-            marker.action = 0 # Add/Modify
-            marker.scale.x = 0.2
-            marker.scale.y = 0.2
-            marker.scale.z = 0.2
-            marker.pose.position.x = float(MarkerMaker.MOTORS[id][0][0])
-            marker.pose.position.y = float(MarkerMaker.MOTORS[id][0][1])
-            marker.pose.position.z = float(MarkerMaker.MOTORS[id][0][2])
-            marker.pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[id][1])
-            marker.color.r = 1.0
-            marker.color.g = 1.0
-            marker.color.b = 1.0
-            marker.color.a = 0.5
+        for i in range(8):
+            self.labels[i].type = 9 # Text 
+            self.labels[i].action = 0 # Add/Modify
+            self.labels[i].scale.x = 0.2
+            self.labels[i].scale.y = 0.2
+            self.labels[i].scale.z = 0.2
+            self.labels[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
+            self.labels[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
+            self.labels[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
+            self.labels[i].color.r = 1.0
+            self.labels[i].color.g = 1.0
+            self.labels[i].color.b = 1.0
+            self.labels[i].color.a = 1.0
+            self.labels[i].text = str(i)
 
-        for id, marker in enumerate(self.markers.markers):
-            marker.header.frame_id = 'map' # Broken but easy
-            marker.id = id
-            marker.type = 0 # Arrow 
-            marker.action = 0 # Add/Modify
-            marker.scale.x = 0.0
-            marker.scale.y = 0.1
-            marker.scale.z = 0.1
-            marker.pose.position.x = float(MarkerMaker.MOTORS[id][0][0])
-            marker.pose.position.y = float(MarkerMaker.MOTORS[id][0][1])
-            marker.pose.position.z = float(MarkerMaker.MOTORS[id][0][2])
-            marker.pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[id][1])
+            self.boxes[i].type = 1 # Cube 
+            self.boxes[i].action = 0 # Add/Modify
+            self.boxes[i].scale.x = 0.2
+            self.boxes[i].scale.y = 0.2
+            self.boxes[i].scale.z = 0.2
+            self.boxes[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
+            self.boxes[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
+            self.boxes[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
+            self.boxes[i].pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[i][1])
+            self.boxes[i].color.r = 1.0
+            self.boxes[i].color.g = 1.0
+            self.boxes[i].color.b = 1.0
+            self.boxes[i].color.a = 0.5
 
-            marker.color.r = 1.0
-            marker.color.g = 0.0
-            marker.color.b = 0.0
-            marker.color.a = 1.0
- 
+            self.arrows[i].type = 0 # Arrow 
+            self.arrows[i].action = 0 # Add/Modify
+            self.arrows[i].scale.x = 0.0
+            self.arrows[i].scale.y = 0.1
+            self.arrows[i].scale.z = 0.1
+            self.arrows[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
+            self.arrows[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
+            self.arrows[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
+            self.arrows[i].pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[i][1])
+            self.arrows[i].color.r = 1.0
+            self.arrows[i].color.g = 0.0
+            self.arrows[i].color.b = 0.0
+            self.arrows[i].color.a = 1.0
+
+
     def _callback(self, motor_msg):
         """
         When I see ne new message on drive/motors
         """
         self.get_logger().info(f"Motor Message: {motor_msg.data}")
         for i, motor in enumerate(motor_msg.data):
-            self.markers.markers[i].scale.x = motor
-            self.labels.markers[i].text = f"{i}: {motor}"
+            arrow = self.arrows[i]
+            label = self.labels[i]
+            arrow.scale.x = motor
+            label.text = f"{i}: {motor}"
             if motor < -1 or motor > 1:
-                self.markers.markers[i].color.r = 1.0
-                self.markers.markers[i].color.g = 0.0
-                self.markers.markers[i].color.b = 0.0
-                self.labels.markers[i].color.r = 1.0
-                self.labels.markers[i].color.g = 0.0
-                self.labels.markers[i].color.b = 0.0
+                arrow.color.r = 1.0
+                arrow.color.g = 0.0
+                arrow.color.b = 0.0
+                label.color.r = 1.0
+                label.color.g = 0.0
+                label.color.b = 0.0
             else:
-                self.markers.markers[i].color.r = 0.0
-                self.markers.markers[i].color.g = 1.0
-                self.markers.markers[i].color.b = 1.0
-                self.labels.markers[i].color.r = 1.0
-                self.labels.markers[i].color.g = 1.0
-                self.labels.markers[i].color.b = 1.0
+                arrow.color.r = 0.0
+                arrow.color.g = 1.0
+                arrow.color.b = 1.0
+                label.color.r = 1.0
+                label.color.g = 1.0
+                label.color.b = 1.0
 
-        self.marker_pub.publish(self.boxes)
-        self.marker_pub.publish(self.labels)
         self.marker_pub.publish(self.markers)
 
     @staticmethod
