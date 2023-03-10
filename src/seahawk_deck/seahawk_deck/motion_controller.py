@@ -26,14 +26,13 @@ class MotionController(Node):
     def combine_input(self, direction1:float, direction2:float)->float:
         """Add two directions in such a way that they do not fall outside [-1, 1]"""
         if (direction1 >= 0 and direction2 >= 0): # If both input values are positive (0 included)
-            # Combines decimal percentage values based on a probability union operation
+            # Combines decimal percentage values based on a probability union operation to determine what the thruster should output
             return direction1 + direction2 - (direction1 * direction2)
         elif (direction1 < 0 and direction2 < 0): # If both input values are negative
-            # Tweaked probability union operation to accomodate two negative values
+            # Tweaked probability union operation similar to above to work with negative values
             return direction1 + direction2 + (direction1 * direction2)
-        else: # If one value is positive and one value is negative
-            # Adds the values of different signs to offset each other
-            return direction1 + direction2
+        # If one value is positive and one value is negative, adds the values of different signs to offset each other
+        return direction1 + direction2
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message. """
