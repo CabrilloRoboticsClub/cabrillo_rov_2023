@@ -71,6 +71,11 @@ display_group = displayio.Group()
 # show the layer on the display
 display.show(display_group)
 
+
+#
+# Display Header
+#
+
 # draw outline for club name
 display_group.append(
     Rect(
@@ -93,6 +98,7 @@ display_group.append(
         y=8
     )
 )
+
 
 #
 # Recieve data from radio and display it
