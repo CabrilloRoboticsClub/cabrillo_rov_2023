@@ -69,6 +69,7 @@ def generate_launch_description():
         arguments=[
             '-world', WORLD_NAME,
             '-file', MODEL_PATH,
+            '-z', '0.1',
         ]
     )
 
