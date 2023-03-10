@@ -16,7 +16,7 @@ import time
 # get board details
 board_type = os.uname().machine
 
-# instanciate the spi interface
+# instantiate the spi interface
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
 
@@ -38,7 +38,7 @@ else:
 # set the radio frequency to 915mhz
 RADIO_FREQ_MHZ = 915.0 
 
-# instanciate the lora radio in 915mhz mode
+# instantiate the lora radio in 915mhz mode
 rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 
 # set my lora node ID

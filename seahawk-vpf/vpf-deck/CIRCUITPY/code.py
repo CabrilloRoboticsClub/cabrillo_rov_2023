@@ -21,10 +21,10 @@ from adafruit_display_shapes.rect import Rect
 # get board details
 board_type = os.uname().machine
 
-# instanciate the spi interface
+# instantiate the spi interface
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
-# instanciate the i2c interface
+# instantiate the i2c interface
 i2c = board.I2C()
 
 #
@@ -45,7 +45,7 @@ else:
 # set the radio frequency to 915mhz
 RADIO_FREQ_MHZ = 915.0 
 
-# instanciate the lora radio in 915mhz mode
+# instantiate the lora radio in 915mhz mode
 rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 
 # set my node ID
@@ -58,15 +58,15 @@ rfm9x.node = 50
 # reset display to cleanly handle soft reset
 displayio.release_displays()
 
-# instanciate a displayio display bus for the oled screen
+# instantiate a displayio display bus for the oled screen
 display_bus = displayio.I2CDisplay(i2c, device_address=0x3c)
 
-# instanciate the display
+# instantiate the display
 display = adafruit_displayio_sh1107.SH1107(
     display_bus, width=128, height=64, rotation=0
 )
 
-# create a layer for switing to the display
+# create a layer for switching to the display
 display_group = displayio.Group()
 # show the layer on the display
 display.show(display_group)
@@ -101,7 +101,7 @@ display_group.append(
 
 
 #
-# Recieve data from radio and display it
+# Receive data from radio and display it
 #
 
 while True:
