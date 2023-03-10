@@ -105,4 +105,18 @@ display_group.append(
 #
 
 while True:
-    pass
+
+    # listen for a packet
+    packet = rfm9x.receive()
+
+    if packet is None:
+        pass
+    else:
+        display_group.append(
+            label.Label(
+                text=str(packet, "ascii"),
+                color=0xFFFFFF,
+                x=8,
+                y=24
+            )
+        )
