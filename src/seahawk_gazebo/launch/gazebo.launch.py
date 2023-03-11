@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from ament_index_python.packages import (
     get_package_share_path,
@@ -27,7 +28,7 @@ def generate_launch_description():
     #   Gazebo should be able to read mesh relative paths out of a URDF.
     gazebo_env = SetEnvironmentVariable(
         name='IGN_FILE_PATH',
-        value=os.path.join(PKG_PATH, '..')
+        value=str(Path(PKG_PATH).parent.resolve())
     )
 
     robot_model = DeclareLaunchArgument(
