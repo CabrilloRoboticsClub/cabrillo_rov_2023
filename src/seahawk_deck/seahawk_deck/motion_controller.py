@@ -29,8 +29,9 @@ class MotionController(Node):
         elif (direction1 < 0 and direction2 < 0): # If both input values are negative
             # Tweaked probability union operation similar to above to work with negative values
             return direction1 + direction2 + (direction1 * direction2)
-        # If one value is positive and one value is negative, adds the values of different signs to offset each other
-        return direction1 + direction2
+        else:
+            # If one value is positive and one value is negative, adds the values of different signs to offset each other
+            return direction1 + direction2
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message. """
