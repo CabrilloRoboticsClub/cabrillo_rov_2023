@@ -36,12 +36,20 @@ def generate_launch_description():
         default_value=MODEL_PATH
     )
 
-    gazebo_launch_include = IncludeLaunchDescription(
+    gazebo_server_launch_include = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('ros_gz_sim'),
                 'launch/gz_sim.launch.py')),
-        launch_arguments={'gz_args': f'{WORLD_NAME}.sdf'}.items()
+        launch_arguments={'gz_args': f'-s {WORLD_NAME}.sdf'}.items()
+    )
+
+    gazebo_gui_launch_include = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory('ros_gz_sim'),
+                'launch/gz_sim.launch.py')),
+        launch_arguments={'gz_args': f'-g {WORLD_NAME}.sdf'}.items()
     )
 
     tf_footprint_base_node = Node(
@@ -77,7 +85,8 @@ def generate_launch_description():
     return LaunchDescription([
         gazebo_env,
         robot_model,
-        gazebo_launch_include,
+        gazebo_server_launch_include,
+        gazebo_gui_launch_include,
         tf_footprint_base_node,
         spawn_model_node
     ])
