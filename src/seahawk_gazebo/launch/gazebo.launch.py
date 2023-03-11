@@ -22,10 +22,6 @@ MODEL_PATH = os.path.join(PKG_PATH, f'urdf/{PKG_NAME}.urdf')
 
 ARGUMENTS = [
     DeclareLaunchArgument(
-        'world_path',
-        default_value='empty.sdf',
-        description='The world path, the default is empty.sdf'),
-    DeclareLaunchArgument(
         name='model_path',
         default_value=MODEL_PATH,
         description=f'The robot model math, the default is {MODEL_PATH}'),
