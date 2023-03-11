@@ -19,7 +19,15 @@ def generate_launch_description():
             package='seahawk_deck',
             executable='motion_controller',
             name='motion_controller',
-            output='screen'
+            output='screen',
+            parameters=[
+                {"linear_x_scale": 1},
+                {"linear_y_scale": 1},
+                {"linear_z_scale": 1},
+                {"angular_x_scale": 0},
+                {"angular_y_scale": 0.5},
+                {"angular_z_scale": 0.5}
+            ]
         ),
         Node(
             package='joy',
