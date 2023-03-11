@@ -9,20 +9,39 @@ from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
     IncludeLaunchDescription,
-    SetEnvironmentVariable
+    SetEnvironmentVariable, OpaqueFunction
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch.launch_context import LaunchContext
 
 from launch_ros.actions import Node
 
 
-def generate_launch_description():
+PKG_NAME = 'seahawk_description'
+PKG_PATH = get_package_share_path(PKG_NAME)
+MODEL_PATH = os.path.join(PKG_PATH, f'urdf/{PKG_NAME}.urdf')
 
-    PKG_NAME = 'seahawk_description'
-    PKG_PATH = get_package_share_path(PKG_NAME)
-    MODEL_PATH = os.path.join(PKG_PATH, f'urdf/{PKG_NAME}.urdf')
-    # TODO: Add an argument for the world file
-    WORLD_NAME = 'empty'
+ARGUMENTS = [
+    DeclareLaunchArgument(
+        'world_path',
+        default_value='empty.sdf',
+        description='The world path, the default is empty.world'),
+    DeclareLaunchArgument(
+        name='model_path',
+        default_value=MODEL_PATH,
+        description=f'The robot model math, the default is {MODEL_PATH}'),
+]
+
+
+def launch_setup(context: LaunchContext):
+    """Function that is executed with the given the Launch Context.
+
+    This is the only way I've found you can get a launch argument's string
+    value.
+    """
+    world_path = LaunchConfiguration('world_path')
+    model_path = LaunchConfiguration('model_path')
 
     # TODO: See if there's any way to avoid setting this env variable. I think
     #   Gazebo should be able to read mesh relative paths out of a URDF.
@@ -31,17 +50,14 @@ def generate_launch_description():
         value=str(Path(PKG_PATH).parent.resolve())
     )
 
-    robot_model = DeclareLaunchArgument(
-        name='model',
-        default_value=MODEL_PATH
-    )
-
     gazebo_server_launch_include = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
                 get_package_share_directory('ros_gz_sim'),
                 'launch/gz_sim.launch.py')),
-        launch_arguments={'gz_args': f'-s {WORLD_NAME}.sdf'}.items()
+        launch_arguments={
+            'gz_args': f'-s {world_path.perform(context)}'
+        }.items()
     )
 
     gazebo_gui_launch_include = IncludeLaunchDescription(
@@ -49,7 +65,9 @@ def generate_launch_description():
             os.path.join(
                 get_package_share_directory('ros_gz_sim'),
                 'launch/gz_sim.launch.py')),
-        launch_arguments={'gz_args': f'-g {WORLD_NAME}.sdf'}.items()
+        launch_arguments={
+            'gz_args': f'-g {world_path.perform(context)}'
+        }.items()
     )
 
     tf_footprint_base_node = Node(
@@ -76,17 +94,22 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         arguments=[
-            '-world', WORLD_NAME,
-            '-file', MODEL_PATH,
+            '-file', model_path,
             '-z', '0.1',
         ]
     )
 
-    return LaunchDescription([
+    return [
         gazebo_env,
-        robot_model,
         gazebo_server_launch_include,
         gazebo_gui_launch_include,
         tf_footprint_base_node,
         spawn_model_node
+    ]
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        *ARGUMENTS,
+        OpaqueFunction(function=launch_setup)
     ])
