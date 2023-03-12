@@ -19,6 +19,13 @@ class MotionController(Node):
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
+        """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
+        self.declare_parameter('linear_x_scale', 1.0) # Forward/Backward
+        self.declare_parameter('linear_y_scale', 1.0) # Sideways
+        self.declare_parameter('linear_z_scale', 1.0) # Depth
+        self.declare_parameter('angular_x_scale', 0.0) # Roll
+        self.declare_parameter('angular_y_scale', 0.5) # Pitch
+        self.declare_parameter('angular_z_scale', 0.5) # Yaw
     
     # Calculates what a thruster should output based on multiple input values
     def combine_input(self, direction1:float, direction2:float)->float:
@@ -66,19 +73,13 @@ class MotionController(Node):
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
 
-        # CONSTANT AXIS SCALING
-        AXIS_SCALE = {
-            'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
-            'angular': {'x': 0, 'y': 0.5, 'z': 0.5},  # roll, pitch, yaw
-        }
-        twist_msg.linear.y  *= AXIS_SCALE['linear']['x']
-        twist_msg.linear.x  *= AXIS_SCALE['linear']['y']
-        twist_msg.linear.z  *= AXIS_SCALE['linear']['z']
-        twist_msg.angular.x *= AXIS_SCALE['angular']['x']
-        twist_msg.angular.y *= AXIS_SCALE['angular']['y']
-        twist_msg.angular.z *= AXIS_SCALE['angular']['z']
-
-        self.twist_pub.publish(twist_msg)
+        # AXIS SCALING
+        twist_msg.linear.x *= self.get_parameter('linear_x_scale').get_parameter_value().double_value
+        twist_msg.linear.y  *= self.get_parameter('linear_y_scale').get_parameter_value().double_value
+        twist_msg.linear.z  *= self.get_parameter('linear_z_scale').get_parameter_value().double_value
+        twist_msg.angular.x *= self.get_parameter('angular_x_scale').get_parameter_value().double_value
+        twist_msg.angular.y *= self.get_parameter('angular_y_scale').get_parameter_value().double_value
+        twist_msg.angular.z *= self.get_parameter('angular_z_scale').get_parameter_value().double_value
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
         motor_msg = Float32MultiArray()
