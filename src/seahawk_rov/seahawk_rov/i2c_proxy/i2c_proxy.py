@@ -47,11 +47,7 @@ from std_msgs.msg import Float32
 from sensor_msgs.msg import Temperature
 from sensor_msgs.msg import RelativeHumidity
 from sensor_msgs.msg import FluidPressure
-from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32MultiArray
-
-# this library is needed by the bno085
-import time
 
 # library for accessing the raspberry pi board
 # aka /dev/i2c
@@ -61,13 +57,11 @@ import busio
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
 
-# inport the bno085 circuit python sensor library
-import adafruit_bno08x
-from adafruit_bno08x.i2c import BNO08X_I2C
-
 # import servokit for the pwm hats
 from adafruit_servokit import ServoKit
 
+# sensor classes
+from logic_tube_bno085 import LogicTubeBNO085
 
 # # # # # # # #
 #
@@ -100,17 +94,10 @@ class SensorPublisher:
         self.thrust_box_temperature = node.create_publisher(Temperature,'thrust_box/temperature', 8)
         self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
         self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
-        #self.logic_tube_imu = node.create_publisher(Imu, 'logic_tube/imu', 8)
 
         # instantiate sensors
         self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
         self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-        #self.logic_tube_bno085 = BNO08X_I2C(i2c)
-
-        # configure sensors
-        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        #self.logic_tube_bno085.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
         # instantiate timer
         self.timer = node.create_timer(0.1, self.publish)
@@ -125,7 +112,6 @@ class SensorPublisher:
         message_thrust_box_temperature = Temperature()
         message_thrust_box_humidity = RelativeHumidity()
         message_thrust_box_pressure = FluidPressure()
-        #message_logic_tube_imu = Imu()
 
         # insert fame id
         message_logic_tube_temperature.header.frame_id = "base_link"
@@ -134,7 +120,6 @@ class SensorPublisher:
         message_thrust_box_temperature.header.frame_id = "base_link"
         message_thrust_box_humidity.header.frame_id = "base_link"
         message_thrust_box_pressure.header.frame_id = "base_link"
-        #message_logic_tube_imu.header.frame_id = "base_link"
 
         # grab the data from the sensors
         message_logic_tube_temperature.temperature = self.logic_tube_bme280.temperature
@@ -144,10 +129,6 @@ class SensorPublisher:
         message_thrust_box_humidity.relative_humidity = self.thrust_box_bme280.humidity
         message_thrust_box_pressure.fluid_pressure = self.thrust_box_bme280.pressure
 
-        #message_logic_tube_imu.linear_acceleration = self.logic_tube_bno085.raw_acceleration
-        #message_logic_tube_imu.angular_velocity = self.logic_tube_bno085.raw_gyro
-        #message_logic_tube_imu.orientation = self.logic_tube_bno085.raw_quaternion
-
         # publish the data
         self.logic_tube_temperature.publish(message_logic_tube_temperature)
         self.logic_tube_humidity.publish(message_logic_tube_humidity)
@@ -155,8 +136,6 @@ class SensorPublisher:
         self.thrust_box_temperature.publish(message_thrust_box_temperature)
         self.thrust_box_humidity.publish(message_thrust_box_humidity)
         self.thrust_box_pressure.publish(message_thrust_box_pressure)
-        #self.logic_tube_imu.publish(message_logic_tube_imu)
-
 
 
 # # # # # # # # #
@@ -215,6 +194,8 @@ def main(args=None):
     sensor_publisher = SensorPublisher(node_i2c_proxy, i2c)
 
     output_subscriber = OutputSubscriber(node_i2c_proxy, i2c)
+
+    logic_tube_bno085 = LogicTubeBNO085(node_i2c_proxy, i2c)
 
     rclpy.spin(node_i2c_proxy)
 
