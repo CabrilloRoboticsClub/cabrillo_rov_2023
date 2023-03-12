@@ -71,8 +71,8 @@ class MotionController(Node):
             'linear':  {'x': 1, 'y': 1, 'z': 1},    # forwards, sideways, depth
             'angular': {'x': 0, 'y': 0.5, 'z': 0.5},  # roll, pitch, yaw
         }
-        twist_msg.linear.y  *= AXIS_SCALE['linear']['x']
-        twist_msg.linear.x  *= AXIS_SCALE['linear']['y']
+        twist_msg.linear.x *= AXIS_SCALE['linear']['x']
+        twist_msg.linear.y  *= AXIS_SCALE['linear']['y']
         twist_msg.linear.z  *= AXIS_SCALE['linear']['z']
         twist_msg.angular.x *= AXIS_SCALE['angular']['x']
         twist_msg.angular.y *= AXIS_SCALE['angular']['y']
