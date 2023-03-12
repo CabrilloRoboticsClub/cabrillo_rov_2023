@@ -1,7 +1,5 @@
 import sys 
 
-import math
-
 import rclpy
 
 from rclpy.node import Node 
@@ -22,13 +20,17 @@ class MotionController(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
     
-    def thrust_control(self, direction1:float, direction2:float)->float:
+    # Calculates what a thruster should output based on multiple input values
+    def combine_input(self, direction1:float, direction2:float)->float:
         """Add two directions in such a way that they do not fall outside [-1, 1]"""
-        if (direction1 >= 0 and direction2 >= 0):
+        if (direction1 >= 0 and direction2 >= 0): # If both input values are positive (0 included)
+            # Combines decimal percentage values based on a probability union operation to determine what the thruster should output
             return direction1 + direction2 - (direction1 * direction2)
-        elif (direction1 < 0 and direction2 < 0):
+        elif (direction1 < 0 and direction2 < 0): # If both input values are negative
+            # Tweaked probability union operation similar to above to work with negative values
             return direction1 + direction2 + (direction1 * direction2)
         else:
+            # If one value is positive and one value is negative, adds the values of different signs to offset each other
             return direction1 + direction2
 
     def _callback(self, joy_msg):
@@ -107,16 +109,16 @@ class MotionController(Node):
         # int16. A 16-bit signed integer whose values exist on the interval [−32,767, +32,767] .
 
         # Lower motors 
-        motor_msg.data[0] = self.thrust_control(self.thrust_control(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
-        motor_msg.data[2] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
-        motor_msg.data[4] = self.thrust_control(self.thrust_control(-twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
-        motor_msg.data[6] = self.thrust_control(self.thrust_control(twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
+        motor_msg.data[0] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[2] = self.combine_input(self.combine_input(-twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
+        motor_msg.data[4] = self.combine_input(self.combine_input(-twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[6] = self.combine_input(self.combine_input(twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
 
         # Upper motors
-        motor_msg.data[1] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
-        motor_msg.data[3] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[5] = self.thrust_control(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[7] = self.thrust_control(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[1] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[3] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[5] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[7] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
         
 
         # Publish data to the motors
