@@ -5,6 +5,7 @@ i2c_proxy.py
 this is the node with the lock on /dev/i2c
 this node publishes the data from the i2c sensors in the robot
 this node subscribes to the signals for the i2c signal generators on the robot
+this node implements software protections for hardware on the robot.
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
