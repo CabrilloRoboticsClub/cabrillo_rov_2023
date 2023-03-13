@@ -22,3 +22,46 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
+
+# ros msgs
+from sensor_msgs.msg import Temperature
+from sensor_msgs.msg import RelativeHumidity
+from sensor_msgs.msg import FluidPressure
+
+# import the bme280 circuit python sensor library
+from adafruit_bme280 import basic as adafruit_bme280
+
+class ThrustBoxBME280:
+    def __init__(self, node, i2c):
+        # create publishers
+        self.temperature_publisher = node.create_publisher(Temperature,'thrust_box/temperature', 8)
+        self.humidity_publisher = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
+        self.pressure_publisher = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
+
+        # instantiate sensor
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
+
+        # instantiate timer
+        self.timer = node.create_timer(0.1, self.publish)
+
+    def publish(self):
+
+        # instantiate the msgs
+        msg_temperature = Temperature()
+        msg_humidity = RelativeHumidity()
+        msg_pressure = FluidPressure()
+
+        # insert fame id
+        msg_temperature.header.frame_id = "base_link"
+        msg_humidity.header.frame_id = "base_link"
+        msg_pressure.header.frame_id = "base_link"
+
+        # grab the data from the sensors
+        msg_temperature.temperature = self.bme.temperature
+        msg_humidity.relative_humidity = self.bme.humidity
+        msg_pressure.fluid_pressure = self.bme.pressure
+
+        # publish the data
+        self.temperature_publisher.publish(msg_temperature)
+        self.humidity_publisher.publish(msg_humidity)
+        self.pressure_publisher.publish(msg_pressure)
