@@ -52,13 +52,13 @@ class LogicTubeServo:
         self.drive_cam_servo = 15
 
         # instanciate servokit
-        self.servo = ServoKit(channels=16, i2c=i2c, address=0x40)
+        self.kit = ServoKit(channels=16, i2c=i2c, address=0x40)
 
         # configure outputs
-        self.logic_tube_pwm.servo[self.drive_cam_servo].set_pulse_width_range(0, 3000)
-        self.logic_tube_pwm.servo[self.drive_cam_servo].actuation_range = 3000
-        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = 1500
+        self.kit.servo[self.drive_cam_servo].set_pulse_width_range(0, 3000)
+        self.kit.servo[self.drive_cam_servo].actuation_range = 3000
+        self.kit.servo[self.drive_cam_servo].angle = 1500
 
 
-    def receive_drive_camera(self, message:Float32):
-        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
+    def receive_drive_camera(self, message):
+        self.kit.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
