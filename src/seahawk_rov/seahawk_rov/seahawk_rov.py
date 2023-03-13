@@ -55,7 +55,8 @@ def main(args=None):
     i2c = board.I2C()
 
     # instanciate the sensor publishers
-    logic_tube_bme280 = 
+    logic_tube_bme280 = LogicTubeBME280(node_seahawk_rov, i2c)
+    
 
     rclpy.spin(node_i2c_proxy)
 
