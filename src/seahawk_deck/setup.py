@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "motion_controller=seahawk_deck.motion_controller:main"
+            "motion_controller=seahawk_deck.motion_controller:main",
+            "rviz_markers=seahawk_deck.rviz_markers:main",
         ],
     },
 )
