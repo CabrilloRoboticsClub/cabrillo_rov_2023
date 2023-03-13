@@ -1,5 +1,5 @@
 '''
-logic_tube_bme280.py
+_logic_tube_bme280.py
 
 code for publishing the data from the bme280 sensor in the logic tube
 
