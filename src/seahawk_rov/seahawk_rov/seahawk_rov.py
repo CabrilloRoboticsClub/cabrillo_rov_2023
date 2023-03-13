@@ -22,3 +22,19 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
+
+# # # # # # # # 
+#
+# IMPORTS
+#
+# # # # # # # #
+
+# enable command line arguments
+import sys
+# enable signal handling
+import signal
+
+# ros stuff
+import rclpy
+from rclpy.node import Node
+
