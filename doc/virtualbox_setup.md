@@ -23,6 +23,8 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 -->
 
+# THIS FILE IS DEPRICATED
+
 # Development VM Setup
 
 I've decided to use Oracle VirtualBox for the VM tooling because it is relatively easy to use, and exists on all major platforms. This is *not* a general purpose guide for using VirtualBox, or a guide for getting started with Linux. Ideally, this will be a lits of procedures that can be understood by someone with zero experience with either so that they can begin working on the robot code as fast as possible. **If a wider understanding is needed, this is the wrong document.**
