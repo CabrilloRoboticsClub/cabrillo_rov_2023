@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>seahawk_rov</name>
-  <version>0.0.1</version>
-  <description>Package for SeaHawk nodes</description>
-  <maintainer email="michael.matera@cabrillo.edu">Mike Matera</maintainer>
-  <license>TODO: License declaration</license>
+  <version>0.0.2</version>
+  <description>Package for SeaHawk ROV nodes</description>
+  <maintainer email="cabrillorobotics@gmail.com">Cabrillo Robotics Club</maintainer>
+  <license>AGPL V3</license>
 
   <exec_depend>example_interfaces</exec_depend>
   <exec_depend>rclpy</exec_depend>

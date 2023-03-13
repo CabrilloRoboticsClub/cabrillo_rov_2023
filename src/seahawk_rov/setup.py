@@ -6,7 +6,7 @@ package_name = 'seahawk_rov'
 
 setup(
     name=package_name,
-    version='0.0.1',
+    version='0.0.2',
     # Packages to export
     packages=[
         package_name,
@@ -21,28 +21,31 @@ setup(
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
     ],
     # This is important as well
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'adafruit-python-shell',
+        'adafruit-blinka',
+
+        ],
     zip_safe=True,
-    author='ROS 2 Developer',
-    author_email='ros2@ros.com',
-    maintainer='ROS 2 Developer',
-    maintainer_email='ros2@ros.com',
-    keywords=['foo', 'bar'],
+    author='Cabrillo Robotics Club',
+    author_email='cabrillorobotics@gmail.com',
+    maintainer='Cabrillo Robotics Club',
+    maintainer_email='cabrillorobotics@gmail.com',
+    keywords=['MATE', 'ROV', '2023', 'Underwater', 'Robotics', 'Competition'],
     classifiers=[
-        'Intended Audience :: Developers',
-        'License :: TODO',
+        'Intended Audience :: Education',
+        'License :: AGPLv3',
         'Programming Language :: Python',
-        'Topic :: Software Development',
+        'Topic :: Education',
     ],
-    description='My awesome package.',
-    license='TODO',
+    description='package for deployment of the SeaHawk-ROV by Cabrillo College Robotics Club',
+    license='AGPLv3',
     # Like the CMakeLists add_executable macro, you can add your python
     # scripts here.
     entry_points={
         'console_scripts': [
-            'i2c_proxy = seahawk_rov.i2c_proxy.i2c_proxy:main',
-            'example_pub = seahawk_rov.example_pub:main',
-            'example_sub = seahawk_rov.example_sub:main',
+            'seahawk_rov = seahawk_rov.seahawk_rov:main'
         ],
     },
 )
