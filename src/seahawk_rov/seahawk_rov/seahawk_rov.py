@@ -38,3 +38,38 @@ import signal
 import rclpy
 from rclpy.node import Node
 
+# library for accessing the raspberry pi board
+# aka /dev/i2c
+import board
+import busio
+
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    # this creates the node "i2c_proxy"
+    node_seahawk_rov = rclpy.create_node('seahawk_rov')
+
+    # grab the i2c interface for us to use
+    i2c = board.I2C()
+
+    # instanciate the sensor publishers
+    logic_tube_bme280 = 
+
+    rclpy.spin(node_i2c_proxy)
+
+
+# # # # # # # #
+#
+# graceful shutdown
+#
+# # # # # # # #
+def signal_handler(sig, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
+
+if __name__ == '__main__':
+    main(sys.argv)
