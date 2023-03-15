@@ -21,8 +21,8 @@ def generate_launch_description():
         ),
         Node(
             package='seahawk_rov',
-            executable='i2c_proxy',
-            name='i2c_proxy',
+            executable='seahawk_rov',
+            name='seahawk_rov',
             output='screen'
         )
     ])

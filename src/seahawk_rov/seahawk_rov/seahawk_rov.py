@@ -58,7 +58,7 @@ def main(args=None):
     logic_tube_bme280 = LogicTubeBME280(node_seahawk_rov, i2c)
     
 
-    rclpy.spin(node_i2c_proxy)
+    rclpy.spin(node_seahawk_rov)
 
 
 # # # # # # # #
