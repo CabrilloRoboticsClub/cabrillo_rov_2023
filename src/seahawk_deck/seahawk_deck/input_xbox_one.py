@@ -33,7 +33,7 @@ from sensor_msgs.msg import Joy
 
 class Input(Node):
     """
-    Class that implements the motion controller.
+    Class that implements the joystick input.
     """
 
     def __init__(self):

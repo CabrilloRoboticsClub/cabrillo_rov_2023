@@ -17,8 +17,8 @@ def generate_launch_description():
         ),
         Node(
             package='seahawk_deck',
-            executable='motion_controller',
-            name='motion_controller',
+            executable='thrust',
+            name='thrust',
             output='screen'
         ),
         Node(
