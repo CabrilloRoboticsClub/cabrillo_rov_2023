@@ -22,6 +22,12 @@ def generate_launch_description():
             output='screen'
         ),
         Node(
+            package='seahawk_deck',
+            executable='input_xbox_one',
+            name='input',
+            output='screen'
+        ),
+        Node(
             package='joy',
             executable='joy_node',
             name='joy_node',

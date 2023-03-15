@@ -4,8 +4,7 @@ import rclpy
 
 from rclpy.node import Node 
 
-from geometry_msgs.msg import Twist 
-from sensor_msgs.msg import Joy 
+from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
 
 class MotionController(Node):
@@ -16,9 +15,8 @@ class MotionController(Node):
     def __init__(self):
         """Initialize this node"""
         super().__init__('motion_controller')
-        self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
+        self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
-        self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
         self.declare_parameter('linear_x_scale', 1.0) # Forward/Backward
         self.declare_parameter('linear_y_scale', 1.0) # Sideways
@@ -40,46 +38,8 @@ class MotionController(Node):
             # If one value is positive and one value is negative, adds the values of different signs to offset each other
             return direction1 + direction2
 
-    def _callback(self, joy_msg):
-        """Called every time the joystick publishes a message. """
-        self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
-
-        # Compute desired motion in <x, y, z, r, p, y>
-
-        # CONTROLLER KEYMAPPINGS
-        # for more controller mappings see commit 4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06 motion_controller.py line 41
-        # https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/4b3ba9b6f51c15a86bdab61bcc5f012b8b3dbd06/src/seahawk_deck/seahawk_deck/motion_controller.py#LL41
-        controller = {
-            'left_stick': {
-                'x':        -joy_msg.axes[0],
-                'y':        joy_msg.axes[1],
-                'press':    joy_msg.buttons[9],
-            },
-            'right_stick': {
-                'x':        -joy_msg.axes[3],
-                'y':        joy_msg.axes[4],
-                'press':    joy_msg.buttons[10],
-            },
-            'left_trigger': joy_msg.axes[2],
-            'right_trigger':joy_msg.axes[5],
-        } 
-
-        # BINDINGS
-        twist_msg = Twist()
-        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = controller['left_stick']['x']# Y (sideways)
-        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
-        twist_msg.angular.x = 0.0 # R (roll)
-        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
-
-        # AXIS SCALING
-        twist_msg.linear.x *= self.get_parameter('linear_x_scale').get_parameter_value().double_value
-        twist_msg.linear.y  *= self.get_parameter('linear_y_scale').get_parameter_value().double_value
-        twist_msg.linear.z  *= self.get_parameter('linear_z_scale').get_parameter_value().double_value
-        twist_msg.angular.x *= self.get_parameter('angular_x_scale').get_parameter_value().double_value
-        twist_msg.angular.y *= self.get_parameter('angular_y_scale').get_parameter_value().double_value
-        twist_msg.angular.z *= self.get_parameter('angular_z_scale').get_parameter_value().double_value
+    def _callback(self, twist_msg):
+        """Called every time the twist publishes a message."""
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
         motor_msg = Float32MultiArray()
@@ -107,7 +67,14 @@ class MotionController(Node):
             0.0,  # Motor 6 thrust
             0.0,  # Motor 7 thrust
         ]
-        # int16. A 16-bit signed integer whose values exist on the interval [−32,767, +32,767] .
+
+        # # AXIS SCALING
+        # twist_msg.linear.x *= self.get_parameter('linear_x_scale').get_parameter_value().double_value
+        # twist_msg.linear.y  *= self.get_parameter('linear_y_scale').get_parameter_value().double_value
+        # twist_msg.linear.z  *= self.get_parameter('linear_z_scale').get_parameter_value().double_value
+        # twist_msg.angular.x *= self.get_parameter('angular_x_scale').get_parameter_value().double_value
+        # twist_msg.angular.y *= self.get_parameter('angular_y_scale').get_parameter_value().double_value
+        # twist_msg.angular.z *= self.get_parameter('angular_z_scale').get_parameter_value().double_value
 
         # Lower motors 
         motor_msg.data[0] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
