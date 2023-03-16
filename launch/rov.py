@@ -19,10 +19,10 @@ def generate_launch_description():
                 ('image_raw/h264', 'front_camera/h264'),
             ]
         ),
-        Node(
-            package='seahawk_rov',
-            executable='i2c_proxy',
-            name='i2c_proxy',
-            output='screen'
-        )
+        # Node(
+        #     package='seahawk_rov',
+        #     executable='i2c_proxy',
+        #     name='i2c_proxy',
+        #     output='screen'
+        # )
     ])
