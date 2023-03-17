@@ -41,14 +41,8 @@ class Thrust(Node):
         super().__init__('thrust')
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
-        """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0) # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0) # Sideways
-        self.declare_parameter('linear_z_scale', 1.0) # Depth
-        self.declare_parameter('angular_x_scale', 0.0) # Roll
-        self.declare_parameter('angular_y_scale', 0.5) # Pitch
-        self.declare_parameter('angular_z_scale', 0.5) # Yaw
-    
+        
+
     # Calculates what a thruster should output based on multiple input values
     def combine_input(self, direction1:float, direction2:float)->float:
         """Add two directions in such a way that they do not fall outside [-1, 1]"""
@@ -92,13 +86,6 @@ class Thrust(Node):
             0.0,  # Motor 7 thrust
         ]
 
-        # # AXIS SCALING
-        # twist_msg.linear.x *= self.get_parameter('linear_x_scale').get_parameter_value().double_value
-        # twist_msg.linear.y  *= self.get_parameter('linear_y_scale').get_parameter_value().double_value
-        # twist_msg.linear.z  *= self.get_parameter('linear_z_scale').get_parameter_value().double_value
-        # twist_msg.angular.x *= self.get_parameter('angular_x_scale').get_parameter_value().double_value
-        # twist_msg.angular.y *= self.get_parameter('angular_y_scale').get_parameter_value().double_value
-        # twist_msg.angular.z *= self.get_parameter('angular_z_scale').get_parameter_value().double_value
 
         # Lower motors 
         motor_msg.data[0] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
