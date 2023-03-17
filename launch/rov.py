@@ -12,7 +12,7 @@ def generate_launch_description():
             parameters=[{
                 'input_fn': '/dev/video0',
                 'fps': 20,
-                'size': '3280x2464',
+                'size': '1408x792',
                 'frame_id': 'rov_frame',
             }],
             remappings=[
