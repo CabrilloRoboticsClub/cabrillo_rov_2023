@@ -52,13 +52,14 @@ class Input(Node):
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.bambi_mode = False
         self.last_x_state = 0
+        self.z_trim = 0.0
+        self.last_lb_state = 0
+        self.last_rb_state = 0
     
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message."""
         self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
-        # self._bambi = self.get_parameter_or('/thrust/angular_x_scale', 'FUCK')
-        # self.get_logger().info(self._bambi)
 
         # Compute desired motion in <x, y, z, r, p, y>
 
@@ -86,8 +87,8 @@ class Input(Node):
             'b':            joy_msg.buttons[1],
             'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
             'y':            joy_msg.buttons[3],
-            'left_bumper':  joy_msg.buttons[4],
-            'right_bumper': joy_msg.buttons[5],
+            'left_bumper':  joy_msg.buttons[4], # trim -
+            'right_bumper': joy_msg.buttons[5], # trim +
             'window':       joy_msg.buttons[6],
             'menu':         joy_msg.buttons[7],
             'xbox':         joy_msg.buttons[8],
@@ -102,6 +103,16 @@ class Input(Node):
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
         
+        # Makes lb button for z trim incremantal
+        if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
+            self.z_trim -= 0.05
+        self.last_lb_state = controller['left_bumper']
+
+        # Makes rb buttn for z trim incremental 
+        if self.last_rb_state == 0 and controller['right_bumper'] == 1 and self.z_trim < 0.15:
+            self.z_trim += 0.05
+        self.last_rb_state = controller['right_bumper']
+
         # Makes x button for bambi mode activation "sticky" 
         if self.last_x_state == 0 and controller['x'] == 1:
             self.bambi_mode = not self.bambi_mode
@@ -129,10 +140,18 @@ class Input(Node):
         # AXIS SCALE
         twist_msg.linear.x  *= linear_x_scale
         twist_msg.linear.y  *= linear_y_scale
-        twist_msg.linear.z  *= linear_z_scale
         twist_msg.angular.x *= angular_x_scale
         twist_msg.angular.y *= angular_y_scale
         twist_msg.angular.z *= angular_z_scale
+
+        # Ensures linear z does not excede 1 or -1 due to z_trim and z axis scale
+        temp_linear_z = twist_msg.linear.z * linear_z_scale + self.z_trim
+        if temp_linear_z < -1.0:
+            twist_msg.linear.z = -1.0
+        elif temp_linear_z > 1.0:
+            twist_msg.linear.z = 1.0
+        else:
+            twist_msg.linear.z = temp_linear_z
 
         self.twist_pub.publish(twist_msg)
 
