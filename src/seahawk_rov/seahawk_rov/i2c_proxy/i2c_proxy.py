@@ -5,6 +5,7 @@ i2c_proxy.py
 this is the node with the lock on /dev/i2c
 this node publishes the data from the i2c sensors in the robot
 this node subscribes to the signals for the i2c signal generators on the robot
+this node implements software protections for hardware on the robot.
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -46,11 +47,7 @@ from std_msgs.msg import Float32
 from sensor_msgs.msg import Temperature
 from sensor_msgs.msg import RelativeHumidity
 from sensor_msgs.msg import FluidPressure
-from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32MultiArray
-
-# this library is needed by the bno085
-import time
 
 # library for accessing the raspberry pi board
 # aka /dev/i2c
@@ -60,62 +57,11 @@ import busio
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
 
-# inport the bno085 circuit python sensor library
-import adafruit_bno08x
-from adafruit_bno08x.i2c import BNO08X_I2C
-
 # import servokit for the pwm hats
 from adafruit_servokit import ServoKit
 
-# # # # # # # #
-#
-# INSTANCIATIONS
-#
-# # # # # # # #
-
-# grab the i2c interface for us to use
-i2c = board.I2C()
-
-# instanciate the logic tube bme280
-# enviromental sensor
-logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
-
-# instanciate the thrust box bme280
-# enviromental sensor
-thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-
-# instanciate the logic tube bmo085
-# 9dof absolute orientation imu Ssensor
-logic_tube_imu = BNO08X_I2C(i2c)
-
-# instanciate the logic tube pwm hat
-logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
-
-# instanciate thrust box pwm
-thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
-
-# # # # # # # #
-#
-# Hardware Calibrations
-#
-# # # # # # # #
-
-#### THRUSTERS PARAMS
-# hard limit thrusters so they can all run at 100% no issues
-# 8 motors
-# 2x 30a buck
-# 8/60 = 7.5
-# t200 thrusters pull 7.5a at pwm 1220 in reverse and 1780 in forward
-thruster_channels = (0,1,2,3,4,5,6,7)
-for channel in thruster_channels:
-    thrust_box_pwm.servo[channel].set_pulse_width_range(1220, 1780)
-    thrust_box_pwm.servo[channel].actuation_range = 3000
-    thrust_box_pwm.servo[channel].angle = 1500 # zero throttle at bootup
-
-servo_cam_channel = 15
-logic_tube_pwm.servo[servo_cam_channel].set_pulse_width_range(0, 3000)
-logic_tube_pwm.servo[servo_cam_channel].actuation_range = 3000
-logic_tube_pwm.servo[servo_cam_channel].angle = 1500
+# sensor classes
+from logic_tube_bno085 import LogicTubeBNO085
 
 # # # # # # # #
 #
@@ -123,11 +69,112 @@ logic_tube_pwm.servo[servo_cam_channel].angle = 1500
 #
 # # # # # # # #
 
-def lerp(old_min, old_max, new_min, new_max, old_value):
+def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
     old_range = old_max - old_min
     new_range = new_max - new_min
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
     return new_value
+
+def clamp(num, minimum, maximum):
+  return max(min(minimum, num), maximum)
+
+
+# # # # # # # #
+#
+# sensor publisher class
+#
+# # # # # # # #
+
+class SensorPublisher:
+    def __init__(self, node, i2c):
+        # instantiate sensor publishers
+        self.logic_tube_temperature = node.create_publisher(Temperature,'logic_tube/temperature', 8)
+        self.logic_tube_humidity = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
+        self.logic_tube_pressure = node.create_publisher(FluidPressure,'logic_tube/pressure', 8)
+        self.thrust_box_temperature = node.create_publisher(Temperature,'thrust_box/temperature', 8)
+        self.thrust_box_humidity = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
+        self.thrust_box_pressure = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
+
+        # instantiate sensors
+        self.logic_tube_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+        self.thrust_box_bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
+
+        # instantiate timer
+        self.timer = node.create_timer(0.1, self.publish)
+
+ 
+    def publish(self):
+
+        # instantiate the messages
+        message_logic_tube_temperature = Temperature()
+        message_logic_tube_humidity = RelativeHumidity()
+        message_logic_tube_pressure = FluidPressure()
+        message_thrust_box_temperature = Temperature()
+        message_thrust_box_humidity = RelativeHumidity()
+        message_thrust_box_pressure = FluidPressure()
+
+        # insert fame id
+        message_logic_tube_temperature.header.frame_id = "base_link"
+        message_logic_tube_humidity.header.frame_id = "base_link"
+        message_logic_tube_pressure.header.frame_id = "base_link"
+        message_thrust_box_temperature.header.frame_id = "base_link"
+        message_thrust_box_humidity.header.frame_id = "base_link"
+        message_thrust_box_pressure.header.frame_id = "base_link"
+
+        # grab the data from the sensors
+        message_logic_tube_temperature.temperature = self.logic_tube_bme280.temperature
+        message_logic_tube_humidity.relative_humidity = self.logic_tube_bme280.humidity
+        message_logic_tube_pressure.fluid_pressure = self.logic_tube_bme280.pressure
+        message_thrust_box_temperature.temperature = self.thrust_box_bme280.temperature
+        message_thrust_box_humidity.relative_humidity = self.thrust_box_bme280.humidity
+        message_thrust_box_pressure.fluid_pressure = self.thrust_box_bme280.pressure
+
+        # publish the data
+        self.logic_tube_temperature.publish(message_logic_tube_temperature)
+        self.logic_tube_humidity.publish(message_logic_tube_humidity)
+        self.logic_tube_pressure.publish(message_logic_tube_pressure)
+        self.thrust_box_temperature.publish(message_thrust_box_temperature)
+        self.thrust_box_humidity.publish(message_thrust_box_humidity)
+        self.thrust_box_pressure.publish(message_thrust_box_pressure)
+
+
+# # # # # # # # #
+#
+# output subscriber class
+#
+# # # # # # # # #
+
+class OutputSubscriber:
+    def __init__(self, node, i2c):
+        # create subscribers
+        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
+        self.drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10)
+
+        # create member variables
+        self.drive_cam_servo = 15
+        self.thrusters = (0,1,2,3,4,5,6,7)
+
+        # instantiate outputs
+        self.logic_tube_pwm = ServoKit(channels=16, i2c=i2c, address=0x40)
+        self.thrust_box_pwm = ServoKit(channels=16, i2c=i2c, address=0x41)
+
+        # configure outputs
+        for thruster in self.thrusters:
+            self.thrust_box_pwm.servo[thruster].set_pulse_width_range(1220, 1780)
+            self.thrust_box_pwm.servo[thruster].actuation_range = 3000
+            self.thrust_box_pwm.servo[thruster].angle = 1500 # zero throttle at bootup
+        self.logic_tube_pwm.servo[self.drive_cam_servo].set_pulse_width_range(0, 3000)
+        self.logic_tube_pwm.servo[self.drive_cam_servo].actuation_range = 3000
+        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = 1500
+
+
+    def receive_thruster(self, message:Float32MultiArray):
+        for thruster in self.thrusters:
+            self.thrust_box_pwm.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
+
+    def receive_drive_camera(self, message:Float32):
+        self.logic_tube_pwm.servo[self.drive_cam_servo].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data, -1, 1)))
+
 
 # # # # # # # #
 #
@@ -141,97 +188,20 @@ def main(args=None):
     # this creates the node "i2c_proxy"
     node_i2c_proxy = rclpy.create_node('i2c_proxy')
 
-    # instanciate sensor publishers
-    publisher_logic_tube_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'logic_tube/bme280/temperature', 8)
-    publisher_logic_tube_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'logic_tube/bme280/humidity', 8)
-    publisher_logic_tube_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'logic_tube/bme280/pressure', 8)
-    publisher_thrust_box_bme280_temperature = node_i2c_proxy.create_publisher(Temperature,'thrust_box/bme280/temperature', 8)
-    publisher_thrust_box_bme280_humidity = node_i2c_proxy.create_publisher(RelativeHumidity,'thrust_box/bme280/humidity', 8)
-    publisher_thrust_box_bme280_pressure = node_i2c_proxy.create_publisher(FluidPressure,'thrust_box/bme280/pressure', 8)
-#    publisher_logic_tube_imu = node_i2c_proxy.create_publisher(Imu, 'logic_tube_imu', 8)
+    # grab the i2c interface for us to use
+    i2c = board.I2C()
 
-    # # # # # # # #
-    #
-    # Callbacks
-    #
-    # # # # # # # #
-    
-    def poll_sensors():
+    sensor_publisher = SensorPublisher(node_i2c_proxy, i2c)
 
-        # instanciate the messages
-        message_logic_tube_bme280_temperature = Temperature()
-        message_logic_tube_bme280_humidity = RelativeHumidity()
-        message_logic_tube_bme280_pressure = FluidPressure()
-        message_thrust_box_bme280_temperature = Temperature()
-        message_thrust_box_bme280_humidity = RelativeHumidity()
-        message_thrust_box_bme280_pressure = FluidPressure()
-#        message_logic_tube_imu = Imu()
+    output_subscriber = OutputSubscriber(node_i2c_proxy, i2c)
 
-        # insert fame id
-        message_logic_tube_bme280_temperature.header.frame_id = "base_link"
-        message_logic_tube_bme280_humidity.header.frame_id = "base_link"
-        message_logic_tube_bme280_pressure.header.frame_id = "base_link"
-        message_thrust_box_bme280_temperature.header.frame_id = "base_link"
-        message_thrust_box_bme280_humidity.header.frame_id = "base_link"
-        message_thrust_box_bme280_pressure.header.frame_id = "base_link"
-#        message_logic_tube_imu.header.frame_id = "base_link"
-
-        # grab the data from the sensors
-        message_logic_tube_bme280_temperature.temperature = logic_tube_bme280.temperature
-        message_logic_tube_bme280_humidity.relative_humidity = logic_tube_bme280.humidity
-        message_logic_tube_bme280_pressure.fluid_pressure = logic_tube_bme280.pressure
-        message_thrust_box_bme280_temperature.temperature = thrust_box_bme280.temperature
-        message_thrust_box_bme280_humidity.relative_humidity = thrust_box_bme280.humidity
-        message_thrust_box_bme280_pressure.fluid_pressure = thrust_box_bme280.pressure
-#        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-#        message_logic_tube_imu.linear_acceleration = logic_tube_imu.raw_acceleration
-#        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-#        message_logic_tube_imu.angular_velocity = logic_tube_imu.raw_gyro
-#        logic_tube_imu.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
-#        message_logic_tube_imu.orientation = logic_tube_imu.raw_quaternion
-
-        # pubblish the data
-        publisher_logic_tube_bme280_temperature.publish(message_logic_tube_bme280_temperature)
-        publisher_logic_tube_bme280_humidity.publish(message_logic_tube_bme280_humidity)
-        publisher_logic_tube_bme280_pressure.publish(message_logic_tube_bme280_pressure)
-        publisher_thrust_box_bme280_temperature.publish(message_thrust_box_bme280_temperature)
-        publisher_thrust_box_bme280_humidity.publish(message_thrust_box_bme280_humidity)
-        publisher_thrust_box_bme280_pressure.publish(message_thrust_box_bme280_pressure)
-#        publisher_logic_tube_imu.publish(message_logic_tube_imu)
-
-    def thrusters_callback(msg_thrusters):
-        # get the message data
-        thrusters_throttle_array = msg_thrusters.data
-        # set all the pwm outputs
-        # im adding 32767 to the value to turn the signed int to a unsigned int
-        # servo kit only works with unsigned``
-        for channel in thruster_channels:
-            thrust_box_pwm.servo[channel].angle = int(lerp(-1.0, 1.0, 0, 3000, thrusters_throttle_array[channel]))
-
-    def camera_servo_callback(msg_drive_cam_servo):
-        camera_angle = msg_drive_cam_servo.data
-        logic_tube_pwm.servo[servo_cam_channel].angle = int(lerp(-1.0, 1.0, 0, 3000, camera_angle))
-
-    # # # # # # # #
-    #
-    # Pubs & Subs
-    #
-    # # # # # # 3 #
-
-    # instanciate output subscribers
-    subscriber_thrusters = node_i2c_proxy.create_subscription(Float32MultiArray, 'drive/motors', thrusters_callback, 10)
-
-    # drive cam servo subscriber
-    subscriber_drive_cam = node_i2c_proxy.create_subscription(Float32, 'camera_control', camera_servo_callback, 10)
-
-    # create the timer for the i2c proxy node
-    timer_i2c_proxy_publish = node_i2c_proxy.create_timer(0.1, poll_sensors)
+    logic_tube_bno085 = LogicTubeBNO085(node_i2c_proxy, i2c)
 
     rclpy.spin(node_i2c_proxy)
 
 # # # # # # # #
 #
-# gracefull shutdown
+# graceful shutdown
 #
 # # # # # # # #
 def signal_handler(sig, frame):
