@@ -44,13 +44,13 @@ import board
 import busio
 
 # sensor classes
-from logic_tube_bme280 import LogicTubeBME280
-from logic_tube_bno085 import LogicTubeBNO085
-from thrust_box_bme280 import ThrustBoxBME280
+from seahawk_rov.logic_tube_bme280 import LogicTubeBME280
+from seahawk_rov.logic_tube_bno085 import LogicTubeBNO085
+from seahawk_rov.thrust_box_bme280 import ThrustBoxBME280
 
 # output classes
-from logic_tube_servo import LogicTubeServo
-from thrust_box_servo import ThrustBoxServo
+from seahawk_rov.logic_tube_servo import LogicTubeServo
+from seahawk_rov.thrust_box_servo import ThrustBoxServo
 
 
 def main(args=None):
