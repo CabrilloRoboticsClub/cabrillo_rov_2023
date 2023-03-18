@@ -50,9 +50,6 @@ class LogicTubeBNO085:
         self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
         self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
 
-        # instantiate the ros publish timer
-        self.timer = node.create_timer(0.1, self.publish)
-    
     def publish(self):
         # instantiate an imu message
         msg = Imu()

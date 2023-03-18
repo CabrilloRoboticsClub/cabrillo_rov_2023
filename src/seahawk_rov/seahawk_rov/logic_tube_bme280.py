@@ -41,9 +41,6 @@ class LogicTubeBME280:
         # instanciate the sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
-        # instanciate the publisher timer
-        self.timer = node.create_timer(0.1, self.publish)
-
     def publish(self):
         # instanciate the messages
         msg_temperature = Temperature()

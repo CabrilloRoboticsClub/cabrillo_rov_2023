@@ -41,8 +41,6 @@ class ThrustBoxBME280:
         # instantiate sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
-        # instantiate timer
-        self.timer = node.create_timer(0.1, self.publish)
 
     def publish(self):
 
