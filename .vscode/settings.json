@@ -2,5 +2,13 @@
     "python.analysis.extraPaths": [
         "/opt/ros/humble/lib/python3.10/site-packages\""
     ],
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "python.autoComplete.extraPaths": [
+        "/home/student/cabrillo_rov_2023/build/seahawk_rov",
+        "/home/student/cabrillo_rov_2023/install/seahawk_rov/lib/python3.10/site-packages",
+        "/home/student/cabrillo_rov_2023/build/seahawk_deck",
+        "/home/student/cabrillo_rov_2023/install/seahawk_deck/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
 }
