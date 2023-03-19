@@ -13,7 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(urdf REQUIRED)
 find_package(xacro REQUIRED)
 
-install(DIRECTORY launch worlds
+install(DIRECTORY launch worlds config
   DESTINATION share/${PROJECT_NAME}
 )
 

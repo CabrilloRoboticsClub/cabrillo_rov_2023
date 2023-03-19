@@ -63,6 +63,23 @@ def generate_launch_description():
             ]
         ),
 
+        # TODO: add joint state bridge if the robot model gets joints added
+        Node(
+            name="gz_bridge",
+            package="ros_gz_bridge",
+            executable="parameter_bridge",
+            parameters=[
+                {
+                    'config_file': os.path.join(
+                        get_package_share_directory('seahawk_gazebo'),
+                        'config/ros_gz_bridge.yaml')
+                }
+            ],
+            remappings=[
+                ('/model/seahawk/cmd_vel', '/cmd_vel'),
+            ]
+        ),
+
         # TODO: Make sure the world argument matches the world you're using above
         # TODO: You might be able to load the xml from the robot_description topic:
         #   https://github.com/gazebosim/ros_gz/blob/27f20ffbb2331a5c87685c62053d7eb20544e09a/ros_gz_sim_demos/launch/joint_states.launch.py#L68

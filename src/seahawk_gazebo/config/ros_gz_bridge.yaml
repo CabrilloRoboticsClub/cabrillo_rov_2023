@@ -1,0 +1,12 @@
+# Configuration parameters for the ros_gz_bridge node passing topics between
+# ROS and Gazebo.
+# See link for a list of configuration options
+# https://github.com/gazebosim/ros_gz/tree/humble/ros_gz_bridge#example-5-configuring-the-bridge-via-yaml
+- topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "ignition.msgs.Clock"
+  direction: GZ_TO_ROS
+- topic_name: "/model/seahawk/cmd_vel"
+  ros_type_name: "geometry_msgs/msg/Twist"
+  gz_type_name: "ignition.msgs.Twist"
+  direction: ROS_TO_GZ
