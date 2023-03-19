@@ -8,17 +8,20 @@
     name="base_link">
     <inertial>
       <origin
-        xyz="-0.0206930700678135 0.00341026375918563 -0.0414859116104987"
+        xyz="0 0 0"
         rpy="1.5707 0 3.14159" />
       <mass
-        value="6.91657871127401" />
+        value="20.0" />
+      <!-- inertia matrix for a solid cuboid using model's mass and collision geometry -->
+      <!-- https://en.wikipedia.org/wiki/List_of_moments_of_inertia#List_of_3D_inertia_tensors -->
+      <!-- https://docs.ros.org/en/foxy/Tutorials/Intermediate/URDF/Adding-Physical-and-Collision-Properties-to-a-URDF-Model.html -->
       <inertia
-        ixx="0.0143666413178029"
-        ixy="3.93272056525135E-06"
-        ixz="-2.87914525039085E-05"
-        iyy="0.0152232941277146"
-        iyz="9.84703382535022E-07"
-        izz="0.0226843964008807" />
+        ixx="0.42733"
+        ixy="0"
+        ixz="0"
+        iyy="0.833333"
+        iyz="0"
+        izz="0.42733" />
     </inertial>
     <visual>
       <origin
@@ -37,11 +40,39 @@
     <collision>
       <origin
         xyz="0 0 0"
-        rpy="1.5707 0 3.14159" />
+        rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://seahawk_description/meshes/base_link.STL" />
+        <!-- TODO: update this geometry to be more accurate later -->
+        <!-- temporary collision geometry to make the rover neutrally buoyant -->
+        <box size="0.5 0.5 0.08" />
       </geometry>
     </collision>
   </link>
+
+  <gazebo>
+    <!-- See link below for hydrodynamics parameter descriptions -->
+    <!-- https://github.com/gazebosim/gz-sim/blob/ign-gazebo6/src/systems/hydrodynamics/Hydrodynamics.hh -->
+    <plugin
+      filename="ignition-gazebo-hydrodynamics-system"
+      name="ignition::gazebo::systems::Hydrodynamics">
+      <link_name>base_link</link_name>
+      <xDotU>7.0</xDotU>
+      <yDotV>7.0</yDotV>
+      <zDotW>7.0</zDotW>
+      <kDotP>0</kDotP>
+      <mDotQ>0</mDotQ>
+      <nDotR>0</nDotR>
+      <xUabsU>20</xUabsU>
+      <xU>0</xU>
+      <yVabsV>20</yVabsV>
+      <yV>0</yV>
+      <zWabsW>20</zWabsW>
+      <zW>0</zW>
+      <kPabsP>20</kPabsP>
+      <kP>0</kP>
+      <mQabsQ>20</mQabsQ>
+      <mQ>0</mQ>
+      <nRabsR>20</nRabsR>
+      <nR>0</nR>
+    </plugin>
 </robot>
