@@ -2,6 +2,7 @@
 __init__.py
 
 this is the init for the main node that runs on the ROV
+it imports all the classes to make them available to main
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -22,3 +23,12 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
+
+# sensor classes
+from seahawk_rov.logic_tube_bme280 import LogicTubeBME280
+from seahawk_rov.logic_tube_bno085 import LogicTubeBNO085
+from seahawk_rov.thrust_box_bme280 import ThrustBoxBME280
+
+# output classes
+from seahawk_rov.logic_tube_servo import LogicTubeServo
+from seahawk_rov.thrust_box_servo import ThrustBoxServo

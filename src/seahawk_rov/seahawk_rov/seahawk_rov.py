@@ -43,14 +43,8 @@ from rclpy.node import Node
 import board
 import busio
 
-# sensor classes
-from seahawk_rov.logic_tube_bme280 import LogicTubeBME280
-from seahawk_rov.logic_tube_bno085 import LogicTubeBNO085
-from seahawk_rov.thrust_box_bme280 import ThrustBoxBME280
-
-# output classes
-from seahawk_rov.logic_tube_servo import LogicTubeServo
-from seahawk_rov.thrust_box_servo import ThrustBoxServo
+# import classes
+import seahawk_rov
 
 
 def main(args=None):
@@ -63,13 +57,13 @@ def main(args=None):
     i2c = board.I2C()
 
     # instnciate the output classes
-    logic_tube_servo = LogicTubeServo(node_seahawk_rov, i2c)
-    thrust_box_servo = ThrustBoxServo(node_seahawk_rov, i2c)
+    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
 
     # instanciate the sensor classes
-    logic_tube_bme280 = LogicTubeBME280(node_seahawk_rov, i2c)
+    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
     # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = ThrustBoxBME280(node_seahawk_rov, i2c)
+    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
     
     def publisher():
         logic_tube_bme280.publish()
