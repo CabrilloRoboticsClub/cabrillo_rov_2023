@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>our_examples</name>
+  <version>1.0.0</version>
+  <description>Example ROS Package providing a publisher and subscriber node</description>
+  <maintainer email="robertgarrett404@gmail.com">Robert</maintainer>
+  <license>AGPLv3</license>
+  
+  <!-- Execution depends on having the Python RCL bindings,
+  as well as the ROS standard messages -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <!-- There are no tests, so I'm omitting the test deps -->
+  
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
