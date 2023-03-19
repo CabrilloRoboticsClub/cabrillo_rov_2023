@@ -16,14 +16,15 @@ from launch.substitutions import LaunchConfiguration
 from launch.launch_context import LaunchContext
 
 
-PKG_NAME = 'seahawk_description'
-PKG_PATH = get_package_share_path(PKG_NAME)
+DESCRIPTION_PKG_PATH = get_package_share_path('seahawk_description')
+GAZEBO_PKG_PATH = get_package_share_path('seahawk_gazebo')
+DEFAULT_WORLD_PATH = os.path.join(GAZEBO_PKG_PATH, 'worlds/seahawk_sim.sdf')
 
 ARGUMENTS = [
     DeclareLaunchArgument(
         'world_path',
-        default_value='empty.sdf',
-        description='The world path, the default is empty.sdf'),
+        default_value=DEFAULT_WORLD_PATH,
+        description='The world file path'),
 ]
 
 
@@ -40,7 +41,7 @@ def launch_setup(context: LaunchContext):
     return [
         SetEnvironmentVariable(
             name='IGN_FILE_PATH',
-            value=str(Path(PKG_PATH).parent.resolve())
+            value=str(Path(DESCRIPTION_PKG_PATH).parent.resolve())
         ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
