@@ -17,8 +17,8 @@ setup(
     license="AGPLv3",
     entry_points={
         "console_scripts": [
-            "example_pub = seahawk_rov.example_pub:main",
-            "example_sub = seahawk_rov.example_sub:main",
+            "example_pub = our_examples.example_publisher.example_pub:main",
+            "example_sub = our_examples.example_subscriber.example_sub:main",
         ]
     }
 )

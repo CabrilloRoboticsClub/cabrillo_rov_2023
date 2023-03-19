@@ -7,6 +7,11 @@
   <maintainer email="robertgarrett404@gmail.com">Robert</maintainer>
   <license>AGPLv3</license>
   
+  <build_depend>python3-setuptools</build_depend>
+
+  <exec_depend>python3</exec_depend> <!-- silly to mark a dependency on Python. But, hey. Maybe it's not installed yet!
+  ... rosdep is a Python program. It's basically impossible for this to not already be satisfied. Oh well. -->
+  
   <!-- Execution depends on having the Python RCL bindings,
   as well as the ROS standard messages -->
   <exec_depend>rclpy</exec_depend>
