@@ -75,4 +75,11 @@
       <nRabsR>20</nRabsR>
       <nR>0</nR>
     </plugin>
+
+    <!-- By default listens for Gazebo twist msgs on /model/<model_name>/cmd_vel-->
+    <plugin
+      filename="ignition-gazebo-velocity-control-system"
+      name="ignition::gazebo::systems::VelocityControl">
+    </plugin>
+  </gazebo>
 </robot>
