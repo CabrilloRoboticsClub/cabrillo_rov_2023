@@ -29,7 +29,6 @@ ARGUMENTS = [
 
 
 def generate_launch_description():
-    world_path = LaunchConfiguration('world_path')
 
     return LaunchDescription([
         *ARGUMENTS,
@@ -38,10 +37,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 os.path.join(
                     get_package_share_directory('seahawk_gazebo'),
-                    'launch/gazebo_server.launch.py')),
-            launch_arguments={
-                'world_path': world_path
-            }.items()
+                    'launch/gazebo_server.launch.py'))
         ),
 
         IncludeLaunchDescription(
