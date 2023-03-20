@@ -74,9 +74,6 @@ def generate_launch_description():
                         get_package_share_directory('seahawk_gazebo'),
                         'config/ros_gz_bridge.yaml')
                 }
-            ],
-            remappings=[
-                ('/model/seahawk/cmd_vel', '/cmd_vel'),
             ]
         ),
 
