@@ -22,3 +22,15 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
+
+import time
+
+# adafruit circuitpython motor driver
+from adafruit_motorkit import MotorKit
+
+class LogicTubeMotor:
+    def __init__(self, node, I2C):
+
+        
+        # instanciate the motor hat
+        kit = MotorKit(i2c=I2C, address=0x60)

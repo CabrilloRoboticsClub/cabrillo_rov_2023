@@ -29,19 +29,9 @@ from std_msgs.msg import Float32
 # adafruit servokit for hat
 from adafruit_servokit import ServoKit
 
-
-# linear interpolation helper function
-def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
-    old_range = old_max - old_min
-    new_range = new_max - new_min
-    new_value = (((old_value - old_min) * new_range) / old_range) + new_min
-    return new_value
-
-# clamp helper function
-# helps keep us from starting fires
-def clamp(num, minimum, maximum):
-  return max(min(minimum, num), maximum)
-
+# import helper functions
+from seahawk_rov import clamp
+from seahawk_rov import lerp
 
 class LogicTubeServo:
     def __init__(self, node, i2c):

@@ -29,6 +29,10 @@ from std_msgs.msg import Float32MultiArray
 # adafruit circuitpython servo driver
 from adafruit_servokit import ServoKit
 
+# import helper functions
+from seahawk_rov import clamp
+from seahawk_rov import lerp
+
 class ThrustBoxServo:
     def __init__(self, node, i2c):
         # subscribe to the motors
