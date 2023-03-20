@@ -23,6 +23,9 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+# time is needed
+import time
+
 # ros messages
 from sensor_msgs.msg import Temperature
 from sensor_msgs.msg import RelativeHumidity

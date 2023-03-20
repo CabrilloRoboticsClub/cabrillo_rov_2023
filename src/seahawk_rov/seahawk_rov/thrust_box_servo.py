@@ -23,6 +23,9 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+# time is needed
+import time
+
 # ros message
 from std_msgs.msg import Float32MultiArray
 

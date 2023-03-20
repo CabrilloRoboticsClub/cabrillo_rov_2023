@@ -24,9 +24,6 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# time is needed
-import time
-
 # sensor classes
 from .logic_tube_bme280 import LogicTubeBME280
 from .logic_tube_bno085 import LogicTubeBNO085

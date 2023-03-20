@@ -29,6 +29,9 @@ cabrillorobotics@gmail.com
 #
 # # # # # # # #
 
+# time is needed
+import time
+
 # enable command line arguments
 import sys
 # enable signal handling
