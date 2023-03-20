@@ -68,4 +68,5 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
+            print(f"t{thruster} {self.kit.servo[thruster].angle}: {message.data[thruster]} -> {int(lerp(-1.0, 1.0, 0, 3000, message.data[thruster]))}")
             self.kit.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
