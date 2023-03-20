@@ -25,12 +25,39 @@ cabrillorobotics@gmail.com
 
 import time
 
+# ros messages
+from std_msgs.msg import Int8MultiArray
+
 # adafruit circuitpython motor driver
 from adafruit_motorkit import MotorKit
+
+# import helper functions
+from seahawk_rov import clamp
 
 class LogicTubeMotor:
     def __init__(self, node, I2C):
 
-        
+        # instanciate the claws subscriber
+        self.claws = node.create_subscription(Int8MultiArray, 'claw_control', self.recieve_claws, 10)
+
         # instanciate the motor hat
         kit = MotorKit(i2c=I2C, address=0x60)
+
+    def recieve_claws(self, message):
+        # solenoid 1
+        if message.data[1] == 0:
+            self.kit.motor1.throttle = None
+        else:
+            self.kit.motor1.throttle = 1
+        
+        # solenoid 2
+        if message.data[2] == 0:
+            self.kit.motor2.throttle = None
+        else:
+            self.kit.motor2.throttle = 1
+        
+        # solenoid 3
+        if message.data[3] == 0:
+            self.kit.motor3.throttle = None
+        else:
+            self.kit.motor3.throttle = 1

@@ -43,9 +43,6 @@ from rclpy.node import Node
 import board
 import busio
 
-# import classes
-import seahawk_rov
-
 
 def main(args=None):
     rclpy.init(args=args)
