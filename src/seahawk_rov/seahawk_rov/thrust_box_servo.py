@@ -39,20 +39,20 @@ from adafruit_servokit import ServoKit
 def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
     '''linear interpolate helper function'''
     if DEBUG:
-        print("LERP | Old Min: " + old_min)
-        print("LERP | Old Max: " + old_max)
-        print("LERP | New Min: " + new_min)
-        print("LERP | New Max: " + new_max)
-        print("LERP | Old Value: " + old_value)
+        print(f"LERP | Old Min: {old_min}")
+        print(f"LERP | Old Max: {old_max}")
+        print(f"LERP | New Min: {new_min}")
+        print(f"LERP | New Max: {new_max}")
+        print(f"LERP | Old Value: {old_value}")
     old_range = old_max - old_min
     if DEBUG:
-        print("LERP | Old Range: " + old_range)
+        print(f"LERP | Old Range: {old_range}")
     new_range = new_max - new_min
     if DEBUG:
-        print("LERP | New Range: " + new_range)
+        print(f"LERP | New Range: {new_range}")
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
     if DEBUG:
-        print("LERP | New Value: " + new_value)
+        print(f"LERP | New Value: {new_value}")
     return new_value
 
 
@@ -61,12 +61,12 @@ def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float
 def clamp(num, minimum, maximum):
   '''clamp helper function'''
   if DEBUG:
-      print("CLAMP | Num: " + num)
-      print("CLAMP | Minimum: " + minimum)
-      print("CLAMP | Maximum")
+      print(f"CLAMP | Num: {num}")
+      print(f"CLAMP | Minimum: {minimum}")
+      print(f"CLAMP | Maximum: {maximum}")
   new_num = max(min(minimum, num), maximum)
   if DEBUG:
-      print("CLAMP | New Num: " + new_num)
+      print(f"CLAMP | New Num: {new_num}")
   return new_num
 
 class ThrustBoxServo:
@@ -89,5 +89,6 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            print(f"t{thruster} {self.kit.servo[thruster].angle}: {message.data[thruster]} -> {int(lerp(-1.0, 1.0, 0, 3000, message.data[thruster]))}")
+            if DEBUG:
+                print(f"t{thruster} {self.kit.servo[thruster].angle}: {message.data[thruster]} -> {int(lerp(-1.0, 1.0, 0, 3000, message.data[thruster]))}")
             self.kit.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
