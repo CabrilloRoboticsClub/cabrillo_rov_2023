@@ -32,32 +32,8 @@ from std_msgs.msg import Float32MultiArray
 # adafruit circuitpython servo driver
 from adafruit_servokit import ServoKit
 
-
-# linear interpolation helper function
-def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
-    '''linear interpolate helper function'''
-    old_range = old_max - old_min
-    new_range = new_max - new_min
-    new_value = (((old_value - old_min) * new_range) / old_range) + new_min
-    return new_value
-
-
-# clamp helper function
-# helps keep us from starting fires
-def clamp(num, minimum, maximum):
-  '''clamp helper function'''
-  
-  # gives the highest value of the two.
-  # aka if the minimum value is higher than the input num than the minimum value is returned
-  # removes values lower than the minimum
-  maximised = max(minimum, num)
-
-  # gives the minimum value of the two
-  # aka if the maximised value is lower than the input num than the maximum value is returned
-  # removes values higher than the maximum
-  minimised = min(maximised, maximum)
-
-  return minimised
+# import helper functions
+import  seahawk_rov
 
 class ThrustBoxServo:
     def __init__(self, node, i2c):
@@ -79,4 +55,4 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1.0, 1.0)))
+            self.kit.servo[thruster].angle = int(seahawk_rov.lerp(-1.0, 1.0, 0, 3000, seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))

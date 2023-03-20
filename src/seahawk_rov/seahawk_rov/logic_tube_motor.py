@@ -32,11 +32,6 @@ from std_msgs.msg import Int8MultiArray
 # adafruit circuitpython motor driver
 from adafruit_motorkit import MotorKit
 
-# clamp helper function
-# helps keep us from starting fires
-def clamp(num, minimum, maximum):
-  '''clamp helper function'''
-  return max(min(minimum, num), maximum)
 
 class LogicTubeMotor:
     def __init__(self, node, I2C):
