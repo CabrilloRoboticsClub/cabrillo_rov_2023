@@ -92,6 +92,28 @@ def generate_launch_description():
             ]
         ),
 
+        # TODO: suggest the drive input topic changes to /drive/cmd_vel or
+        #  remove the remappings here in the Nodes below
+        Node(
+            package='seahawk_deck',
+            executable='input_xbox_one',
+            name='input',
+            output='log',
+            remappings=[
+                ('/drive/twist', '/drive/cmd_vel')
+            ]
+        ),
+
+        Node(
+            package='seahawk_deck',
+            executable='thrust',
+            name='thrust',
+            output='screen',
+            remappings=[
+                ('/drive/twist', '/drive/cmd_vel')
+            ]
+        ),
+
         Node(
             package='joy',
             executable='joy_node',
