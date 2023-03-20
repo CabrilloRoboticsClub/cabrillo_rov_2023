@@ -65,3 +65,4 @@ class LogicTubeMotor:
             self.kit.motor3.throttle = None
         else:
             self.kit.motor3.throttle = 1
+            
