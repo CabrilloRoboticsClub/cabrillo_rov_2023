@@ -46,7 +46,18 @@ def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float
 # helps keep us from starting fires
 def clamp(num, minimum, maximum):
   '''clamp helper function'''
-  return max(min(minimum, num), maximum)
+  
+  # gives the highest value of the two.
+  # aka if the minimum value is higher than the input num than the minimum value is returned
+  # removes values lower than the minimum
+  maximised = max(minimum, num)
+
+  # gives the minimum value of the two
+  # aka if the maximised value is lower than the input num than the maximum value is returned
+  # removes values higher than the maximum
+  minimised = min(maximised, maximum)
+
+  return minimised
 
 class ThrustBoxServo:
     def __init__(self, node, i2c):
@@ -68,4 +79,4 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1, 1)))
+            self.kit.servo[thruster].angle = int(lerp(-1.0, 1.0, 0, 3000, clamp(message.data[thruster], -1.0, 1.0)))
