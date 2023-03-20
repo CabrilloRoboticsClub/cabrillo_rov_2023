@@ -39,20 +39,20 @@ from adafruit_servokit import ServoKit
 def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
     '''linear interpolate helper function'''
     if DEBUG:
-        print("Old Min: " + old_min)
-        print("Old Max: " + old_max)
-        print("New Min: " + new_min)
-        print("New Max: " + new_max)
-        print("Old Value: " + old_value)
+        print("LERP | Old Min: " + old_min)
+        print("LERP | Old Max: " + old_max)
+        print("LERP | New Min: " + new_min)
+        print("LERP | New Max: " + new_max)
+        print("LERP | Old Value: " + old_value)
     old_range = old_max - old_min
     if DEBUG:
-        print("Old Range: " + old_range)
+        print("LERP | Old Range: " + old_range)
     new_range = new_max - new_min
     if DEBUG:
-        print("New Range: " + new_range)
+        print("LERP | New Range: " + new_range)
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
     if DEBUG:
-        print("New Value: " + new_value)
+        print("LERP | New Value: " + new_value)
     return new_value
 
 
@@ -60,7 +60,14 @@ def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float
 # helps keep us from starting fires
 def clamp(num, minimum, maximum):
   '''clamp helper function'''
-  return max(min(minimum, num), maximum)
+  if DEBUG:
+      print("CLAMP | Num: " + num)
+      print("CLAMP | Minimum: " + minimum)
+      print("CLAMP | Maximum")
+  new_num = max(min(minimum, num), maximum)
+  if DEBUG:
+      print("CLAMP | New Num: " + new_num)
+  return new_num
 
 class ThrustBoxServo:
     def __init__(self, node, i2c):
