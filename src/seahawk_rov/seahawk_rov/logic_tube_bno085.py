@@ -1,5 +1,5 @@
 '''
-_logic_tube_bno085.py
+logic_tube_bno085.py
 
 code for publishing the data from the bno085 sensor in the logic tube
 

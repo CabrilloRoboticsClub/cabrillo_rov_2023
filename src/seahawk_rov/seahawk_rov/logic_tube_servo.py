@@ -1,5 +1,5 @@
 '''
-_logic_tube_servo.py
+logic_tube_servo.py
 
 code for controlling the servo hat in the logic tube
 

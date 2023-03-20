@@ -1,5 +1,5 @@
 '''
-_thrust_box_servo.py
+thrust_box_servo.py
 
 code for controlling the servo bpard in the thrust box
 

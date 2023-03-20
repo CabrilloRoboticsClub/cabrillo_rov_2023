@@ -1,5 +1,5 @@
 '''
-_thrust_box_bme280.py
+thrust_box_bme280.py
 
 code for publishing the data from the bme280 sensor in the thrust box
 
