@@ -88,6 +88,9 @@ def generate_launch_description():
             executable='create',
             arguments=[
                 '-file', MODEL_PATH,
+                '-name', 'seahawk',
+                '-x', '0',
+                '-y', '0',
                 '-z', '0.1',
             ]
         ),
