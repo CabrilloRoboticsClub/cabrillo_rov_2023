@@ -4,8 +4,8 @@ ROV setup:
 - `cd cabrillo_rov_2023`
 - `git submodule init`
 - `git submodule update`
-- `rosdep init` (as root)
-- `rosdep update` (not as root)
+- `sudo rosdep init`
+- `rosdep update`
 - `rosdep install -i --from-path src/ --rosdistro humble -y`
 - `source /opt/ros/humble/setup.bash`
 - `make`
@@ -13,8 +13,11 @@ ROV setup:
 - `ros2 launch launch/rov.launch.py`
 
 loop:
+- `rosdep update`
+- `rosdep install -i --from-path src/ --rosdistro humble -y`
+- `source /opt/ros/humble/setup.bash`
 - `make`
 - `source install/setup.bash`
-- `ros2 launch`
+- `ros2 launch `
 
 user ubuntu needs to be added to dialout group
