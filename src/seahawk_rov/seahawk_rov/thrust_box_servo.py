@@ -46,7 +46,16 @@ def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float
 # helps keep us from starting fires
 def clamp(num, minimum, maximum):
   '''clamp helper function'''
-  return min(max(minimum, num), maximum)
+  
+  # gives the highest value of the two.
+  # aka if the minimum value is higher than the input num than the minimum value is returned
+  maximised = max(minimum, num)
+
+  # gives the minimum value of the two
+  # aka if the maximised value is lower than the input num than the maximum value is returned
+  minimised = min(maximised, maximum)
+
+  return minimised
 
 class ThrustBoxServo:
     def __init__(self, node, i2c):
