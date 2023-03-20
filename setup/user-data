@@ -21,7 +21,7 @@ ssh_pwauth: true
 hostname: SeaHawk
 
 # update packages (apt)
-packages_update: true
+package_update: true
 
 # reboot when finished
 power_state:
