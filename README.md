@@ -33,13 +33,13 @@ $ make clean
 There are launch configurations in the `launch` directory. To run all the configured nodes on the ROV:
 
 ```console 
-ros2 launch ./launch/rov.py  
+ros2 launch ./launch/rov.launch.py  
 ```
 
 To launch all the nodes on the deck:
 
 ```console 
-ros2 launch ./launch/deck.py  
+ros2 launch ./launch/deck.launch.py  
 ```
 
 ## Running Individual Nodes 
@@ -108,7 +108,7 @@ start_x=1
 Do this to launch the deck nodes: 
 
 ```console 
-$ ros2 launch ./launch/deck.yaml
+$ ros2 launch ./launch/deck.launch.py
 $ ros2 topic echo /drive/twist
 ```
 
@@ -117,5 +117,5 @@ $ ros2 topic echo /drive/twist
 Do this to launch the debug nodes. It also starts RViz:
 
 ```console 
-$ ros2 launch launch/debug.py
+$ ros2 launch launch/kinematics_viz.launch.py
 ```
