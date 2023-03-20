@@ -34,3 +34,4 @@ from .logic_tube_motor import LogicTubeMotor
 from .logic_tube_servo import LogicTubeServo
 from .thrust_box_servo import ThrustBoxServo
 
+from .main import main

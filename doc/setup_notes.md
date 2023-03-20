@@ -1,0 +1,1 @@
+user ubuntu needs to be added to dialout group

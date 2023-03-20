@@ -45,7 +45,7 @@ setup(
     # scripts here.
     entry_points={
         'console_scripts': [
-            'seahawk_rov = seahawk_rov.seahawk_rov:main'
+            'seahawk_rov = seahawk_rov:main'
         ],
     },
 )
