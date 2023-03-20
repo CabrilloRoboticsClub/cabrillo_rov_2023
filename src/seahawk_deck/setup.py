@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "motion_controller=seahawk_deck.motion_controller:main",
+            "thrust=seahawk_deck.thrust:main",
+            "input_xbox_one=seahawk_deck.input_xbox_one:main",
             "rviz_markers=seahawk_deck.rviz_markers:main",
         ],
     },
