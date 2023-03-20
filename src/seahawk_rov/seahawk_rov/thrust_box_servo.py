@@ -49,10 +49,12 @@ def clamp(num, minimum, maximum):
   
   # gives the highest value of the two.
   # aka if the minimum value is higher than the input num than the minimum value is returned
+  # removes values lower than the minimum
   maximised = max(minimum, num)
 
   # gives the minimum value of the two
   # aka if the maximised value is lower than the input num than the maximum value is returned
+  # removes values higher than the maximum
   minimised = min(maximised, maximum)
 
   return minimised
