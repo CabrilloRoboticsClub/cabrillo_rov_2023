@@ -4,7 +4,7 @@
   <name>seahawk_deck</name>
   <version>0.0.1</version>
   <description>Nodes for the Seahawk Deck machine</description>
-  <maintainer email="matera@lifealgorithmic.com">maximus</maintainer>
+  <maintainer email="cabrillorobotics@gmail.com">Cabrillo Robotics Club</maintainer>
   <license>TODO: License declaration</license>
 
   <build_depend>python3-setuptools</build_depend>
