@@ -64,7 +64,7 @@ def clamp(num, minimum, maximum):
       print(f"CLAMP | Num: {num}")
       print(f"CLAMP | Minimum: {minimum}")
       print(f"CLAMP | Maximum: {maximum}")
-  new_num = max(min(minimum, num), maximum)
+  new_num = min(max(minimum, num), maximum)
   if DEBUG:
       print(f"CLAMP | New Num: {new_num}")
   return new_num
