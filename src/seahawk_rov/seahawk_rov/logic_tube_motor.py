@@ -45,7 +45,7 @@ class LogicTubeMotor:
         self.claws = node.create_subscription(Int8MultiArray, 'claw_control', self.recieve_claws, 10)
 
         # instanciate the motor hat
-        kit = MotorKit(i2c=I2C, address=0x60)
+        self.kit = MotorKit(i2c=I2C, address=0x60)
 
     def recieve_claws(self, message):
         # solenoid 1
