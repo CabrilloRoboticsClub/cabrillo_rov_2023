@@ -91,5 +91,12 @@ def generate_launch_description():
                 '-z', '0.1',
             ]
         ),
+
+        Node(
+            package='joy',
+            executable='joy_node',
+            name='joy_node',
+            output='screen'
+        ),
     ])
 
