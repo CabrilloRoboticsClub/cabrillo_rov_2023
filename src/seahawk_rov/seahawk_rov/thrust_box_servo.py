@@ -23,6 +23,8 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+DEBUG = True
+
 # time is needed
 import time
 
@@ -36,9 +38,21 @@ from adafruit_servokit import ServoKit
 # linear interpolation helper function
 def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float):
     '''linear interpolate helper function'''
+    if DEBUG:
+        print("Old Min: " + old_min)
+        print("Old Max: " + old_max)
+        print("New Min: " + new_min)
+        print("New Max: " + new_max)
+        print("Old Value: " + old_value)
     old_range = old_max - old_min
+    if DEBUG:
+        print("Old Range: " + old_range)
     new_range = new_max - new_min
+    if DEBUG:
+        print("New Range: " + new_range)
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
+    if DEBUG:
+        print("New Value: " + new_value)
     return new_value
 
 
