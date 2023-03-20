@@ -30,5 +30,6 @@ from seahawk_rov.logic_tube_bno085 import LogicTubeBNO085
 from seahawk_rov.thrust_box_bme280 import ThrustBoxBME280
 
 # output classes
+from seahawk_rov.logic_tube_motor import LogicTubeMotor
 from seahawk_rov.logic_tube_servo import LogicTubeServo
 from seahawk_rov.thrust_box_servo import ThrustBoxServo
