@@ -1,5 +1,5 @@
 '''
-__init__.py
+seahawk_rov/__init__.py
 
 this is the init for the main node that runs on the ROV
 it imports all the classes to make them available to main
@@ -24,13 +24,16 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
+# time is needed
+import time
+
 # sensor classes
-from seahawk_rov.logic_tube_bme280 import LogicTubeBME280
-from seahawk_rov.logic_tube_bno085 import LogicTubeBNO085
-from seahawk_rov.thrust_box_bme280 import ThrustBoxBME280
+from .logic_tube_bme280 import LogicTubeBME280
+from .logic_tube_bno085 import LogicTubeBNO085
+from .thrust_box_bme280 import ThrustBoxBME280
 
 # output classes
-from seahawk_rov.logic_tube_motor import LogicTubeMotor
-from seahawk_rov.logic_tube_servo import LogicTubeServo
-from seahawk_rov.thrust_box_servo import ThrustBoxServo
+from .logic_tube_motor import LogicTubeMotor
+from .logic_tube_servo import LogicTubeServo
+from .thrust_box_servo import ThrustBoxServo
 

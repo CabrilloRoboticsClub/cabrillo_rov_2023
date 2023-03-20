@@ -1,5 +1,5 @@
 '''
-logic_tube_bno085.py
+seahawk_rov/logic_tube_bno085.py
 
 code for publishing the data from the bno085 sensor in the logic tube
 
@@ -23,15 +23,8 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# ros stuff
-import rclpy
-from rclpy.node import Node
-
 # ros message
 from sensor_msgs.msg import Imu
-
-# the docs say to import this
-import time
 
 # inport the bno085 circuit python sensor library
 import adafruit_bno08x

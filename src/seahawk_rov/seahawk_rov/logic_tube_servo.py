@@ -1,5 +1,5 @@
 '''
-logic_tube_servo.py
+seahawk_rov/logic_tube_servo.py
 
 code for controlling the servo hat in the logic tube
 

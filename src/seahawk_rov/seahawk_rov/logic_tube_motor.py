@@ -1,5 +1,5 @@
 '''
-logic_tube_motor.py
+seahawk_rov/logic_tube_motor.py
 
 code for controlling the motor hat in the logic tube
 
@@ -23,16 +23,17 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-import time
-
 # ros messages
 from std_msgs.msg import Int8MultiArray
 
 # adafruit circuitpython motor driver
 from adafruit_motorkit import MotorKit
 
-# import helper functions
-from seahawk_rov import clamp
+# clamp helper function
+# helps keep us from starting fires
+def clamp(num, minimum, maximum):
+  '''clamp helper function'''
+  return max(min(minimum, num), maximum)
 
 class LogicTubeMotor:
     def __init__(self, node, I2C):

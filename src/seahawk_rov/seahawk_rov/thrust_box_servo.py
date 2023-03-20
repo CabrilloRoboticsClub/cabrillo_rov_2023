@@ -1,7 +1,7 @@
 '''
-thrust_box_servo.py
+seahawk_rov/thrust_box_servo.py
 
-code for controlling the servo bpard in the thrust box
+code for controlling the servo board in the thrust box
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 

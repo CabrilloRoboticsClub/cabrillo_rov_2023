@@ -1,5 +1,5 @@
 '''
-seahawk_rov.py
+seahawk_rov/main.py
 
 this is the main node that runs on the ROV
 
@@ -43,6 +43,7 @@ from rclpy.node import Node
 import board
 import busio
 
+import seahawk_rov
 
 def main(args=None):
     rclpy.init(args=args)
