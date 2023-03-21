@@ -39,30 +39,37 @@
 
 rov:
   hosts:
-    SeaHawk:
+    SeaHawk-ROV:
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
-    SeaHawk-1:
+    SeaHawk-ROV-SPARE:
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
-      ansible_host: 192.168.254.101
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
-    SeaHawk-2:
+    SeaHawk-ROV-Ciaran:
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
-      ansible_host: 192.168.254.102
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
 deck:
   hosts:
-    Deck_Placeholder_Name:
-      # TODO: The whole deck computer. Oops.
+    SeaHawk-DECK:
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    SeaHawk-DECK-Ciaran:
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
 
 devkits:
   hosts:
@@ -80,12 +87,15 @@ devkits:
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 ros_hosts:
   hosts:
-    SeaHawk-1:
-    SeaHawk-2:
-    Deck_Placeholder_Name: # TODO: duh. Finish the deck
+    SeaHawk-ROV:
+    SeaHawk-ROV-SPARE:
+    SeaHawk-ROV-Ciaran:
+    SeaHawk-DECK:
+    SeaHawk-DECK-Ciaran:
 
 pyparts:
   hosts:
-    SeaHawk-1:
-    SeaHawk-2:
+    SeaHawk-ROV:
+    SeaHawk-ROV-SPARE:
+    SeaHawk-ROV-Ciaran:
 

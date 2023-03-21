@@ -61,5 +61,7 @@
     name:
       - ros-humble-ros-core
       - ros-humble-rclpy
+      - python3-rosdep2
+      - python3-colcon-common-extensions
     state: present
     cache_valid_time: 86400
