@@ -53,4 +53,4 @@ class LogicTubeServo:
 
 
     def receive_drive_camera(self, message):
-        self.kit.servo[self.drive_cam_servo].angle = int(seahawk_rov.lerp(-1.0, 1.0, 0, 3000, seahawk_rov.clamp(message.data, -1, 1)))
+        self.kit.servo[self.drive_cam_servo].angle = int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data, -1, 1)))

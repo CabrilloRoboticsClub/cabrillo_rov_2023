@@ -24,10 +24,18 @@ cabrillorobotics@gmail.com
 '''
 
 # linear interpolation helper function
-def lerp(old_min:float, old_max:float, new_min:int, new_max:int, old_value:float)->int:
+def float_to_pwm(old_value:float)->int:
     '''linear interpolate helper function'''
+
+    old_min:float = -1.0
+    old_max:float = 1.0
+
+    new_min:int = 0
+    new_max:int = 3000
+
     old_range = old_max - old_min
     new_range = new_max - new_min
+
     new_value = (((old_value - old_min) * new_range) / old_range) + new_min
     return int(new_value)
 

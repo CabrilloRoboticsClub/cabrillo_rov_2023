@@ -55,4 +55,4 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].angle = int(seahawk_rov.lerp(-1.0, 1.0, 0, 3000, seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))
+            self.kit.servo[thruster].angle = int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))
