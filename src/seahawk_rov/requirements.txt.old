@@ -1,0 +1,10 @@
+# requirements.txt
+#
+RPi.GPIO
+adafruit-circuitpython-bme280
+adafruit-circuitpython-bno08x
+adafruit-circuitpython-motorkit
+adafruit-circuitpython-servokit
+adafruit-blinka
+adafruit-python-shell
+setuptools
