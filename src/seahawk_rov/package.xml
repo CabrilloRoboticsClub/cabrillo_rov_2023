@@ -5,6 +5,7 @@
   <version>0.0.2</version>
   <description>Package for SeaHawk ROV nodes</description>
   <maintainer email="cabrillorobotics@gmail.com">Cabrillo Robotics Club</maintainer>
+  <author email="ciaran@cturtle98.com">Ciaran Farley</author>
   <license>AGPL V3</license>
 
   <!-- Explicitly depend upon setuptools. In the event that it's missing, `rosdep` will fetch it for us before we build -->

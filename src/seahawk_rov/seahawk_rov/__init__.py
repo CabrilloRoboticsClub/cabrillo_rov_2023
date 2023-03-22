@@ -34,4 +34,8 @@ from .logic_tube_motor import LogicTubeMotor
 from .logic_tube_servo import LogicTubeServo
 from .thrust_box_servo import ThrustBoxServo
 
+# helper functions
+from .helper_functions import float_to_pwm
+from .helper_functions import clamp
+
 from .__main__ import main

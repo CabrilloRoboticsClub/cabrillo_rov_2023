@@ -27,8 +27,8 @@ setup(
 
         ],
     zip_safe=True,
-    author='Cabrillo Robotics Club',
-    author_email='cabrillorobotics@gmail.com',
+    author='Ciaran Farley',
+    author_email='ciaran@cturtle98.com',
     maintainer='Cabrillo Robotics Club',
     maintainer_email='cabrillorobotics@gmail.com',
     keywords=['MATE', 'ROV', '2023', 'Underwater', 'Robotics', 'Competition'],
