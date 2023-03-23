@@ -1,0 +1,33 @@
+#cloud-config
+
+autoinstall:
+  version: 1
+  interactive-sections:
+   - storage
+  storage:
+    layout:
+      name: lvm
+      match:
+        size: largest  
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  identity:
+    hostname: SeaHawk-DECK
+    password: Cabri11o
+    username: ubuntu
+  ssh:
+    allow-pw: true
+    install-server: true
+  apt:
+    primary:
+      - arches: [default]
+        uri: http://us.archive.ubuntu.com/ubuntu/
+  packages: 
+    - ansible
+    - python3
+    - python3-pip
+    - python3-setuptools
+    - ubuntu-desktop-minimal
+  package_update: true
+  package_upgrade: true
