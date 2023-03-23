@@ -81,9 +81,9 @@ class Input(Node):
             'right_trigger':joy_msg.axes[5],
             'dpad': {
                 'up':       int(max(joy_msg.axes[7], 0)), # +
-                'down':     int(min(joy_msg.axes[7], 0)), # -
+                'down':     int(-min(joy_msg.axes[7], 0)), # -
                 'right':    int(max(joy_msg.axes[6], 0)), # +
-                'left':     int(min(joy_msg.axes[6], 0)), # -
+                'left':     int(-min(joy_msg.axes[6], 0)), # -
             },
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
@@ -106,11 +106,11 @@ class Input(Node):
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
         # Claw
         claw_msg = Int8MultiArray()
-        claw_msg.data = {
-            controller['a'], # Solenoid 1
-            controller['dpad']['right'], # Solenoid 2
-            controller['dpad']['left'], # Solenoid 3
-        }
+        claw_msg.data = [0,0,0,0]
+        claw_msg.data[1] = controller['a'] # Solenoid 1
+        claw_msg.data[2] = controller['dpad']['right'] # Solenoid 2
+        claw_msg.data[3] = controller['dpad']['left'] # Solenoid 3
+        self.claw_pub.publish(claw_msg)
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
@@ -163,7 +163,6 @@ class Input(Node):
             twist_msg.linear.z = temp_linear_z
 
         self.twist_pub.publish(twist_msg)
-        self.claw_pub.publish(claw_msg)
 
 def main(args=None):
     rclpy.init(args=args)
