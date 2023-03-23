@@ -91,4 +91,3 @@ YES allow password authentication over ssh
 ### Featured Server Snaps
 
 none
-
