@@ -8,9 +8,21 @@
   <author email="ciaran@cturtle98.com">Ciaran Farley</author>
   <license>AGPL V3</license>
 
-  <exec_depend>example_interfaces</exec_depend>
-  <exec_depend>rclpy</exec_depend>
+  <!-- Explicitly depend upon setuptools. In the event that it's missing, `rosdep` will fetch it for us before we build -->
+  <build_depend>python3-setuptools</build_depend>
 
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend> <!-- TODO: Check if we need one, or both of "sensor_msgs{,_py}". It's the only one that has a _py variant. Strange :l-->
+  
+  <exec_depend>python3</exec_depend>
+  <exec_depend>python-rpi.gpio-pip</exec_depend>
+  <exec_depend>python3-adafruit-blinka-pip</exec_depend>
+  <!-- rosdep doesn't currently know about the rest of our adafruit-circuitpython libraries.
+  We could submit a PR with the entries, but for now I'm just making a note and exploring
+  the possibility to let the "setup.py" file do the pip installs for us.
+  Here's the source file, in case the key ever appears: https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/python.yaml
+  -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
