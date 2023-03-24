@@ -36,7 +36,7 @@ from adafruit_bno08x.i2c import BNO08X_I2C
 class LogicTubeBNO085:
     def __init__(self, node, i2c):
         # instantiate the publisher
-        self.publisher = node.create_publisher(Imu, 'logic_tube/imu', 8)
+        self.publisher = node.create_publisher(Imu, 'logic_tube/imu', 10)
 
         # instanciate the sensor
         self.bno = BNO08X_I2C(i2c)
