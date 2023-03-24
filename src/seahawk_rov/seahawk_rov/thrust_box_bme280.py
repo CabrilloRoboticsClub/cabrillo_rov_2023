@@ -44,25 +44,29 @@ class ThrustBoxBME280:
         # instantiate sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
+    # instanciate the messages
+        self.msg_temperature = Temperature()
+        self.msg_humidity = RelativeHumidity()
+        self.msg_pressure = FluidPressure()
+
+        # insert frame id
+        self.msg_temperature.header.frame_id = "base_link"
+        self.msg_humidity.header.frame_id = "base_link"
+        self.msg_pressure.header.frame_id = "base_link"
+
+        # instanciate the sensor
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+
+    def poll_sensors(self):
+
+        # get sensor data
+        self.msg_temperature.temperature = self.bme.temperature
+        self.msg_humidity.relative_humidity = self.bme.humidity
+        self.msg_pressure.fluid_pressure = self.bme.pressure
 
     def publish(self):
 
-        # instantiate the msgs
-        msg_temperature = Temperature()
-        msg_humidity = RelativeHumidity()
-        msg_pressure = FluidPressure()
-
-        # insert fame id
-        msg_temperature.header.frame_id = "base_link"
-        msg_humidity.header.frame_id = "base_link"
-        msg_pressure.header.frame_id = "base_link"
-
-        # grab the data from the sensors
-        msg_temperature.temperature = self.bme.temperature
-        msg_humidity.relative_humidity = self.bme.humidity
-        msg_pressure.fluid_pressure = self.bme.pressure
-
-        # publish the data
-        self.temperature_publisher.publish(msg_temperature)
-        self.humidity_publisher.publish(msg_humidity)
-        self.pressure_publisher.publish(msg_pressure)
+        # publish data
+        self.temperature_publisher.publish(self.msg_temperature)
+        self.humidity_publisher.publish(self.msg_humidity)
+        self.pressure_publisher.publish(self.msg_pressure)
