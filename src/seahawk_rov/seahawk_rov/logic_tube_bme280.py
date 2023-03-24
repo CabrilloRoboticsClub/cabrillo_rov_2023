@@ -54,7 +54,7 @@ class LogicTubeBME280:
         # instanciate the sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
-    def poll_sensors(self):
+    def poll(self):
 
         # get sensor data
         self.msg_temperature.temperature = self.bme.temperature
