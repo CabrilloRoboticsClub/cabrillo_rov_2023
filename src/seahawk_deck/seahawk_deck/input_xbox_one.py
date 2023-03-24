@@ -30,6 +30,7 @@ from rclpy.node import Node
 from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
+from std_msgs.msg import Int8MultiArray
 from rclpy.parameter import Parameter
 
 class Input(Node):
@@ -49,6 +50,7 @@ class Input(Node):
         self.declare_parameter('angular_z_scale', 0.5) # Yaw
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
+        self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
         self.bambi_mode = False
         self.last_x_state = 0
         self.z_trim = 0.0
@@ -77,10 +79,10 @@ class Input(Node):
             'left_trigger': joy_msg.axes[2],
             'right_trigger':joy_msg.axes[5],
             'dpad': {
-                'up':       max(joy_msg.axes[7], 0), # +
-                'down':     min(joy_msg.axes[7], 0), # -
-                'right':    max(joy_msg.axes[6], 0), # +
-                'left':     min(joy_msg.axes[6], 0), # -
+                'up':       int(max(joy_msg.axes[7], 0)), # +
+                'down':     int(-min(joy_msg.axes[7], 0)), # -
+                'right':    int(max(joy_msg.axes[6], 0)), # +
+                'left':     int(-min(joy_msg.axes[6], 0)), # -
             },
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
@@ -101,6 +103,13 @@ class Input(Node):
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
+        # Claw
+        claw_msg = Int8MultiArray()
+        claw_msg.data = [0,0,0,0]
+        claw_msg.data[1] = controller['a'] # Solenoid 1
+        claw_msg.data[2] = controller['dpad']['right'] # Solenoid 2
+        claw_msg.data[3] = controller['dpad']['left'] # Solenoid 3
+        self.claw_pub.publish(claw_msg)
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
