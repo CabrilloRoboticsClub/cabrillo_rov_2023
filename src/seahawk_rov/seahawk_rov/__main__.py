@@ -76,9 +76,9 @@ def main(args=None):
 
     # publish_timer = node_seahawk_rov.create_timer(1, publisher)
 
-    # Threadimg information: https://docs.python.org/3/library/threading.html#thread-objects
-    # t = Thread(target=print, args=[1])
-    # t.run()
+    # Threadimg information: See the tasks on git hub for links
+    # t = Thread(target=, args=) # target is the function to run, args are the arguements to send to the function
+    # t.run() # Runs the function
 
     rclpy.spin(node_seahawk_rov)
 
