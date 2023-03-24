@@ -45,6 +45,7 @@ from rclpy.node import Node
 # aka /dev/i2c
 import board
 import busio
+# from threading import Thread
 
 import seahawk_rov
 
@@ -72,6 +73,10 @@ def main(args=None):
         thrust_box_bme280.publish()
 
     # publish_timer = node_seahawk_rov.create_timer(1, publisher)
+
+    # Threadimg information: https://docs.python.org/3/library/threading.html#thread-objects
+    # t = Thread(target=print, args=[1])
+    # t.run()
 
     rclpy.spin(node_seahawk_rov)
 
