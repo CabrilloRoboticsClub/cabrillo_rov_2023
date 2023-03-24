@@ -28,7 +28,6 @@ import rclpy
 
 from rclpy.node import Node 
 from rcl_interfaces.srv import SetParameters
-# from rcl_interfaces.msg import Parameter, ParameterValue
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from rclpy.parameter import Parameter
@@ -42,9 +41,9 @@ class Input(Node):
         """Initialize this node"""
         super().__init__('input_xbox_one')
         """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0) # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0) # Sideways
-        self.declare_parameter('linear_z_scale', 1.0) # Depth
+        self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
+        self.declare_parameter('linear_y_scale', 1.0)  # Sideways
+        self.declare_parameter('linear_z_scale', 1.0)  # Depth
         self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
         self.declare_parameter('angular_y_scale', 0.5) # Pitch
         self.declare_parameter('angular_z_scale', 0.5) # Yaw
@@ -127,7 +126,7 @@ class Input(Node):
         angular_z_scale = self.get_parameter('angular_z_scale').get_parameter_value().double_value
 
         # BAMBI MODE
-        # If button x is pressed, bambi node is activated. x must be pressed again to deactivate
+        # If button x is pressed, bambi mode is activated. x must be pressed again to deactivate
         # Bambi mode cuts all motor thrust in half
         if self.bambi_mode:
             linear_x_scale /= 2
