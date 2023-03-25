@@ -42,7 +42,8 @@ setup(
         'pyserial',
         'pyusb',
         'RPi.GPIO',
-        'typing_extensions'
+        'typing_extensions',
+        'hidapi'
         ],
     zip_safe=True,
     author='Ciaran Farley',
