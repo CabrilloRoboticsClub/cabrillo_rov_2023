@@ -63,7 +63,9 @@ setup(
     # scripts here.
     entry_points={
         'console_scripts': [
-            'seahawk_rov = seahawk_rov:main'
+            'seahawk_rov = seahawk_rov:main',
+            'rov_rpi = rov_rpi:main',
+            'rov_mcp2221 = rov_mcp2221:main'
         ],
     },
 )
