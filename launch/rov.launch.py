@@ -24,7 +24,7 @@ def generate_launch_description():
             executable='rov_rpi',
             name='seahawk_rov_rpi',
             output='screen'
-        )
+        ),
         Node(
             package='seahawk_rov',
             executable='rov_mcp2221',
