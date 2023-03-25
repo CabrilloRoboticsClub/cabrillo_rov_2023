@@ -59,6 +59,7 @@ def main(args=None):
 
     # instnciate the output classes
     logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+    logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
     thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
 
     # instanciate the sensor classes
