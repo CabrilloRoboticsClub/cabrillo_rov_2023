@@ -1,7 +1,7 @@
 '''
-seahawk_rov/__main__.py
+rov_rpi/__main__.py
 
-this is the main node that runs on the ROV
+the main for the node that access the rpi gpio on the rov
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -54,25 +54,14 @@ def main(args=None):
     # grab the i2c interface for us to use
     i2c = board.I2C()
 
+
     # this creates the node "seahawk_rov"
-    node_seahawk_rov = rclpy.create_node('seahawk_rov')
+    node_seahawk_rov = rclpy.create_node('seahawk_rov_rpi')
 
     # instnciate the output classes
     logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
     logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
     thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
-
-    # instanciate the sensor classes
-    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
-    
-    def publisher():
-        logic_tube_bme280.publish()
-        # logic_tube_bno085.publish()
-        thrust_box_bme280.publish()
-
-    publish_timer = node_seahawk_rov.create_timer(0.1, publisher)
 
     rclpy.spin(node_seahawk_rov)
 
