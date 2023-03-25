@@ -25,4 +25,10 @@ def generate_launch_description():
             name='seahawk_rov',
             output='screen'
         )
+        Node(
+            package='seahawk_rov',
+            executable='seahawk_rov',
+            name='seahawk_rov_sensors',
+            output='screen'
+        )
     ])

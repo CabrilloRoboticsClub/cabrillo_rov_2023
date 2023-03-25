@@ -51,30 +51,39 @@ import seahawk_rov
 def main(args=None):
     rclpy.init(args=args)
 
-    # this creates the node "i2c_proxy"
-    node_seahawk_rov = rclpy.create_node('seahawk_rov')
-
     # grab the i2c interface for us to use
     i2c = board.I2C()
 
-    # instnciate the output classes
-    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-    logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
-    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+    if "RASPBERRY_PI" in board.board_id:
 
-    # instanciate the sensor classes
-    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
-    
-    def publisher():
-        logic_tube_bme280.publish()
-        # logic_tube_bno085.publish()
-        thrust_box_bme280.publish()
+        # this creates the node "seahawk_rov"
+        node_seahawk_rov = rclpy.create_node('seahawk_rov')
 
-    publish_timer = node_seahawk_rov.create_timer(0.1, publisher)
+        # instnciate the output classes
+        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
+        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
 
-    rclpy.spin(node_seahawk_rov)
+        rclpy.spin(node_seahawk_rov)
+
+    elif "MCP2221" in board.board_id:
+
+        # this creates the node "seahawk_rov"
+        node_seahawk_rov_mcp2221 = rclpy.create_node('seahawk_rov_mcp2221')
+
+        # instanciate the sensor classes
+        logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
+        # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
+        thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
+        
+        def publisher():
+            logic_tube_bme280.publish()
+            # logic_tube_bno085.publish()
+            thrust_box_bme280.publish()
+
+        publish_timer = node_seahawk_rov.create_timer(0.1, publisher)
+
+        rclpy.spin(node_seahawk_rov_mcp2221)
 
 # # # # # # # #
 #
