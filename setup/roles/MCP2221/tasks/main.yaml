@@ -46,3 +46,5 @@
   ansible.builtin.blockinfile:
     block: 'blacklist hid_mcp2221'
     path: /etc/modprobe.d/blacklist.conf
+    marker: "# {mark} SeaHawk-ROV Configuration"
+
