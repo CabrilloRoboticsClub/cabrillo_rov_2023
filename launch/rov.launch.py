@@ -29,6 +29,7 @@ def generate_launch_description():
             package='seahawk_rov',
             executable='seahawk_rov',
             name='seahawk_rov_sensors',
-            output='screen'
+            output='screen',
+            additional_env={'BLINKA_MCP2221': '1'}
         )
     ])

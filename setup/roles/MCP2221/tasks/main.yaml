@@ -67,9 +67,9 @@
   ansible.builtin.pip:
     name: adafruit-blinka
 
-- name: "enable blinka for usb gpio board with env var"
-  become: false
-  ansible.builtin.blockinfile:
-    block: 'export BLINKA_MCP2221=1'
-    path: /home/{ansible_user}/.bashrc
-    maker: "# {mark} SeaHawk-ROV MCP2221 Configuration"
+#- name: "enable blinka for usb gpio board with env var"
+#  become: false
+#  ansible.builtin.blockinfile:
+#    block: 'export BLINKA_MCP2221=1'
+#    path: /home/{ansible_user}/.bashrc
+#    maker: "# {mark} SeaHawk-ROV MCP2221 Configuration"
