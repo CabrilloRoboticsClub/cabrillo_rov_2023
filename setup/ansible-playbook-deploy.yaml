@@ -46,3 +46,8 @@
   become_user: "{{ ansible_user }}"
   roles:
     - mcu
+
+- name: deploy MCP2221 to ROV
+  hosts: rov
+  roles:
+    - MCP2221

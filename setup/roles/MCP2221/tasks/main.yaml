@@ -31,7 +31,6 @@
   ansible.builtin.apt:
     state: present
     name:
-    - libusb-1.0
     - libudev-dev
 
 - name: "add udev rule"
