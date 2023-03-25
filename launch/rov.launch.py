@@ -21,14 +21,14 @@ def generate_launch_description():
         # ),
         Node(
             package='seahawk_rov',
-            executable='seahawk_rov',
-            name='seahawk_rov',
+            executable='rov_rpi',
+            name='seahawk_rov_rpi',
             output='screen'
         )
         Node(
             package='seahawk_rov',
-            executable='seahawk_rov',
-            name='seahawk_rov_sensors',
+            executable='rov_mcp2221',
+            name='seahawk_rov_mcp2221',
             output='screen',
             additional_env={'BLINKA_MCP2221': '1'}
         )
