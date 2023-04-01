@@ -26,7 +26,7 @@
 #
 ---
 
-- name: "install libusb"
+- name: "mcp2221 - install libusb"
   become: true
   ansible.builtin.apt:
     state: present
@@ -34,42 +34,43 @@
     - libusb-1.0
     - libudev-dev
 
-- name: "add udev rule"
+- name: "mcp2221 - add udev rule"
   become: true
   ansible.builtin.blockinfile:
     create: true
     block: 'SUBSYSTEM=="usb", ATTRS{idVendor}=="04d8", ATTR{idProduct}=="00dd", MODE="0666"'
     path: /etc/udev/rules.d/99-mcp2221.rules
 
-- name: "pip install hidapi"
+- name: "mcp2221 - pip install hidapi"
   become: false
   ansible.builtin.pip:
     name: hidapi
 
-- name: "blacklist mcp2221 kernel module"
+- name: "mcp2221 - blacklist mcp2221 kernel module"
   become: true
   ansible.builtin.blockinfile:
     block: 'blacklist hid_mcp2221'
     path: /etc/modprobe.d/blacklist.conf
     marker: "# {mark} SeaHawk-ROV MCP2221 Configuration"
 
-- name: "initramfs update"
+- name: "mcp2221 - initramfs update"
   become: true
   ansible.builtin.shell:
     cmd: 'update-initramfs -u'
 
-- name: "reboot syste to apply kernel module changes"
+- name: "mcp2221 - reboot syste to apply kernel module changes"
   become: true
   ansible.builtin.reboot:
 
-- name: "install blinka"
+- name: "mcp2221 - install blinka"
   become: false
   ansible.builtin.pip:
     name: adafruit-blinka
-
-- name: "enable blinka for usb gpio board with env var"
-  become: false
-  ansible.builtin.blockinfile:
-    block: 'export BLINKA_MCP2221=1'
-    path: /home/{ansible_user}/.bashrc
-    maker: "# {mark} SeaHawk-ROV MCP2221 Configuration"
+    
+# dont do this because we do this with launch files
+#- name: "mcp2221 - enable blinka for usb gpio board with env var"
+#  become: false
+#  ansible.builtin.blockinfile:
+#    block: 'export BLINKA_MCP2221=1'
+#    path: /home/{ansible_user}/.bashrc
+#    maker: "# {mark} SeaHawk-ROV MCP2221 Configuration"

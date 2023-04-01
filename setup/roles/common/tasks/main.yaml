@@ -26,7 +26,7 @@
 #
 ---
 
-- name: Install basic parts
+- name: common - Install basic parts
   ansible.builtin.apt:
     state: present
     name:
@@ -35,13 +35,13 @@
       - python3-setuptools
     cache_valid_time: 86400
 
-- name: No unattended upgrades!
+- name: common - No unattended upgrades!
   ansible.builtin.apt:
     state: absent
     name:
       - unattended-upgrades
 
-- name: But still do those upgrades
+- name: common - But still do those upgrades
   ansible.builtin.apt:
     upgrade: "yes"
     autoremove: true
