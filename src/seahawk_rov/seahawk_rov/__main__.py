@@ -82,6 +82,42 @@ def main(args=None):
 
     rclpy.spin(node_seahawk_rov)
 
+    logic_tube_servo.kit.servo[0].angle = None
+    logic_tube_servo.kit.servo[1].angle = None
+    logic_tube_servo.kit.servo[2].angle = None
+    logic_tube_servo.kit.servo[3].angle = None
+    logic_tube_servo.kit.servo[3].angle = None
+    logic_tube_servo.kit.servo[4].angle = None
+    logic_tube_servo.kit.servo[5].angle = None
+    logic_tube_servo.kit.servo[6].angle = None
+    logic_tube_servo.kit.servo[7].angle = None
+    logic_tube_servo.kit.servo[8].angle = None
+    logic_tube_servo.kit.servo[9].angle = None
+    logic_tube_servo.kit.servo[10].angle = None
+    logic_tube_servo.kit.servo[11].angle = None
+    logic_tube_servo.kit.servo[12].angle = None
+    logic_tube_servo.kit.servo[13].angle = None
+    logic_tube_servo.kit.servo[14].angle = None
+    logic_tube_servo.kit.servo[15].angle = None
+
+    thrust_box_servo.kit.servo[0].angle = None
+    thrust_box_servo.kit.servo[1].angle = None
+    thrust_box_servo.kit.servo[2].angle = None
+    thrust_box_servo.kit.servo[3].angle = None
+    thrust_box_servo.kit.servo[3].angle = None
+    thrust_box_servo.kit.servo[4].angle = None
+    thrust_box_servo.kit.servo[5].angle = None
+    thrust_box_servo.kit.servo[6].angle = None
+    thrust_box_servo.kit.servo[7].angle = None
+    thrust_box_servo.kit.servo[8].angle = None
+    thrust_box_servo.kit.servo[9].angle = None
+    thrust_box_servo.kit.servo[10].angle = None
+    thrust_box_servo.kit.servo[11].angle = None
+    thrust_box_servo.kit.servo[12].angle = None
+    thrust_box_servo.kit.servo[13].angle = None
+    thrust_box_servo.kit.servo[14].angle = None
+    thrust_box_servo.kit.servo[15].angle = None
+
 # # # # # # # #
 #
 # graceful shutdown
