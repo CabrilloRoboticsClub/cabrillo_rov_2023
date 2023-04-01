@@ -27,6 +27,8 @@
 ---
 
 - name: deck - Install components from apt
+  become: True
+  become_user: root
   ansible.builtin.apt:
     name:
       - ubuntu-desktop

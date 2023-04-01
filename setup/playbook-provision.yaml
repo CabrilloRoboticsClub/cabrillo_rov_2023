@@ -51,7 +51,5 @@
 
 - name: provision deck
   hosts: deck
-  become: true
-  become_user: "{{ ansible_user }}"
   roles:
     - deck
