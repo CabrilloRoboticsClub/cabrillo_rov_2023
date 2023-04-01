@@ -27,7 +27,7 @@
 ---
 
 # allow access to i2c
-- name: Add ubuntu to the dialout group
+- name: rov - Add ubuntu to the dialout group
   user:
     name: ubuntu
     groups: dialout

@@ -26,7 +26,7 @@
 #
 ---
 
-- name: Install ROS2 GPG keys
+- name: ros - Install ROS2 GPG keys
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
     dest: /usr/share/keyrings/ros-archive-keyring.gpg
@@ -35,12 +35,12 @@
     mode: 0644
 
 # This is just for debugging. It can go away whenever, really.
-- name: Print host arch
+- name: ros - Print host arch
   ansible.builtin.debug:
     msg: "{{ [ansible_architecture] | map('extract', deb_architecture) | first }}"
 
 
-- name: Add ROS2 Humble apt repo
+- name: ros - Add ROS2 Humble apt repo
   ansible.builtin.apt_repository:
     repo: "deb [arch={{ [ansible_architecture] | map('extract', deb_architecture) | first }}
       signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
@@ -48,7 +48,7 @@
     # this task assumes that all systems in the inventory are running ubuntu 22.04 lts
 
 # TODO:Turn this into a handler. It can run if and only if the package version is too old
-- name: Ensure systemd and udev upgrades happen first
+- name: ros - Ensure systemd and udev upgrades happen first
   ansible.builtin.apt:
     name:
       - systemd
@@ -56,7 +56,7 @@
     cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
     # this also sets update_cache: true implicitly, so that can be left out
 
-- name: Install components from apt
+- name: ros - Install components from apt
   ansible.builtin.apt:
     name:
       - ros-humble-ros-core
