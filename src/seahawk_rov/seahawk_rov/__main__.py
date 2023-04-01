@@ -49,7 +49,7 @@ import busio
 
 import seahawk_rov
 
-rclpy.init(sys.args)
+rclpy.init(args=None)
 
 # this creates the node "i2c_proxy"
 node_seahawk_rov = rclpy.create_node('seahawk_rov')
