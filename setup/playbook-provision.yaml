@@ -1,9 +1,11 @@
-# deploy.yaml
+# playbook-provision.yaml
 #
 # ansible playbook file
 #
-# configures hosts for Cabrillo ROV 2023
-# main playbook
+# provisions hosts for Cabrillo ROV 2023
+#
+# assumes starting with blank ubuntu-server 22.04 LTS
+#
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
@@ -26,23 +28,30 @@
 #
 ---
 
-- name: Deploy common platform
+- name: provision common
   hosts: all
   become: true
   become_user: root
   roles:
     - common
 
-- name: Deploy ROS to nodes
+- name: provision ros
   hosts: ros_hosts
   become: true
   become_user: root
   roles:
     - ros
 
-- name: Deploy Python to Controllers (and devkits)
-  hosts: pyparts
+- name: provision rov
+  hosts: rov
   become: true
   become_user: "{{ ansible_user }}"
   roles:
-    - mcu
+    - rov
+
+- name: provision deck
+  hosts: deck
+  become: true
+  become_user: "{{ ansible_user }}"
+  roles:
+    - deck

@@ -26,13 +26,6 @@
 #
 ---
 
-# TODO: Enforce non-root install..... somehow
-- name: Install Python libraries
-  ansible.builtin.pip:
-    state: present
-    requirements: "src/seahawk_rov/requirements.txt"
-    # the above will be replaced by setuptools stuff in the package itself
-
 # allow access to i2c
 - name: Add ubuntu to the dialout group
   user:
