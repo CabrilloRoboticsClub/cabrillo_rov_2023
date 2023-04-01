@@ -49,23 +49,25 @@ import busio
 
 import seahawk_rov
 
+rclpy.init(sys.args)
+
+# this creates the node "i2c_proxy"
+node_seahawk_rov = rclpy.create_node('seahawk_rov')
+
+# grab the i2c interface for us to use
+i2c = board.I2C()
+
+# instnciate the output classes
+logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+
+# instanciate the sensor classes
+logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
+# logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
+thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
+
+
 def main(args=None):
-    rclpy.init(args=args)
-
-    # this creates the node "i2c_proxy"
-    node_seahawk_rov = rclpy.create_node('seahawk_rov')
-
-    # grab the i2c interface for us to use
-    i2c = board.I2C()
-
-    # instnciate the output classes
-    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
-
-    # instanciate the sensor classes
-    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
 
     def publisher():
         logic_tube_bme280.poll()
@@ -81,6 +83,13 @@ def main(args=None):
     # t.run() # Runs the function
 
     rclpy.spin(node_seahawk_rov)
+
+# # # # # # # #
+#
+# graceful shutdown
+#
+# # # # # # # #
+def signal_handler(sig, frame):
 
     logic_tube_servo.kit.servo[0].angle = None
     logic_tube_servo.kit.servo[1].angle = None
@@ -118,12 +127,6 @@ def main(args=None):
     thrust_box_servo.kit.servo[14].angle = None
     thrust_box_servo.kit.servo[15].angle = None
 
-# # # # # # # #
-#
-# graceful shutdown
-#
-# # # # # # # #
-def signal_handler(sig, frame):
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
