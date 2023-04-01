@@ -26,3 +26,10 @@
 #
 ---
 
+- name: deck - Install components from apt
+  ansible.builtin.apt:
+    name:
+      - ubuntu-desktop
+      - ros-humble-desktop
+    state: present
+    cache_valid_time: 86400
