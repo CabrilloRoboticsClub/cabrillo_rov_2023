@@ -29,22 +29,23 @@ import time
 # ros message
 from sensor_msgs.msg import Imu
 
-# inport the bno085 circuit python sensor library
+# import the bno085 circuit python sensor library
 import adafruit_bno08x
 from adafruit_bno08x.i2c import BNO08X_I2C
+
 
 class LogicTubeBNO085:
     def __init__(self, node, i2c):
         # instantiate the publisher
         self.publisher = node.create_publisher(Imu, 'logic_tube/imu', 8)
 
-        # instanciate the sensor
+        # instantiate the sensor
         self.bno = BNO08X_I2C(i2c)
 
         # enable raw data outputs
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_LINEAR_ACCELERATION)
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GYROSCOPE)
         self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GYROSCOPE)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_LINEAR_ACCELERATION)
 
     def publish(self):
         # instantiate an imu message
@@ -54,9 +55,9 @@ class LogicTubeBNO085:
         msg.header.frame_id = "base_link"
 
         # load the message with data from the sensor
-        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = self.bno.linear_acceleration
-        msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = self.bno.gyro
         msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w = self.bno.geomagnetic_quaternion
-        
+        msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = self.bno.gyro
+        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = self.bno.linear_acceleration
+
         # publish
         self.publisher.publish(msg)
