@@ -42,9 +42,9 @@ class LogicTubeBNO085:
         self.bno = BNO08X_I2C(i2c)
 
         # enable raw data outputs
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_LINEAR_ACCELERATION)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GYROSCOPE)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR)
 
     def publish(self):
         # instantiate an imu message
@@ -54,9 +54,11 @@ class LogicTubeBNO085:
         msg.header.frame_id = "base_link"
 
         # load the message with data from the sensor
-        msg.linear_acceleration = self.bno.raw_acceleration
-        msg.angular_velocity = self.bno.raw_gyro
-        msg.orientation = self.bno.raw_quaternion
-
+        # msg.linear_acceleration = self.bno.linear_acceleration
+        # msg.angular_velocity = self.bno.gyro
+        # msg.orientation = self.bno.geomagnetic_quaternion
+        self.get_logger().info(f"Orientation  : {self.bno.geomagnetic_quaternion}")
+        self.get_logger().info(f"Acceleration : {self.bno.linear_acceleration}")
+        self.get_logger().info(f"Rotation     : {self.bno.gyro}")
         # publish
         self.publisher.publish(msg)
