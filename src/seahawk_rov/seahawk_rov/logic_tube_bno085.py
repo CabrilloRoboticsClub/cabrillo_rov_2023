@@ -54,9 +54,9 @@ class LogicTubeBNO085:
         msg.header.frame_id = "base_link"
 
         # load the message with data from the sensor
-        # msg.linear_acceleration = self.bno.linear_acceleration
-        # msg.angular_velocity = self.bno.gyro
-        # msg.orientation = self.bno.geomagnetic_quaternion
+        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = self.bno.linear_acceleration
+        msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = self.bno.gyro
+        msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w = self.bno.geomagnetic_quaternion
         self.get_logger().info(f"Orientation  : {self.bno.geomagnetic_quaternion}")
         self.get_logger().info(f"Acceleration : {self.bno.linear_acceleration}")
         self.get_logger().info(f"Rotation     : {self.bno.gyro}")
