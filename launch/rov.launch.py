@@ -24,5 +24,30 @@ def generate_launch_description():
             executable='seahawk_rov',
             name='seahawk_rov',
             output='screen'
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='imu_transform',
+            output='screen',
+            arguments=[
+                # Offset from parent frame in meters
+                "--x",      "0",
+                "--y",      "0",
+                "--z",      "0",
+                # # Quaternion rotation. Alternately use --{roll,pitch,yaw} but those probably aren't ideal in the end
+                # "--qx",     "0",
+                # "--qy",     "0",
+                # "--qz",     "0",
+                # "--qw",     "0",
+                # RPY rotation in radians. This is not ideal, it would be better to use Quaternion rotation
+                "--roll",   "0",
+                "--pitch",  "0",
+                "--yaw",    "0",
+                # Parent frame to which the offset is provided
+                "--frame-id", "base_link",
+                # Created frame which is offset from parent frame
+                "--child-frame-id", "logic_tube_bno085",
+            ]
         )
     ])
