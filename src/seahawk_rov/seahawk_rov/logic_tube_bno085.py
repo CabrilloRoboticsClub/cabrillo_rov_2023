@@ -52,9 +52,11 @@ class LogicTubeBNO085:
         msg = Imu()
 
         # add the frame id
-        msg.header.frame_id = "base_link"
+        msg.header.frame_id = "logic_tube_bno085"
 
         # load the message with data from the sensor
+        # IMU X right, Y up, Z back
+        # ROV Y right, Z down, X forward
         msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w = self.bno.geomagnetic_quaternion
         msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = self.bno.gyro
         msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = self.bno.linear_acceleration
