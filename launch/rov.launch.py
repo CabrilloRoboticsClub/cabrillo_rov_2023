@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from math import pi
+# from math import pi
 
 def generate_launch_description():
     return LaunchDescription([
@@ -41,10 +41,10 @@ def generate_launch_description():
                 # "--qy",     "0",
                 # "--qz",     "0",
                 # "--qw",     "0",
-                # RPY rotation in radians. This is not ideal, it would be better to use Quaternion rotation
-                "--roll",   f"{pi}",
-                "--pitch",  f"0",
-                "--yaw",    f"{-pi*0.5}",
+                # # RPY rotation in radians. This is not ideal, it would be better to use Quaternion rotation
+                # "--roll",   f"{pi}",
+                # "--pitch",  f"0",
+                # "--yaw",    f"{-pi*0.5}",
                 # Parent frame to which the offset is provided
                 "--frame-id", "base_link",
                 # Created frame which is offset from parent frame

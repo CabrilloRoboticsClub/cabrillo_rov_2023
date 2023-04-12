@@ -55,11 +55,18 @@ class LogicTubeBNO085:
         msg.header.frame_id = "logic_tube_bno085"
 
         # load the message with data from the sensor
-        # IMU X right, Y up, Z back
-        # ROV Y right, Z down, X forward
-        msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w = self.bno.geomagnetic_quaternion
-        msg.angular_velocity.x, msg.angular_velocity.y, msg.angular_velocity.z = self.bno.gyro
-        msg.linear_acceleration.x, msg.linear_acceleration.y, msg.linear_acceleration.z = self.bno.linear_acceleration
+        # IMU X right, Y forward, Z up
+        # ROV Y right, X forward, Z down
+        msg.orientation.x = self.bno.geomagnetic_quaternion[1]
+        msg.orientation.y = self.bno.geomagnetic_quaternion[0]
+        msg.orientation.z = -self.bno.geomagnetic_quaternion[2]
+        msg.orientation.w = self.bno.geomagnetic_quaternion[3]
+        msg.angular_velocity.x = self.bno.gyro[1]
+        msg.angular_velocity.y = self.bno.gyro[0]
+        msg.angular_velocity.z = -self.bno.gyro[2]
+        msg.linear_acceleration.x = self.bno.linear_acceleration[1]
+        msg.linear_acceleration.y = self.bno.linear_acceleration[0]
+        msg.linear_acceleration.z = -self.bno.linear_acceleration[2]
 
         # publish
         self.publisher.publish(msg)
