@@ -64,12 +64,12 @@ def main(args=None):
 
     # instanciate the sensor classes
     logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    # logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
+    logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
     thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
     
     def publisher():
         logic_tube_bme280.publish()
-        # logic_tube_bno085.publish()
+        logic_tube_bno085.publish()
         thrust_box_bme280.publish()
 
     publish_timer = node_seahawk_rov.create_timer(0.1, publisher)
