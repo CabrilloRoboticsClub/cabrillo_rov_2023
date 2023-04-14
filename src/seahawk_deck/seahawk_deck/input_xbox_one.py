@@ -109,10 +109,6 @@ class Input(Node):
         # Claw
         claw_msg = Int8MultiArray()
         claw_msg.data = [0,0,0]
-        # claw_msg.data[0] = controller['a'] # Solenoid 1
-        # claw_msg.data[1] = controller['dpad']['right'] # Solenoid 2
-        # claw_msg.data[2] = controller['dpad']['left'] # Solenoid 3
-        # self.claw_pub.publish(claw_msg)
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
