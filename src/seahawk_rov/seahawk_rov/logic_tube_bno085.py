@@ -1,5 +1,5 @@
 '''
-logic_tube_bno085.py
+seahawk_rov/logic_tube_bno085.py
 
 code for publishing the data from the bno085 sensor in the logic tube
 
@@ -23,47 +23,50 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# ros stuff
-import rclpy
-from rclpy.node import Node
+# time is needed
+import time
 
 # ros message
 from sensor_msgs.msg import Imu
 
-# the docs say to import this
-import time
-
-# inport the bno085 circuit python sensor library
+# import the bno085 circuit python sensor library
 import adafruit_bno08x
 from adafruit_bno08x.i2c import BNO08X_I2C
+
 
 class LogicTubeBNO085:
     def __init__(self, node, i2c):
         # instantiate the publisher
         self.publisher = node.create_publisher(Imu, 'logic_tube/imu', 8)
 
-        # instanciate the sensor
+        # instantiate the sensor
         self.bno = BNO08X_I2C(i2c)
 
         # enable raw data outputs
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_ACCELEROMETER)
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_GYROSCOPE)
-        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_RAW_MAGNETOMETER)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GYROSCOPE)
+        self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_LINEAR_ACCELERATION)
 
-        # instantiate the ros publish timer
-        self.timer = node.create_timer(0.1, self.publish)
-    
     def publish(self):
         # instantiate an imu message
         msg = Imu()
 
         # add the frame id
-        msg.header.frame_id = "base_link"
+        msg.header.frame_id = "logic_tube_bno085"
 
         # load the message with data from the sensor
-        msg.linear_acceleration = self.bno.raw_acceleration
-        msg.angular_velocity = self.bno.raw_gyro
-        msg.orientation = self.bno.raw_quaternion
+        # IMU X right, Y forward, Z up
+        # ROV Y right, X forward, Z down
+        msg.orientation.x = self.bno.geomagnetic_quaternion[1]
+        msg.orientation.y = self.bno.geomagnetic_quaternion[0]
+        msg.orientation.z = -self.bno.geomagnetic_quaternion[2]
+        msg.orientation.w = self.bno.geomagnetic_quaternion[3]
+        msg.angular_velocity.x = self.bno.gyro[1]
+        msg.angular_velocity.y = self.bno.gyro[0]
+        msg.angular_velocity.z = -self.bno.gyro[2]
+        msg.linear_acceleration.x = self.bno.linear_acceleration[1]
+        msg.linear_acceleration.y = self.bno.linear_acceleration[0]
+        msg.linear_acceleration.z = -self.bno.linear_acceleration[2]
 
         # publish
         self.publisher.publish(msg)
