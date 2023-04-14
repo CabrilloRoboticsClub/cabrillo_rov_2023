@@ -44,19 +44,19 @@ class LogicTubeMotor:
 
     def receive_claws(self, message:Int8MultiArray):
         # solenoid 1
-        if message.data[1] == 0:
+        if message.data[0] == 0:
             self.kit.motor1.throttle = None
         else:
             self.kit.motor1.throttle = 1
         
         # solenoid 2
-        if message.data[2] == 0:
+        if message.data[1] == 0:
             self.kit.motor2.throttle = None
         else:
             self.kit.motor2.throttle = 1
         
         # solenoid 3
-        if message.data[3] == 0:
+        if message.data[2] == 0:
             self.kit.motor3.throttle = None
         else:
             self.kit.motor3.throttle = 1

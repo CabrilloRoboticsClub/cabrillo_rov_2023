@@ -51,7 +51,9 @@ class Input(Node):
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
+        self.claw_grab = False
         self.bambi_mode = False
+        self.last_a_state = 0
         self.last_x_state = 0
         self.z_trim = 0.0
         self.last_lb_state = 0
@@ -103,13 +105,10 @@ class Input(Node):
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
         twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
+
         # Claw
         claw_msg = Int8MultiArray()
-        claw_msg.data = [0,0,0,0]
-        claw_msg.data[1] = controller['a'] # Solenoid 1
-        claw_msg.data[2] = controller['dpad']['right'] # Solenoid 2
-        claw_msg.data[3] = controller['dpad']['left'] # Solenoid 3
-        self.claw_pub.publish(claw_msg)
+        claw_msg.data = [0,0,0]
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
@@ -120,6 +119,16 @@ class Input(Node):
         if self.last_rb_state == 0 and controller['right_bumper'] == 1 and self.z_trim < 0.15:
             self.z_trim += 0.05
         self.last_rb_state = controller['right_bumper']
+
+        # Makes a button for the claw "sticky"
+        if self.last_a_state == 0 and controller['a'] == 1:
+            self.claw_grab = not self.claw_grab
+        if self.claw_grab:
+            claw_msg.data[0] = 1
+        else:
+            claw_msg.data[0] = 0
+        self.last_a_state = controller['a']
+        self.claw_pub.publish(claw_msg)
 
         # Makes x button for bambi mode activation "sticky" 
         if self.last_x_state == 0 and controller['x'] == 1:
