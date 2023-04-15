@@ -19,5 +19,3 @@ loop:
 - `make`
 - `source install/setup.bash`
 - `ros2 launch `
-
-user ubuntu needs to be added to dialout group
