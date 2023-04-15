@@ -104,7 +104,7 @@ class Input(Node):
         twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
+        twist_msg.angular.z = -controller['right_stick']['x'] # Y (yaw)
 
         # Claw
         claw_msg = Int8MultiArray()
