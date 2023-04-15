@@ -60,11 +60,13 @@ rov:
 deck:
   hosts:
     SeaHawk-DECK:
+      ansible_host: seahawk-deck.local
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     SeaHawk-DECK-Ciaran:
+      ansible_host: seahawk-deck-ciaran.local
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
@@ -80,8 +82,7 @@ devkits:
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # The following groups are for a component-wise separation of roles. Things   #
-# that have "ros-core" will be "ros_hosts". Things with the Python hardware   #
-# interface libraries are "pyparts". etc, etc. Add more as necessary          #
+# that have "ros-core" will be "ros_hosts", etc. Add more as necessary        #
 # !! Take care !! not to re-define hosts here. We're only adding them to      #
 # these secondary groups.                                                     #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -92,10 +93,4 @@ ros_hosts:
     SeaHawk-ROV-Ciaran:
     SeaHawk-DECK:
     SeaHawk-DECK-Ciaran:
-
-pyparts:
-  hosts:
-    SeaHawk-ROV:
-    SeaHawk-ROV-SPARE:
-    SeaHawk-ROV-Ciaran:
 
