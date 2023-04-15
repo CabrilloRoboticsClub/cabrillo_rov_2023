@@ -72,7 +72,7 @@ def main(args=None):
         logic_tube_bno085.publish()
         thrust_box_bme280.publish()
 
-    publish_timer = node_seahawk_rov.create_timer(0.1, publisher)
+    # publish_timer = node_seahawk_rov.create_timer(1, publisher)
 
     rclpy.spin(node_seahawk_rov)
 

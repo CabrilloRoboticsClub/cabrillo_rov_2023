@@ -37,9 +37,9 @@ from adafruit_bme280 import basic as adafruit_bme280
 class ThrustBoxBME280:
     def __init__(self, node, i2c):
         # create publishers
-        self.temperature_publisher = node.create_publisher(Temperature,'thrust_box/temperature', 8)
-        self.humidity_publisher = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 8)
-        self.pressure_publisher = node.create_publisher(FluidPressure,'thrust_box/pressure', 8)
+        self.temperature_publisher = node.create_publisher(Temperature,'thrust_box/temperature', 10)
+        self.humidity_publisher = node.create_publisher(RelativeHumidity,'thrust_box/humidity', 10)
+        self.pressure_publisher = node.create_publisher(FluidPressure,'thrust_box/pressure', 10)
 
         # instantiate sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)

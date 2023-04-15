@@ -37,9 +37,9 @@ from adafruit_bme280 import basic as adafruit_bme280
 class LogicTubeBME280:
     def __init__(self, node, i2c):
         # instanciate the publishers
-        self.temperature_publisher = node.create_publisher(Temperature,'logic_tube/temperature', 8)
-        self.humidity_publisher = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 8)
-        self.pressure_publisher = node.create_publisher(FluidPressure,'logic_tube/pressure', 8)
+        self.temperature_publisher = node.create_publisher(Temperature,'logic_tube/temperature', 10)
+        self.humidity_publisher = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
+        self.pressure_publisher = node.create_publisher(FluidPressure,'logic_tube/pressure', 10)
         
         # instanciate the sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
