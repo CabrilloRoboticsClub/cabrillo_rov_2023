@@ -28,3 +28,30 @@
 #
 ---
 
+- name: DEPLOY
+  hosts: rov, deck
+  tasks:
+  - name: git pull
+    become: false
+    ignore_errors: true
+    git:
+      dest: /home/ubuntu/cabrillo_rov_2023
+      repo: git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+
+  - name: rosdep update
+    become: false
+    shell:
+      chdir: /home/ubuntu/cabrillo_rov_2023
+      cmd: rosdep update
+  
+  - name: rosdep install
+    become: false
+    shell:
+      chdir: /home/ubuntu/cabrillo_rov_2023
+      cmd: rosdep install -i --from-path src/ --rosdistro humble -y
+
+  - name: make
+    become: false
+    shell:
+      chdir: /home/ubuntu/cabrillo_rov_2023
+      cmd: source /opt/ros/humble/setup.bash && make
