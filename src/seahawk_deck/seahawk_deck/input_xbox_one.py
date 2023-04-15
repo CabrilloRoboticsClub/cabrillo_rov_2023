@@ -95,12 +95,12 @@ class Input(Node):
             'window':       joy_msg.buttons[6],
             'menu':         joy_msg.buttons[7],
             'xbox':         joy_msg.buttons[8],
-        } 
+        }
 
         # BINDINGS
         twist_msg = Twist()
         twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = controller['left_stick']['x']# Y (sideways)
+        twist_msg.linear.y  = -controller['left_stick']['x']# Y (sideways)
         twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 

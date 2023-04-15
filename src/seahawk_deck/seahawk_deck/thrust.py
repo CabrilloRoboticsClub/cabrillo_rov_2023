@@ -87,17 +87,17 @@ class Thrust(Node):
         ]
 
 
-        # Lower motors 
-        motor_msg.data[0] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
-        motor_msg.data[2] = self.combine_input(self.combine_input(-twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
-        motor_msg.data[4] = self.combine_input(self.combine_input(-twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
-        motor_msg.data[6] = self.combine_input(self.combine_input(twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
+        # Lower motors
+        motor_msg.data[0] = self.combine_input(self.combine_input(twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[2] = self.combine_input(self.combine_input(-twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
+        motor_msg.data[4] = self.combine_input(self.combine_input(-twist_msg.linear.x, -twist_msg.linear.y), -twist_msg.angular.z)
+        motor_msg.data[6] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
 
         # Upper motors
-        motor_msg.data[1] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
-        motor_msg.data[3] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[5] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
-        motor_msg.data[7] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[1] = self.combine_input(-twist_msg.linear.z, twist_msg.angular.y)
+        motor_msg.data[3] = self.combine_input(-twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[5] = self.combine_input(-twist_msg.linear.z, -twist_msg.angular.y)
+        motor_msg.data[7] = self.combine_input(-twist_msg.linear.z, twist_msg.angular.y)
         
 
         # Publish data to the motors
