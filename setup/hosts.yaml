@@ -47,7 +47,7 @@ rov:
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
     SeaHawk-ROV-SPARE:
-      ansible_host: sehawk-rov-spare.local
+      ansible_host: seahawk-rov-spare.local
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
