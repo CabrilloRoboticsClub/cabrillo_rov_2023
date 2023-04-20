@@ -28,9 +28,9 @@ import rclpy
 
 from rclpy.node import Node 
 from rcl_interfaces.srv import SetParameters
-# from rcl_interfaces.msg import Parameter, ParameterValue
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
+from std_msgs.msg import Int8MultiArray
 from rclpy.parameter import Parameter
 
 class Input(Node):
@@ -42,15 +42,18 @@ class Input(Node):
         """Initialize this node"""
         super().__init__('input_xbox_one')
         """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0) # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0) # Sideways
-        self.declare_parameter('linear_z_scale', 1.0) # Depth
+        self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
+        self.declare_parameter('linear_y_scale', 1.0)  # Sideways
+        self.declare_parameter('linear_z_scale', 1.0)  # Depth
         self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
         self.declare_parameter('angular_y_scale', 0.5) # Pitch
         self.declare_parameter('angular_z_scale', 0.5) # Yaw
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
+        self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
+        self.claw_grab = False
         self.bambi_mode = False
+        self.last_a_state = 0
         self.last_x_state = 0
         self.z_trim = 0.0
         self.last_lb_state = 0
@@ -78,10 +81,10 @@ class Input(Node):
             'left_trigger': joy_msg.axes[2],
             'right_trigger':joy_msg.axes[5],
             'dpad': {
-                'up':       max(joy_msg.axes[7], 0), # +
-                'down':     min(joy_msg.axes[7], 0), # -
-                'right':    max(joy_msg.axes[6], 0), # +
-                'left':     min(joy_msg.axes[6], 0), # -
+                'up':       int(max(joy_msg.axes[7], 0)), # +
+                'down':     int(-min(joy_msg.axes[7], 0)), # -
+                'right':    int(max(joy_msg.axes[6], 0)), # +
+                'left':     int(-min(joy_msg.axes[6], 0)), # -
             },
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
@@ -92,16 +95,20 @@ class Input(Node):
             'window':       joy_msg.buttons[6],
             'menu':         joy_msg.buttons[7],
             'xbox':         joy_msg.buttons[8],
-        } 
+        }
 
         # BINDINGS
         twist_msg = Twist()
         twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = controller['left_stick']['x']# Y (sideways)
+        twist_msg.linear.y  = -controller['left_stick']['x']# Y (sideways)
         twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
         twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = controller['right_stick']['x'] # Y (yaw)
+        twist_msg.angular.z = -controller['right_stick']['x'] # Y (yaw)
+
+        # Claw
+        claw_msg = Int8MultiArray()
+        claw_msg.data = [0,0,0]
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
@@ -112,6 +119,16 @@ class Input(Node):
         if self.last_rb_state == 0 and controller['right_bumper'] == 1 and self.z_trim < 0.15:
             self.z_trim += 0.05
         self.last_rb_state = controller['right_bumper']
+
+        # Makes a button for the claw "sticky"
+        if self.last_a_state == 0 and controller['a'] == 1:
+            self.claw_grab = not self.claw_grab
+        if self.claw_grab:
+            claw_msg.data[0] = 1
+        else:
+            claw_msg.data[0] = 0
+        self.last_a_state = controller['a']
+        self.claw_pub.publish(claw_msg)
 
         # Makes x button for bambi mode activation "sticky" 
         if self.last_x_state == 0 and controller['x'] == 1:
@@ -127,7 +144,7 @@ class Input(Node):
         angular_z_scale = self.get_parameter('angular_z_scale').get_parameter_value().double_value
 
         # BAMBI MODE
-        # If button x is pressed, bambi node is activated. x must be pressed again to deactivate
+        # If button x is pressed, bambi mode is activated. x must be pressed again to deactivate
         # Bambi mode cuts all motor thrust in half
         if self.bambi_mode:
             linear_x_scale /= 2
