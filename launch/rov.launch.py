@@ -14,7 +14,7 @@ def generate_launch_description():
                 'input_fn': '/dev/video0',
                 'fps': 30,
                 'size': '1280x960',
-                'frame_id': 'rov_frame',
+                'frame_id': 'front_camera',
             }],
             remappings=[
                 ('image_raw/h264', 'front_camera/h264'),
