@@ -18,7 +18,7 @@ ssh_import_id:
 ssh_pwauth: true
 
 # set hostname to SeaHawk
-hostname: SeaHawk
+hostname: SeaHawk-ROV
 
 # update packages (apt)
 packages_update: true
