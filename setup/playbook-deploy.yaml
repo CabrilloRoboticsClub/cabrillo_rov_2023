@@ -27,12 +27,6 @@
 # cabrillorobotics@gmail.com
 #
 ---
-- name: vars prompt
-  hosts: all
-  vars_prompt:
-  - name: "git_branch"
-    prompt: Which branch would you like to build?
-    private: false
 
 - name: deploy common to all hosts
   hosts: all
@@ -58,6 +52,10 @@
 
 - name: software setup and build
   hosts: rov, deck
+  vars_prompt:
+  - name: "git_branch"
+    prompt: Which branch would you like to build?
+    private: false
   roles:
     - software_setup
     - software_build
