@@ -1,6 +1,6 @@
 # Setup
 
-**TODO:** flesh this out with description of the contents of this folder>
+**TODO:** flesh this out with description of the contents of this folder
 
 ## Raspberry Pi Setup procedure
 
@@ -22,15 +22,15 @@
     $ sudo apt install -y git ansible 
     ``` 
 
-1. Use Ansible to run the `devbox.yaml` file locally. 
-    
+1. Use Ansible to run the `devbox.yaml` file locally.
+
     ```console
     $ sudo ansible-pull -U https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/devbox.yaml
     ```
 
-    > This will take a long time! 
+    > This will take a long time!
 
-1. Generate an SSH key for your development box. Follow the instructions in the [GitHub documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh). 
+1. Generate an SSH key for your development box. Follow the instructions in the [GitHub documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
 
 1. Clone the Cabrillo ROV repository:
 
