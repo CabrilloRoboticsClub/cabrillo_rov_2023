@@ -27,12 +27,17 @@
 #
 ---
 
+- name: print branch
+  debug:
+    msg: using branch {{ git-branch }}
+
 - name: git pull
   become: false
   git:
     dest: /home/ubuntu/cabrillo_rov_2023
     repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
     track_submodules: true
+    version: {{ git-branch }}
 
 - name: rosdep update
   become: false
