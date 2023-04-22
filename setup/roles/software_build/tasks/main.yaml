@@ -1,11 +1,10 @@
-# playbook-deploy.yaml
+# /setup/roles/software_build/tasks/main.yml
 #
 # ansible playbook file
 #
-# deploys hosts for Cabrillo ROV 2023
-#
-# assumes starting with blank ubuntu-server 22.04 LTS
-#
+# configures hosts for Cabrillo ROV 2023
+# sub-playbook for bulding software
+# runs after software build
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
@@ -28,32 +27,27 @@
 #
 ---
 
-- name: deploy common to all hosts
-  hosts: all
-  become: true
-  become_user: root
-  roles:
-    - common
+- name: git pull
+  become: false
+  git:
+    dest: /home/ubuntu/cabrillo_rov_2023
+    repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
+    track_submodules: true
 
-- name: deploy ros to ros hosts
-  hosts: ros_hosts
-  become: true
-  become_user: root
-  roles:
-    - ros
+- name: rosdep update
+  become: false
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: rosdep update
+  
+- name: rosdep install
+  become: false
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: rosdep install -i --from-path src/ --rosdistro humble -y
 
-- name: deploy rov
-  hosts: rov
-  roles:
-    - rov
-
-- name: deploy deck
-  hosts: deck
-  roles:
-    - deck
-
-- name: software setup and build
-  hosts: rov, deck
-  roles:
-    - software_setup
-    - software_build
+- name: make
+  become: false
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: '. /opt/ros/humble/setup.sh && make'

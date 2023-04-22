@@ -30,28 +30,5 @@
 
 - name: BUILD
   hosts: rov, deck
-  tasks:
-  - name: git pull
-    become: false
-    git:
-      dest: /home/ubuntu/cabrillo_rov_2023
-      repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
-      track_submodules: true
-
-  - name: rosdep update
-    become: false
-    shell:
-      chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: rosdep update
-  
-  - name: rosdep install
-    become: false
-    shell:
-      chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: rosdep install -i --from-path src/ --rosdistro humble -y
-
-  - name: make
-    become: false
-    shell:
-      chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: '. /opt/ros/humble/setup.sh && make'
+  roles: 
+    - software_build
