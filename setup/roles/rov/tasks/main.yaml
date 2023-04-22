@@ -50,6 +50,12 @@
     state: present
     cache_valid_time: 86400
 
+- name: copy cloud init file
+  become: true
+  copy:
+    src: setup/seahawk-rov/user-data
+    dest: /boot/user-data
+
 - name: boot config set vram to 512
   become: true
   lineinfile:
