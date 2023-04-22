@@ -27,10 +27,10 @@
 # cabrillorobotics@gmail.com
 #
 ---
-- name: git branch
+- name: vars prompt
   hosts: all
-  tasks:
-  - name: git-branch
+  vars_prompt:
+  - name: git_branch
     prompt: Which branch would you like to build?
     private: false
 

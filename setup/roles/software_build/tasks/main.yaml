@@ -29,7 +29,7 @@
 
 - name: print branch
   debug:
-    msg: using branch {{ git-branch }}
+    msg: "using branch {{ git_branch }}"
 
 - name: git pull
   become: false
@@ -37,7 +37,7 @@
     dest: /home/ubuntu/cabrillo_rov_2023
     repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
     track_submodules: true
-    version: {{ git-branch }}
+    version: "{{ git_branch }}"
 
 - name: rosdep update
   become: false
