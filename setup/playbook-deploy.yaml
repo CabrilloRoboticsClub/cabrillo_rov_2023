@@ -28,28 +28,28 @@
 #
 ---
 
-- name: provision common
+- name: deploy common to all hosts
   hosts: all
   become: true
   become_user: root
   roles:
     - common
 
-- name: provision ros
+- name: deploy ros to ros hosts
   hosts: ros_hosts
   become: true
   become_user: root
   roles:
     - ros
 
-- name: provision rov
+- name: deploy rov
   hosts: rov
   become: true
   become_user: "{{ ansible_user }}"
   roles:
     - rov
 
-- name: provision deck
+- name: deploy deck
   hosts: deck
   roles:
     - deck
