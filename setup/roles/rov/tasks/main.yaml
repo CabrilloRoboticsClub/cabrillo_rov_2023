@@ -50,18 +50,9 @@
     state: present
     cache_valid_time: 86400
 
-- name: boot config remove dtoverlay
-  become: true
-  lineinfile:
-    path: /boot/firmware/config.txt
-    #backup: true
-    search_string: dtoverlay=
-    state: absent
-
 - name: boot config set vram to 512
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
-    #backup: true
     search_string: gpu_mem=
     line: gpu_mem=512
