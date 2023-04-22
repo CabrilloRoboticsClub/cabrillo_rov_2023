@@ -34,10 +34,16 @@
     append: yes
 
 - name: h264 image transport extra paclages
+  become: true
   apt:
     name:
     - ros-humble-v4l2-camera
     - ros-humble-image-transport-plugins
-    - v4l2-utils
+    - v4l-utils
+    - libavdevice-dev
+    - libavformat-dev
+    - libavcodec-dev
+    - libavutil-dev
+    - libswscale-dev
     state: present
     cache_valid_time: 86400
