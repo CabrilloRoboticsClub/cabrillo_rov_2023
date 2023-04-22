@@ -28,7 +28,7 @@
 #
 ---
 
-- name: DEPLOY
+- name: BUILD
   hosts: rov, deck
   tasks:
   - name: git pull
