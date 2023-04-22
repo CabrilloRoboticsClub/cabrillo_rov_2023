@@ -56,3 +56,7 @@
     path: /boot/firmware/config.txt
     search_string: gpu_mem=
     line: gpu_mem=512
+
+- name: reboot to apply boot config
+  become: true
+  reboot:
