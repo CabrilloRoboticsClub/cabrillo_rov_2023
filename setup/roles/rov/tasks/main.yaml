@@ -32,3 +32,12 @@
     name: ubuntu
     groups: dialout
     append: yes
+
+- name: h264 image transport extra paclages
+  apt:
+    name:
+    - ros-humble-v4l2-camera
+    - ros-humble-image-transport-plugins
+    - v4l2-utils
+    state: present
+    cache_valid_time: 86400
