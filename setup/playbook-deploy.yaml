@@ -30,8 +30,6 @@
 
 - name: deploy common to all hosts
   hosts: all
-  become: true
-  become_user: root
   roles:
     - common
 

@@ -27,6 +27,7 @@
 ---
 
 - name: common - Install basic parts
+  become: true
   ansible.builtin.apt:
     state: present
     name:
@@ -37,12 +38,14 @@
     cache_valid_time: 86400
 
 - name: common - No unattended upgrades!
+  become: true
   ansible.builtin.apt:
     state: absent
     name:
       - unattended-upgrades
 
 - name: common - But still do those upgrades
+  become: true
   ansible.builtin.apt:
     upgrade: "yes"
     autoremove: true
