@@ -2,14 +2,14 @@
 
 **TODO:** flesh this out with description of the contents of this folder
 
-## Raspberry Pi Setup procedure
+## Raspberry Pi (ROV) Setup procedure
 
-1. On your local computer download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or other imaging software of your choice(`dd`, Balena Etcher, etc.)
+1. On your local computer download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 1. Attach a Micro SD card to your local computer
 1. Open Raspberry Pi Imager
     * `CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 22.04 LTS (64-bit)`
     * Choose the Micro SD card as the storage and hit `WRITE`
-1. Unplug the Micro SD card, plug it back in, and copy the `user-data` file into the `BOOT` volume that shows up (overwrite the existing file).
+1. Unplug the Micro SD card, plug it back in, and copy the `user-data` file into the `system-boot` volume that shows up (overwrite the existing file).
 1. Install the SD card into the Raspberry Pi, connect the Pi to ethernet, and plug in the power to the Pi.
 
 ## Ubuntu Devbox Setup Procedure
