@@ -44,8 +44,6 @@
 
 - name: deploy rov
   hosts: rov
-  become: true
-  become_user: "{{ ansible_user }}"
   roles:
     - rov
 
