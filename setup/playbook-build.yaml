@@ -27,6 +27,12 @@
 # cabrillorobotics@gmail.com
 #
 ---
+- name: git branch
+  hosts: all
+  tasks:
+    - name: git-branch
+      prompt: Which branch would you like to build?
+      private: false
 
 - name: BUILD
   hosts: rov, deck
