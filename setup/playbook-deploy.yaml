@@ -30,7 +30,7 @@
 - name: vars prompt
   hosts: all
   vars_prompt:
-  - name: git_branch
+  - name: "git_branch"
     prompt: Which branch would you like to build?
     private: false
 
