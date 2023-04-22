@@ -23,6 +23,14 @@ hostname: SeaHawk-ROV
 # update packages (apt)
 package_update: true
 
+# upgrade packages (apt)
+package_upgrade: true
+
+# install packages (apt)
+packages:
+  - sshpass
+  - git
+
 # reboot when finished
 power_state:
   mode: reboot
