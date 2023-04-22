@@ -33,5 +33,6 @@
     name:
       - ubuntu-desktop
       - ros-humble-desktop
+      - rviz
     state: present
     cache_valid_time: 86400
