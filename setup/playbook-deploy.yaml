@@ -4,7 +4,7 @@
 #
 # deploys hosts for Cabrillo ROV 2023
 #
-# assumes starting with ubuntu-server 22.04 LTS that has had provision run on it
+# assumes starting with blank ubuntu-server 22.04 LTS
 #
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
@@ -28,9 +28,36 @@
 #
 ---
 
-- name: DEPLOY
+- name: provision common
+  hosts: all
+  become: true
+  become_user: root
+  roles:
+    - common
+
+- name: provision ros
+  hosts: ros_hosts
+  become: true
+  become_user: root
+  roles:
+    - ros
+
+- name: provision rov
+  hosts: rov
+  become: true
+  become_user: "{{ ansible_user }}"
+  roles:
+    - rov
+
+- name: provision deck
+  hosts: deck
+  roles:
+    - deck
+
+- name: software setup
   hosts: rov, deck
   tasks:
+
   - name: git pull
     become: false
     git:
@@ -38,20 +65,9 @@
       repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
       track_submodules: true
 
-  - name: rosdep update
-    become: false
+  - name: rosdep init
+    become: true
+    ignore_errors: true
     shell:
       chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: rosdep update
-  
-  - name: rosdep install
-    become: false
-    shell:
-      chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: rosdep install -i --from-path src/ --rosdistro humble -y
-
-  - name: make
-    become: false
-    shell:
-      chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: '. /opt/ros/humble/setup.sh && make'
+      cmd: "rosdep init"
