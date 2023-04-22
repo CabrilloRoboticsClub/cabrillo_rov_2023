@@ -14,7 +14,7 @@ Ament is a ROS 1 & 2 build tool. Historically, ROS has used CMake-based build pr
 
 >It's not clear to me at this time if `ament` reads the contents of `setup.py` directly, or if it simply invokes `setuptools`. I believe the package-inference abilities are done by reading `setup.py`, but the actual build process is handled through `setuptools`. If this is the case, we can switch to a `pyproject.toml` description and still have successful builds -- although we'd lose the ability to infer what whould otherwise be explicitly stated in the [package.xml](#packagexml) file (see above). This is an acceptable trade. We're already supplying the package.xml file, so we don't need to have our build tool infer anything about it.
 
-Package initialization can be done by calling 
+Package initialization can be done by calling
 
 `:~$ ros2 pkg create --build-type <type> <package_name>`
 

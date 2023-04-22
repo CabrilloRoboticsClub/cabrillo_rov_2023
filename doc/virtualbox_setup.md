@@ -35,7 +35,7 @@ You will need to have the following:
 
 - Oracle VirtualBox [main page here](https://www.virtualbox.org/)
 - Ubuntu 22.04 LTS installer .iso [main page here](https://ubuntu.com/)
-    - Most likely, you're looking for an x86_64 image. Sometimes called AMD64 (don't confuse it with `ARM64`. it's easy to do)
+  - Most likely, you're looking for an x86_64 image. Sometimes called AMD64 (don't confuse it with `ARM64`. it's easy to do)
 
 > If you happen to be an an M1/M2 Apple Silicon system, you want the `ARM64` image. In this case, the process *should* be identical, but the EFI suppport may or may not cause issues.
 
