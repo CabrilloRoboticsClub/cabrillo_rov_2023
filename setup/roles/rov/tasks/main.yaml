@@ -53,7 +53,7 @@
 - name: copy cloud init file
   become: true
   copy:
-    src: setup/seahawk-rov/user-data
+    src: user-data
     dest: /boot/user-data
 
 - name: boot config set vram to 512
