@@ -54,4 +54,4 @@
     become: false
     shell:
       chdir: /home/ubuntu/cabrillo_rov_2023
-      cmd: source /opt/ros/humble/setup.bash && make
+      cmd: '. /opt/ros/humble/setup.sh && make'
