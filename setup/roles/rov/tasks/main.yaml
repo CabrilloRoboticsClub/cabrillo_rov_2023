@@ -54,7 +54,7 @@
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
-    backup: true
+    #backup: true
     search_string: dtoverlay=
     state: absent
 
@@ -62,6 +62,6 @@
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
-    backup: true
+    #backup: true
     search_string: gpu_mem=
     line: gpu_mem=512
