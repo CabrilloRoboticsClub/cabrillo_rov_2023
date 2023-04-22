@@ -33,10 +33,10 @@
   tasks:
   - name: git pull
     become: false
-    ignore_errors: true
     git:
       dest: /home/ubuntu/cabrillo_rov_2023
-      repo: git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+      repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
+      track_submodules: true
 
   - name: rosdep update
     become: false
