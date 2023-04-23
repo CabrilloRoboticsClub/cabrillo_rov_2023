@@ -2,6 +2,8 @@
 
 **TODO:** flesh this out with description of the contents of this folder
 
+---
+
 ## Raspberry Pi (ROV) Setup procedure
 
 1. On your local computer download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
@@ -14,6 +16,8 @@
 1. Install the SD card into the Raspberry Pi
 1. Connect the Pi to an ethernet connection with internet access
 1. Plug the power cable in to the Pi.
+
+---
 
 ## DECK BOX Setup Procedure
 
@@ -108,6 +112,9 @@ YES allow password authentication over ssh
 
 none
 
+
+---
+
 ## Ubuntu Devbox Setup Procedure
 
 1. Install Ubuntu on a fresh computer or a removable drive.
@@ -144,6 +151,8 @@ none
 
    1. In order to develop on the Pi, install the `Remote SSH` extension.
    1. Install the Python extension
+
+---
 
 ### Keeping up with Project Updates
 
