@@ -20,9 +20,6 @@ ssh_pwauth: true
 # set hostname to SeaHawk
 hostname: SeaHawk-ROV
 
-# update packages (apt)
-packages_update: true
-
 # reboot when finished
 power_state:
   mode: reboot

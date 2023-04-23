@@ -1,9 +1,9 @@
-# /setup/roles/mcu/tasks/main.yml
+# /setup/roles/software_setup/tasks/main.yml
 #
 # ansible playbook file
 #
 # configures hosts for Cabrillo ROV 2023
-# sub-playbook for mcu configuration
+# sub-playbook for software setup
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
@@ -26,21 +26,17 @@
 #
 ---
 
-- name: No unattended upgrades!
-  ansible.builtin.apt:
-    state: absent
-    name:
-      - unattended-upgrades
+- name: git pull
+  become: false
+  git:
+    dest: /home/ubuntu/cabrillo_rov_2023
+    repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
+    track_submodules: true
+    version: main
 
-# TODO: Enforce non-root install..... somehow
-- name: Install Python libraries
-  ansible.builtin.pip:
-    state: present
-    name:
-      - setuptools
-      - adafruit-python-shell
-      - adafruit-blinka
-      - adafruit-circuitpython-servokit
-      - adafruit-circuitpython-motorkit
-      - adafruit-circuitpython-bme280
-      - adafruit-circuitpython-bno08x
+- name: rosdep init
+  become: true
+  ignore_errors: true
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: "rosdep init"

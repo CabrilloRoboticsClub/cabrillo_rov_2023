@@ -1,9 +1,9 @@
-# deploy.yaml
+# /setup/roles/rov/tasks/main.yml
 #
 # ansible playbook file
 #
 # configures hosts for Cabrillo ROV 2023
-# main playbook
+# sub-playbook for rov configuration
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
@@ -26,23 +26,43 @@
 #
 ---
 
-- name: Deploy common platform
-  hosts: all
-  become: true
-  become_user: root
-  roles:
-    - common
-
-- name: Deploy ROS to nodes
-  hosts: ros_hosts
-  become: true
-  become_user: root
-  roles:
-    - ros
-
-- name: Deploy Python to Controllers (and devkits)
-  hosts: pyparts
-  become: true
+# allow access to i2c
+- name: Add ubuntu to the dialout group
   become_user: "{{ ansible_user }}"
-  roles:
-    - mcu
+  become: true
+  user:
+    name: ubuntu
+    groups: dialout
+    append: yes
+
+- name: h264 image transport extra paclages
+  become: true
+  apt:
+    name:
+    - ros-humble-v4l2-camera
+    - ros-humble-image-transport-plugins
+    - v4l-utils
+    - libavdevice-dev
+    - libavformat-dev
+    - libavcodec-dev
+    - libavutil-dev
+    - libswscale-dev
+    state: present
+    cache_valid_time: 86400
+
+- name: copy cloud init file
+  become: true
+  copy:
+    src: user-data
+    dest: /boot/user-data
+
+- name: boot config set vram to 512
+  become: true
+  lineinfile:
+    path: /boot/firmware/config.txt
+    search_string: gpu_mem=
+    line: gpu_mem=512
+
+- name: reboot to apply boot config
+  become: true
+  reboot:

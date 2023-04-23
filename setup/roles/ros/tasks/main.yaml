@@ -27,6 +27,7 @@
 ---
 
 - name: Install ROS2 GPG keys
+  become: true
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
     dest: /usr/share/keyrings/ros-archive-keyring.gpg
@@ -41,6 +42,7 @@
 
 
 - name: Add ROS2 Humble apt repo
+  become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch={{ [ansible_architecture] | map('extract', deb_architecture) | first }}
       signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
@@ -49,6 +51,7 @@
 
 # TODO:Turn this into a handler. It can run if and only if the package version is too old
 - name: Ensure systemd and udev upgrades happen first
+  become: true
   ansible.builtin.apt:
     name:
       - systemd
@@ -58,8 +61,11 @@
 
 - name: Install components from apt
   ansible.builtin.apt:
+    become: true
     name:
       - ros-humble-ros-core
       - ros-humble-rclpy
+      - python3-rosdep2
+      - python3-colcon-common-extensions
     state: present
     cache_valid_time: 86400
