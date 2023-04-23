@@ -26,7 +26,7 @@
 #
 ---
 
-- name: common - Install basic parts
+- name: common - Install apt depends
   become: true
   ansible.builtin.apt:
     state: present
@@ -36,6 +36,35 @@
       - python3-setuptools
       - sshpass
     cache_valid_time: 86400
+
+- name: install pip depends
+  become: false
+  pip:
+    name:
+    - setuptools
+    - Adafruit-Blinka
+    - adafruit-circuitpython-bme280
+    - adafruit-circuitpython-bno08x
+    - adafruit-circuitpython-busdevice
+    - adafruit-circuitpython-motor
+    - adafruit-circuitpython-motorkit
+    - adafruit-circuitpython-pca9685
+    - adafruit-circuitpython-register
+    - adafruit-circuitpython-requests
+    - adafruit-circuitpython-servokit
+    - adafruit-circuitpython-typing
+    - Adafruit-PlatformDetect
+    - Adafruit-PureIO
+    - adafruit-python-shell
+    - args
+    - clint
+    - pyftdi
+    - pyserial
+    - pyusb
+    - RPi.GPIO
+    - typing_extensions
+    - hidapi
+
 
 - name: common - No unattended upgrades!
   become: true
