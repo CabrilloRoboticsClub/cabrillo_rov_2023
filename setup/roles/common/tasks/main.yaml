@@ -26,7 +26,7 @@
 #
 ---
 
-- name: common - Install apt depends
+- name: Install apt depends
   become: true
   ansible.builtin.apt:
     state: present
@@ -65,15 +65,14 @@
     - typing_extensions
     - hidapi
 
-
-- name: common - No unattended upgrades!
+- name: apt remove unattended-upgrades
   become: true
   ansible.builtin.apt:
     state: absent
     name:
       - unattended-upgrades
 
-- name: common - But still do those upgrades
+- name: apt upgrade
   become: true
   ansible.builtin.apt:
     upgrade: "yes"

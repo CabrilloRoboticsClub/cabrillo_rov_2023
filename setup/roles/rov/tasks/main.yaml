@@ -27,7 +27,7 @@
 ---
 
 # allow access to i2c
-- name: rov - Add ubuntu to the dialout group
+- name: Add ubuntu to the dialout group
   become_user: "{{ ansible_user }}"
   become: true
   user:

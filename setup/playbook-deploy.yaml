@@ -28,16 +28,10 @@
 #
 ---
 
-- name: deploy common to all hosts
+- name: deploy all hosts
   hosts: all
   roles:
     - common
-
-- name: deploy ros to ros hosts
-  hosts: ros_hosts
-  become: true
-  become_user: root
-  roles:
     - ros
 
 - name: deploy rov

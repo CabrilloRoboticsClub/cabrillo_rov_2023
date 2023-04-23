@@ -26,7 +26,7 @@
 #
 ---
 
-- name: deck - Install components from apt
+- name: deck apt parts
   become: True
   become_user: root
   ansible.builtin.apt:
