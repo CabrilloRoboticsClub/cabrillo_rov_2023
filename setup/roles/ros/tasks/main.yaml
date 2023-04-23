@@ -60,8 +60,8 @@
     # this also sets update_cache: true implicitly, so that can be left out
 
 - name: Install components from apt
+  become: true
   ansible.builtin.apt:
-    become: true
     name:
       - ros-humble-ros-core
       - ros-humble-rclpy
