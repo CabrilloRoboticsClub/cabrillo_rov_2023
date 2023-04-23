@@ -9,8 +9,19 @@
 1. Open Raspberry Pi Imager
     * `CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 22.04 LTS (64-bit)`
     * Choose the Micro SD card as the storage and hit `WRITE`
-1. Unplug the Micro SD card, plug it back in, and copy the `user-data` file into the `system-boot` volume that shows up (overwrite the existing file).
-1. Install the SD card into the Raspberry Pi, connect the Pi to ethernet, and plug in the power to the Pi.
+1. Unplug the Micro SD card from your local computer, plug it back in to your local computer.
+1. Copy the `user-data` file from `setup/roles/rov/files` into the `system-boot` volume that shows up (overwrite the existing file).
+1. Install the SD card into the Raspberry Pi
+1. Connect the Pi to an ethernet connection with internet access
+1. Plug the power cable in to the Pi.
+
+## DECK BOX Setup Procedure
+
+1. On your local machine download [ubuntu-server 22.04 LTS](https://releases.ubuntu.com/22.04.2/ubuntu-22.04.2-live-server-amd64.iso) installer iso.
+1. Flash the installer iso to a flash drive.
+1. Boot the installer iso on the deck box.
+1. install ubuntu server.
+    * hostname: SeaHawk-DECK
 
 ## Ubuntu Devbox Setup Procedure
 
