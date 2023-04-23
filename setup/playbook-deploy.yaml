@@ -44,12 +44,11 @@
   roles:
     - deck
 
-- name: software setup and build
+- name: software build
   hosts: rov, deck
   vars_prompt:
   - name: "git_branch"
     prompt: Which branch would you like to build?
     private: false
   roles:
-    - software_setup
     - software_build

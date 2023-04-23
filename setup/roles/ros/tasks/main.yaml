@@ -69,3 +69,10 @@
       - python3-colcon-common-extensions
     state: present
     cache_valid_time: 86400
+
+- name: rosdep init
+  become: true
+  ignore_errors: true
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: "rosdep init"
