@@ -152,10 +152,10 @@ none
    1. In order to develop on the Pi, install the `Remote SSH` extension.
    1. Install the Python extension
 
----
-
 ### Keeping up with Project Updates
 
 Your development box has a command `cabrillo-update`. Running the command will update your box with the latest changes from the infrastructure team.
+
+---
 
 `<this guide is incomplete>`
