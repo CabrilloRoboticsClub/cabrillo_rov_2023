@@ -112,7 +112,6 @@ YES allow password authentication over ssh
 
 none
 
-
 ---
 
 ## Ubuntu Devbox Setup Procedure
