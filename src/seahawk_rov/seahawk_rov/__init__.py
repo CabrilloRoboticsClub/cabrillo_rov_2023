@@ -37,5 +37,6 @@ from .thrust_box_servo import ThrustBoxServo
 # helper functions
 from .helper_functions import float_to_pwm
 from .helper_functions import clamp
+from .helper_functions import deadzone
 
 from .__main__ import main

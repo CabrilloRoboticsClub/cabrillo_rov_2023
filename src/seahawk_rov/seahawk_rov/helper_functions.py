@@ -24,14 +24,11 @@ cabrillorobotics@gmail.com
 '''
 
 # linear interpolation helper function
-def float_to_pwm(old_value:float)->int:
+def float_to_pwm(old_value:float, new_min:int=0, new_max:int=3000)->int:
     '''linear interpolate helper function'''
 
     old_min:float = -1.0
     old_max:float = 1.0
-
-    new_min:int = 0
-    new_max:int = 3000
 
     old_range = old_max - old_min
     new_range = new_max - new_min
@@ -56,3 +53,10 @@ def clamp(num, minimum, maximum):
   minimised = min(maximised, maximum)
 
   return minimised
+
+# deadzone helper function
+# if within range set value to something; else do nothing
+def deadzone(num, min, max, value=0):
+   if min <= num <= max:
+      return value
+   return num
