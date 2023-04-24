@@ -60,8 +60,8 @@
     # this also sets update_cache: true implicitly, so that can be left out
 
 - name: Install components from apt
+  become: true
   ansible.builtin.apt:
-    become: true
     name:
       - ros-humble-ros-core
       - ros-humble-rclpy
@@ -69,3 +69,10 @@
       - python3-colcon-common-extensions
     state: present
     cache_valid_time: 86400
+
+- name: rosdep init
+  become: true
+  ignore_errors: true
+  shell:
+    chdir: /home/ubuntu/cabrillo_rov_2023
+    cmd: "rosdep init"

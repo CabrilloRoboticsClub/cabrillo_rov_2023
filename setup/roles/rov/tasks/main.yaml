@@ -56,12 +56,27 @@
     src: user-data
     dest: /boot/user-data
 
-- name: boot config set vram to 512
+- name: disable camera auto detect
+  become: true
+  lineinfile:
+    path: /boot/firmware/config.txt
+    search_string: camera_auto_detect=
+    line: "#camera_auto_detect="
+    state: present
+
+- name: boot config set vram to 256
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
     search_string: gpu_mem=
-    line: gpu_mem=512
+    line: gpu_mem=256
+
+- name: enable xserver
+  become: true
+  lineinfile:
+    path: /boot/firmware/config.txt
+    search_string: start_x=
+    line: start_x=1
 
 - name: reboot to apply boot config
   become: true
