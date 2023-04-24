@@ -29,7 +29,7 @@ def generate_launch_description():
             package='rviz2',
             executable='rviz2',
             name='rviz2',
-            arguments=['-d', 'rviz/debug_kinematics.rviz']
+            arguments=['-d', os.path.join(get_package_share_path('seahawk_deck'), 'rviz/debug_kinematics.rviz')]
         ),
 
         Node(
