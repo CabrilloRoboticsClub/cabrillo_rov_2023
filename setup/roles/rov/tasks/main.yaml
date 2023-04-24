@@ -64,7 +64,7 @@
     line: "#camera_auto_detect="
     state: present
 
-- name: boot config set vram to 512
+- name: boot config set vram to 256
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
