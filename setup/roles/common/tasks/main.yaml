@@ -26,22 +26,54 @@
 #
 ---
 
-- name: Install basic parts
+- name: Install apt depends
+  become: true
   ansible.builtin.apt:
     state: present
     name:
       - python3
       - python3-pip
+      - python3-setuptools
+      - sshpass
     cache_valid_time: 86400
 
-- name: No unattended upgrades!
+- name: install pip depends
+  become: false
+  pip:
+    name:
+    - setuptools
+    - Adafruit-Blinka
+    - adafruit-circuitpython-bme280
+    - adafruit-circuitpython-bno08x
+    - adafruit-circuitpython-busdevice
+    - adafruit-circuitpython-motor
+    - adafruit-circuitpython-motorkit
+    - adafruit-circuitpython-pca9685
+    - adafruit-circuitpython-register
+    - adafruit-circuitpython-requests
+    - adafruit-circuitpython-servokit
+    - adafruit-circuitpython-typing
+    - Adafruit-PlatformDetect
+    - Adafruit-PureIO
+    - adafruit-python-shell
+    - args
+    - clint
+    - pyftdi
+    - pyserial
+    - pyusb
+    - RPi.GPIO
+    - typing_extensions
+    - hidapi
+
+- name: apt remove unattended-upgrades
+  become: true
   ansible.builtin.apt:
     state: absent
     name:
       - unattended-upgrades
 
-- name: But still do those upgrades
+- name: apt upgrade
+  become: true
   ansible.builtin.apt:
     upgrade: "yes"
     autoremove: true
-    clean: true

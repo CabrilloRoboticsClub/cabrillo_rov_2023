@@ -14,19 +14,20 @@
   - name: Install extra ROS packages.
     apt:
       name:
+        - sshpass
         - rviz
         - ros-humble-desktop-full
         - python3-colcon-common-extensions
         - qemu-user-static
         - python3-venv 
         - python3-rosdep2
-        - docker.io 
+#        - docker.io 
       state: present
-  - name: Add student to the docker group
-    user:
-      name: student
-      groups: docker
-      append: yes
+#  - name: Add student to the docker group
+#    user:
+#      name: student
+#      groups: docker
+#      append: yes
   - name: Make sudo passwordless 
     lineinfile:
       path: /etc/sudoers
