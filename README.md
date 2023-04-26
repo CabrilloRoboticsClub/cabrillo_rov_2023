@@ -30,16 +30,16 @@ make clean
 
 ## Launching all Nodes
 
-There are launch configurations in the `launch` directory. To run all the configured nodes on the ROV:
+We've migrated all the launch files to their respective ROS packages. To run all the configured nodes on the ROV:
 
-```console
-ros2 launch ./launch/rov.launch.py  
+```console 
+ros2 launch seahawk_rov rov.launch.py  
 ```
 
 To launch all the nodes on the deck:
 
-```console
-ros2 launch ./launch/deck.launch.py  
+```console 
+ros2 launch seahawk_deck deck.launch.py  
 ```
 
 ## Running Individual Nodes
@@ -107,15 +107,15 @@ start_x=1
 
 Do this to launch the deck nodes:
 
-```console
-ros2 launch ./launch/deck.launch.py
-ros2 topic echo /drive/twist
+```console 
+$ ros2 launch seahawk_deck deck.launch.py
+$ ros2 topic echo /drive/twist
 ```
 
 ## Launching the Kinematics Debug Nodes
 
 Do this to launch the debug nodes. It also starts RViz:
 
-```console
-ros2 launch launch/kinematics_viz.launch.py
+```console 
+$ ros2 launch seahawk_deck kinematics_viz.launch.py
 ```
