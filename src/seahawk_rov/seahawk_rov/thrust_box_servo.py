@@ -42,7 +42,7 @@ class ThrustBoxServo:
 
         # map output channels        
         self.thruster_map = (0,1,2,3,4,5,6,7)
-        self.thruster_offset = [23,23,23,23,23,23,23,23]
+        self.thruster_offset = [30,30,30,30,30,30,30,30]
 
         # instantiate outputs
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x41)
@@ -56,5 +56,5 @@ class ThrustBoxServo:
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].angle = 1500 - self.thruster_offset[thruster] # int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))
+            self.kit.servo[thruster].angle = 1500 - 30 #self.thruster_offset[thruster] # int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))
             print(f"Thruster {thruster} | {int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))} | {self.kit.servo[thruster].angle} μs")
