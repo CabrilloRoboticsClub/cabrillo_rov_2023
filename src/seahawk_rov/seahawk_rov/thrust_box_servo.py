@@ -49,7 +49,7 @@ class ThrustBoxServo:
 
         # configure outputs
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].set_pulse_width_range(1220, 1780)
+            # self.kit.servo[thruster].set_pulse_width_range(1220, 1780)
             self.kit.servo[thruster].actuation_range = 3000
             self.kit.servo[thruster].angle = 1500 # zero throttle at bootup
 
