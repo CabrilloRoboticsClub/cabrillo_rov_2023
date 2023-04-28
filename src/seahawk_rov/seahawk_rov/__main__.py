@@ -65,6 +65,7 @@ def main(args=None):
         # Callback groups
         fast_group = MutuallyExclusiveCallbackGroup()
         slow_group = MutuallyExclusiveCallbackGroup()
+        imu_group = MutuallyExclusiveCallbackGroup()
 
         # Add imported nodes to this executor
         node_seahawk_rov = rclpy.create_node('seahawk_rov')
@@ -88,9 +89,11 @@ def main(args=None):
             logic_tube_bme280.publish()
             thrust_box_bme280.poll()
             thrust_box_bme280.publish()
+        
+        def publisher_imu():
             logic_tube_bno085.publish()
             
-
+        publish_imu_timer = node_seahawk_rov.create_timer(0.1, publisher_imu, callback_group=imu_group)
         publish_timer = node_seahawk_rov.create_timer(1, publisher, callback_group=slow_group)
 
         try:
