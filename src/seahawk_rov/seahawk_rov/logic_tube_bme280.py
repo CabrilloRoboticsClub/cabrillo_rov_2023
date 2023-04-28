@@ -40,27 +40,30 @@ class LogicTubeBME280:
         self.temperature_publisher = node.create_publisher(Temperature,'logic_tube/temperature', 10)
         self.humidity_publisher = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
         self.pressure_publisher = node.create_publisher(FluidPressure,'logic_tube/pressure', 10)
-        
+
+        # instanciate the messages
+        self.msg_temperature = Temperature()
+        self.msg_humidity = RelativeHumidity()
+        self.msg_pressure = FluidPressure()
+
+        # insert frame id
+        self.msg_temperature.header.frame_id = "base_link"
+        self.msg_humidity.header.frame_id = "base_link"
+        self.msg_pressure.header.frame_id = "base_link"
+
         # instanciate the sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
 
-    def publish(self):
-        # instanciate the messages
-        msg_temperature = Temperature()
-        msg_humidity = RelativeHumidity()
-        msg_pressure = FluidPressure()
-
-        # insert frame id
-        msg_temperature.header.frame_id = "base_link"
-        msg_humidity.header.frame_id = "base_link"
-        msg_pressure.header.frame_id = "base_link"
+    def poll(self):
 
         # get sensor data
-        msg_temperature.temperature = self.bme.temperature
-        msg_humidity.relative_humidity = self.bme.humidity
-        msg_pressure.fluid_pressure = self.bme.pressure
+        self.msg_temperature.temperature = self.bme.temperature
+        self.msg_humidity.relative_humidity = self.bme.humidity
+        self.msg_pressure.fluid_pressure = self.bme.pressure
+
+    def publish(self):
 
         # publish data
-        self.temperature_publisher.publish(msg_temperature)
-        self.humidity_publisher.publish(msg_humidity)
-        self.pressure_publisher.publish(msg_pressure)
+        self.temperature_publisher.publish(self.msg_temperature)
+        self.humidity_publisher.publish(self.msg_humidity)
+        self.pressure_publisher.publish(self.msg_pressure)

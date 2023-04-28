@@ -62,7 +62,7 @@ class Input(Node):
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message."""
-        self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Compute desired motion in <x, y, z, r, p, y>
 
