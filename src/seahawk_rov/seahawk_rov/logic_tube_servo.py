@@ -36,9 +36,9 @@ from adafruit_servokit import ServoKit
 import seahawk_rov
 
 class LogicTubeServo:
-    def __init__(self, node, i2c):
+    def __init__(self, node, i2c, callback_group):
         # instanciate subscribers
-        self.drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10)
+        self.drive_cam = node.create_subscription(Float32, 'camera_control', self.receive_drive_camera, 10, callback_group=callback_group)
 
         # drive cam servo is on pin 15
         self.drive_cam_servo = 15

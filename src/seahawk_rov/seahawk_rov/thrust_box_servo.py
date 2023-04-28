@@ -36,9 +36,9 @@ from adafruit_servokit import ServoKit
 import  seahawk_rov
 
 class ThrustBoxServo:
-    def __init__(self, node, i2c):
+    def __init__(self, node, i2c, callback_group):
         # subscribe to the motors
-        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
+        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10, callback_group=callback_group)
 
         # map output channels        
         self.thruster_map = (0,1,2,3,4,5,6,7)

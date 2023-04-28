@@ -50,6 +50,7 @@ import busio
 import sys
 from rclpy.executors import ExternalShutdownException
 from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 import seahawk_rov
 
@@ -59,18 +60,23 @@ def main(args=None):
     # this creates the node "i2c_proxy"
     try:
         # Runs all callbacks in the main thread
-        executor = MultiThreadedExecutor(num_threads=2)
+        executor = MultiThreadedExecutor(num_threads=4)
+
+        # Callback groups
+        fast_group = MutuallyExclusiveCallbackGroup()
+        slow_group = MutuallyExclusiveCallbackGroup()
+
         # Add imported nodes to this executor
         node_seahawk_rov = rclpy.create_node('seahawk_rov')
         executor.add_node(node_seahawk_rov)
 
-        # grab the i2c interface for us to use
+        # Grab the i2c interface for us to use
         i2c = board.I2C()
 
         # instnciate the output classes
-        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
-        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
+        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
+        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
         # instanciate the sensor classes
         logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
@@ -80,12 +86,12 @@ def main(args=None):
         def publisher():
             logic_tube_bme280.poll()
             logic_tube_bme280.publish()
-            # logic_tube_bno085.publish()
             thrust_box_bme280.poll()
-            logic_tube_bno085.publish()
             thrust_box_bme280.publish()
+            logic_tube_bno085.publish()
+            
 
-        publish_timer = node_seahawk_rov.create_timer(1, publisher)
+        publish_timer = node_seahawk_rov.create_timer(1, publisher, callback_group=slow_group)
 
         try:
             # Execute callbacks nodes as they become ready

@@ -34,10 +34,10 @@ from adafruit_motorkit import MotorKit
 
 
 class LogicTubeMotor:
-    def __init__(self, node, I2C):
+    def __init__(self, node, I2C, callback_group):
 
         # instantiate the claws subscriber
-        self.claws = node.create_subscription(Int8MultiArray, 'claw_control', self.receive_claws, 10)
+        self.claws = node.create_subscription(Int8MultiArray, 'claw_control', self.receive_claws, 10, callback_group=callback_group)
 
         # instantiate the motor hat
         self.kit = MotorKit(i2c=I2C, address=0x60)
