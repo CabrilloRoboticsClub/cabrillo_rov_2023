@@ -58,7 +58,6 @@ class Input(Node):
         self.z_trim = 0.0
         self.last_lb_state = 0
         self.last_rb_state = 0
-    
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message."""
@@ -86,10 +85,10 @@ class Input(Node):
                 'right':    int(max(joy_msg.axes[6], 0)), # +
                 'left':     int(-min(joy_msg.axes[6], 0)), # -
             },
-            'a':            joy_msg.buttons[0],
+            'a':            joy_msg.buttons[0], # claw 
             'b':            joy_msg.buttons[1],
             'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
-            'y':            joy_msg.buttons[3],
+            'y':            joy_msg.buttons[3], # reset bambi and z trim
             'left_bumper':  joy_msg.buttons[4], # trim -
             'right_bumper': joy_msg.buttons[5], # trim +
             'window':       joy_msg.buttons[6],
@@ -109,6 +108,14 @@ class Input(Node):
         # Claw
         claw_msg = Int8MultiArray()
         claw_msg.data = [0,0,0]
+        
+        # Reset bambi and z trim if 'y' is pressed
+        if controller['y']:
+            self.bambi_mode = False
+            self.last_x_state = 0
+            self.z_trim = 0.0
+            self.last_lb_state = 0
+            self.last_rb_state = 0
         
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
