@@ -69,11 +69,34 @@ thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
 
 def main(args=None):
 
+<<<<<<< HEAD
+=======
+    # this creates the node "i2c_proxy"
+    node_seahawk_rov = rclpy.create_node('seahawk_rov')
+
+    # grab the i2c interface for us to use
+    i2c = board.I2C()
+
+    # instnciate the output classes
+    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+    logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
+    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+
+    # instanciate the sensor classes
+    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
+    logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
+    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
+    
+>>>>>>> defe6329aa23660c659e5acec82fbb38819897dd
     def publisher():
         logic_tube_bme280.poll()
         logic_tube_bme280.publish()
+<<<<<<< HEAD
         # logic_tube_bno085.publish()
         thrust_box_bme280.poll()
+=======
+        logic_tube_bno085.publish()
+>>>>>>> defe6329aa23660c659e5acec82fbb38819897dd
         thrust_box_bme280.publish()
 
     # publish_timer = node_seahawk_rov.create_timer(1, publisher)

@@ -23,6 +23,8 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 -->
 
+# THIS FILE IS DEPRICATED
+
 # Development VM Setup
 
 I've decided to use Oracle VirtualBox for the VM tooling because it is relatively easy to use, and exists on all major platforms. This is *not* a general purpose guide for using VirtualBox, or a guide for getting started with Linux. Ideally, this will be a lits of procedures that can be understood by someone with zero experience with either so that they can begin working on the robot code as fast as possible. **If a wider understanding is needed, this is the wrong document.**
@@ -33,7 +35,7 @@ You will need to have the following:
 
 - Oracle VirtualBox [main page here](https://www.virtualbox.org/)
 - Ubuntu 22.04 LTS installer .iso [main page here](https://ubuntu.com/)
-    - Most likely, you're looking for an x86_64 image. Sometimes called AMD64 (don't confuse it with `ARM64`. it's easy to do)
+  - Most likely, you're looking for an x86_64 image. Sometimes called AMD64 (don't confuse it with `ARM64`. it's easy to do)
 
 > If you happen to be an an M1/M2 Apple Silicon system, you want the `ARM64` image. In this case, the process *should* be identical, but the EFI suppport may or may not cause issues.
 

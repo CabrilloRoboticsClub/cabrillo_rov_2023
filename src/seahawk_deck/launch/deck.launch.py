@@ -9,10 +9,10 @@ def generate_launch_description():
             executable='republish',
             name='republish_front_camera',
             output='screen',
-            arguments=['h264', 'raw', '--ros-args', '--log-level fatal'],
+            arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
             remappings=[
-                ('in/h264', 'front_camera/h264 '),
-                ('out', 'front_camera/image')
+                ('/in/h264', '/front_camera/h264'),
+                ('/out', '/front_camera/image'),
             ]
         ),
         Node(

@@ -1,9 +1,11 @@
-# /setup/roles/mcu/tasks/main.yml
+# playbook-deploy.yaml
 #
 # ansible playbook file
 #
-# configures hosts for Cabrillo ROV 2023
-# sub-playbook for mcu configuration
+# deploys hosts for Cabrillo ROV 2023
+#
+# assumes starting with blank ubuntu-server 22.04 LTS
+#
 #
 # Copyright (C) 2022-2023 Cabrillo Robotics Club
 #
@@ -26,21 +28,25 @@
 #
 ---
 
-- name: No unattended upgrades!
-  ansible.builtin.apt:
-    state: absent
-    name:
-      - unattended-upgrades
+- name: deploy all hosts
+  hosts: all
+  roles:
+    - common
+    - ros
 
-# TODO: Enforce non-root install..... somehow
-- name: Install Python libraries
-  ansible.builtin.pip:
-    state: present
-    name:
-      - setuptools
-      - adafruit-python-shell
-      - adafruit-blinka
-      - adafruit-circuitpython-servokit
-      - adafruit-circuitpython-motorkit
-      - adafruit-circuitpython-bme280
-      - adafruit-circuitpython-bno08x
+- name: deploy rov
+  hosts: rov
+  roles:
+    - rov
+
+- name: deploy deck
+  hosts: deck
+  roles:
+    - deck
+
+- name: software build
+  hosts: rov, deck
+  vars:
+  - git_branch: "HEAD"
+  roles:
+    - software_build
