@@ -45,114 +45,71 @@ from rclpy.node import Node
 # aka /dev/i2c
 import board
 import busio
-# from threading import Thread
+
+# threading imports
+import sys
+from rclpy.executors import ExternalShutdownException
+from rclpy.executors import MultiThreadedExecutor
 
 import seahawk_rov
 
-rclpy.init(args=None)
-
-# this creates the node "i2c_proxy"
-node_seahawk_rov = rclpy.create_node('seahawk_rov')
-
-# grab the i2c interface for us to use
-i2c = board.I2C()
-
-# instnciate the output classes
-logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
-
-# instanciate the sensor classes
-logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-# logic_tube_bno085 = LogicTubeBNO085(node_seahawk_rov, i2c)
-thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
-
-
 def main(args=None):
+    rclpy.init(args=args)
 
-<<<<<<< HEAD
-=======
     # this creates the node "i2c_proxy"
-    node_seahawk_rov = rclpy.create_node('seahawk_rov')
+    try:
+        # Runs all callbacks in the main thread
+        executor = MultiThreadedExecutor(num_threads=2)
+        # Add imported nodes to this executor
+        node_seahawk_rov = rclpy.create_node('seahawk_rov')
+        executor.add_node(node_seahawk_rov)
 
-    # grab the i2c interface for us to use
-    i2c = board.I2C()
+        # grab the i2c interface for us to use
+        i2c = board.I2C()
 
-    # instnciate the output classes
-    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-    logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
-    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+        # instnciate the output classes
+        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
+        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
+        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
 
-    # instanciate the sensor classes
-    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
-    
->>>>>>> defe6329aa23660c659e5acec82fbb38819897dd
-    def publisher():
-        logic_tube_bme280.poll()
-        logic_tube_bme280.publish()
-<<<<<<< HEAD
-        # logic_tube_bno085.publish()
-        thrust_box_bme280.poll()
-=======
-        logic_tube_bno085.publish()
->>>>>>> defe6329aa23660c659e5acec82fbb38819897dd
-        thrust_box_bme280.publish()
+        # instanciate the sensor classes
+        logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
+        logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
+        thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
+        
+        def publisher():
+            logic_tube_bme280.poll()
+            logic_tube_bme280.publish()
+            # logic_tube_bno085.publish()
+            thrust_box_bme280.poll()
+            logic_tube_bno085.publish()
+            thrust_box_bme280.publish()
 
-    # publish_timer = node_seahawk_rov.create_timer(1, publisher)
+        publish_timer = node_seahawk_rov.create_timer(1, publisher)
 
-    # Threadimg information: See the tasks on git hub for links
-    # t = Thread(target=, args=) # target is the function to run, args are the arguements to send to the function
-    # t.run() # Runs the function
+        try:
+            # Execute callbacks nodes as they become ready
+            executor.spin()
+        finally:
+            executor.shutdown()
+            seahawk_rov.distroy_node()
+    except KeyboardInterrupt:
+        pass
+    except ExternalShutdownException:
+        sys.exit(1)
+    finally:
+        rclpy.try_shutdown()
 
-    rclpy.spin(node_seahawk_rov)
 
 # # # # # # # #
 #
 # graceful shutdown
 #
 # # # # # # # #
-def signal_handler(sig, frame):
+# def signal_handler(sig, frame):
+#     sys.exit(0)
 
-    logic_tube_servo.kit.servo[0].angle = None
-    logic_tube_servo.kit.servo[1].angle = None
-    logic_tube_servo.kit.servo[2].angle = None
-    logic_tube_servo.kit.servo[3].angle = None
-    logic_tube_servo.kit.servo[3].angle = None
-    logic_tube_servo.kit.servo[4].angle = None
-    logic_tube_servo.kit.servo[5].angle = None
-    logic_tube_servo.kit.servo[6].angle = None
-    logic_tube_servo.kit.servo[7].angle = None
-    logic_tube_servo.kit.servo[8].angle = None
-    logic_tube_servo.kit.servo[9].angle = None
-    logic_tube_servo.kit.servo[10].angle = None
-    logic_tube_servo.kit.servo[11].angle = None
-    logic_tube_servo.kit.servo[12].angle = None
-    logic_tube_servo.kit.servo[13].angle = None
-    logic_tube_servo.kit.servo[14].angle = None
-    logic_tube_servo.kit.servo[15].angle = None
-
-    thrust_box_servo.kit.servo[0].angle = None
-    thrust_box_servo.kit.servo[1].angle = None
-    thrust_box_servo.kit.servo[2].angle = None
-    thrust_box_servo.kit.servo[3].angle = None
-    thrust_box_servo.kit.servo[3].angle = None
-    thrust_box_servo.kit.servo[4].angle = None
-    thrust_box_servo.kit.servo[5].angle = None
-    thrust_box_servo.kit.servo[6].angle = None
-    thrust_box_servo.kit.servo[7].angle = None
-    thrust_box_servo.kit.servo[8].angle = None
-    thrust_box_servo.kit.servo[9].angle = None
-    thrust_box_servo.kit.servo[10].angle = None
-    thrust_box_servo.kit.servo[11].angle = None
-    thrust_box_servo.kit.servo[12].angle = None
-    thrust_box_servo.kit.servo[13].angle = None
-    thrust_box_servo.kit.servo[14].angle = None
-    thrust_box_servo.kit.servo[15].angle = None
-
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
+# signal.signal(signal.SIGINT, signal_handler)
 
 # # # # # # # #
 #
