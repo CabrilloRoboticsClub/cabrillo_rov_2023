@@ -31,6 +31,7 @@ from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int8MultiArray
+from std_msgs.msg import Float32
 from rclpy.parameter import Parameter
 
 class Input(Node):
@@ -51,6 +52,7 @@ class Input(Node):
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
+        self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
         self.claw_grab = False
         self.bambi_mode = False
         self.last_a_state = 0
@@ -134,6 +136,13 @@ class Input(Node):
         if self.last_x_state == 0 and controller['x'] == 1:
             self.bambi_mode = not self.bambi_mode
         self.last_x_state = controller['x']
+
+        if controller['dpad']['left']:
+            self.cam_servo_pub.publish(0)
+        elif controller['dpad']['up']:
+            self.cam_servo_pub.publish(1)
+        elif controller['dpad']['down']:
+            self.cam_servo_pub.publish(-1)
 
         # Stores thrust values in local variables
         linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value
