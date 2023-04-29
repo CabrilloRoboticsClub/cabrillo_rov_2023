@@ -55,11 +55,11 @@ class LogicTubeServo:
 
 
     def receive_drive_camera(self, message):
-        if message == 0:
+        if message.data == 0:
             self.angle = 90
-        elif message == 1 :
+        elif message.data == 1 :
             self.angle -= self.servo_degrees_delta
-        elif message == -1:
+        elif message.data == -1:
             self.angle += self.servo_degrees_delta
         if 45 <= self.angle >= 135:
             self.kit.servo[self.drive_cam_servo].angle = self.angle

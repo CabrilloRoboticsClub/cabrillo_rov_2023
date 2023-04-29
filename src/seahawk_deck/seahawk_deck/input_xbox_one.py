@@ -137,12 +137,17 @@ class Input(Node):
             self.bambi_mode = not self.bambi_mode
         self.last_x_state = controller['x']
 
+        cam_servo_msg = Float32()
+
         if controller['dpad']['left']:
-            self.cam_servo_pub.publish(0)
+            cam_servo_msg.data = 0
         elif controller['dpad']['up']:
-            self.cam_servo_pub.publish(1)
+            cam_servo_msg.data = 1
         elif controller['dpad']['down']:
-            self.cam_servo_pub.publish(-1)
+            cam_servo_msg.data = -1
+        
+        if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
+            self.cam_servo_pub.publish(cam_servo_msg)
 
         # Stores thrust values in local variables
         linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value
