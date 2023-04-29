@@ -140,11 +140,11 @@ class Input(Node):
         cam_servo_msg = Float32()
 
         if controller['dpad']['left']:
-            cam_servo_msg.data = 0
+            cam_servo_msg.data = 0.0
         elif controller['dpad']['up']:
-            cam_servo_msg.data = 1
+            cam_servo_msg.data = 1.0
         elif controller['dpad']['down']:
-            cam_servo_msg.data = -1
+            cam_servo_msg.data = -1.0
         
         if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
             self.cam_servo_pub.publish(cam_servo_msg)
