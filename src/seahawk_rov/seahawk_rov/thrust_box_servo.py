@@ -42,17 +42,18 @@ class ThrustBoxServo:
 
         # map output channels        
         self.thruster_map = (0,1,2,3,4,5,6,7)
+        self.pwm_offset = -30 # offset in microseconds
 
         # instantiate outputs
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x41)
 
         # configure outputs
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].set_pulse_width_range(1220, 1780)
+            self.kit.servo[thruster].set_pulse_width_range(1220 + self.pwm_offset, 1780 + self.pwm_offset)
             self.kit.servo[thruster].actuation_range = 3000
-            self.kit.servo[thruster].angle = 1500 # zero throttle at bootup
+            self.kit.servo[thruster].angle = 1500 + self.pwm_offset # zero throttle at bootup
 
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].angle = int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)))
+            self.kit.servo[thruster].angle = int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data[thruster], -1.0, 1.0)) + self.pwm_offset)
