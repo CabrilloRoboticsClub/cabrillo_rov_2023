@@ -85,8 +85,8 @@ class Input(Node):
             'dpad': {
                 'up':       int(max(joy_msg.axes[7], 0)), # +
                 'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'right':    int(max(joy_msg.axes[6], 0)), # +
-                'left':     int(-min(joy_msg.axes[6], 0)), # -
+                'left':     int(max(joy_msg.axes[6], 0)), # +
+                'right':    int(-min(joy_msg.axes[6], 0)), # -
             },
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
