@@ -52,8 +52,10 @@ class Input(Node):
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
         self.claw_grab = False
+        self.fish_release = False
         self.bambi_mode = False
         self.last_a_state = 0
+        self.last_b_state = 0
         self.last_x_state = 0
         self.z_trim = 0.0
         self.last_lb_state = 0
@@ -128,6 +130,14 @@ class Input(Node):
         else:
             claw_msg.data[0] = 0
         self.last_a_state = controller['a']
+
+        if self.last_b_state == 0 and controller['b'] == 1:
+            self.fish_release = not self.fish_release
+        if self.fish_release:
+            claw_msg.data[1] = 1
+        else:
+            claw_msg.data[1] = 0
+        self.last_b_state = controller['b']
         self.claw_pub.publish(claw_msg)
 
         # Makes x button for bambi mode activation "sticky" 
