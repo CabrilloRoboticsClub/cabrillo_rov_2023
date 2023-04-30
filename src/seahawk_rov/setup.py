@@ -17,7 +17,7 @@ setup(
         (os.path.join('share', package_name), ['package.xml']),
         # The `seahawk_rov` package doesn't actually contain any launch files. They're up a level in the main workspace.
         # Include all launch files.
-#        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
     ],
     # This is important as well
     install_requires=[
