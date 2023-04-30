@@ -47,10 +47,19 @@ class LogicTubeServo:
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x40)
 
         # configure outputs
-        self.kit.servo[self.drive_cam_servo].set_pulse_width_range(0, 3000)
-        self.kit.servo[self.drive_cam_servo].actuation_range = 3000
-        self.kit.servo[self.drive_cam_servo].angle = 1500
+        self.kit.servo[self.drive_cam_servo].set_pulse_width_range(1000, 2000)
+        self.kit.servo[self.drive_cam_servo].actuation_range = 180
+        self.kit.servo[self.drive_cam_servo].angle = 90
+        self.servo_degrees_delta = 5
+        self.angle = 90
 
 
     def receive_drive_camera(self, message):
-        self.kit.servo[self.drive_cam_servo].angle = int(seahawk_rov.float_to_pwm(seahawk_rov.clamp(message.data, -1, 1)))
+        if message.data == 0:
+            self.angle = 90
+        elif message.data == 1 and self.angle < 135:
+            self.angle += self.servo_degrees_delta
+        elif message.data == -1 and self.angle > 45:
+            self.angle -= self.servo_degrees_delta
+        
+        self.kit.servo[self.drive_cam_servo].angle = self.angle
