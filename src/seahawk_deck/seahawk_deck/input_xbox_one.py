@@ -31,6 +31,7 @@ from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int8MultiArray
+from std_msgs.msg import Float32
 from rclpy.parameter import Parameter
 
 class Input(Node):
@@ -51,6 +52,7 @@ class Input(Node):
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
+        self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
         self.claw_grab = False
         self.fish_release = False
         self.bambi_mode = False
@@ -85,8 +87,8 @@ class Input(Node):
             'dpad': {
                 'up':       int(max(joy_msg.axes[7], 0)), # +
                 'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'right':    int(max(joy_msg.axes[6], 0)), # +
-                'left':     int(-min(joy_msg.axes[6], 0)), # -
+                'left':     int(max(joy_msg.axes[6], 0)), # +
+                'right':    int(-min(joy_msg.axes[6], 0)), # -
             },
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
@@ -144,6 +146,18 @@ class Input(Node):
         if self.last_x_state == 0 and controller['x'] == 1:
             self.bambi_mode = not self.bambi_mode
         self.last_x_state = controller['x']
+
+        cam_servo_msg = Float32()
+
+        if controller['dpad']['left']:
+            cam_servo_msg.data = 0.0
+        elif controller['dpad']['up']:
+            cam_servo_msg.data = 1.0
+        elif controller['dpad']['down']:
+            cam_servo_msg.data = -1.0
+        
+        if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
+            self.cam_servo_pub.publish(cam_servo_msg)
 
         # Stores thrust values in local variables
         linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value
