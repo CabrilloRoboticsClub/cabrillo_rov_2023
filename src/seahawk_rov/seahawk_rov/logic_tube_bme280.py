@@ -34,12 +34,31 @@ from sensor_msgs.msg import FluidPressure
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
 
+class Config:
+    def __init__(self):
+
+        self.node = ""
+
+        self.i2c_bus = ""
+
 class LogicTubeBME280:
-    def __init__(self, node, i2c):
+    def __init__(self, config):
+
+        config = {
+             "node": "",
+             "i2c bus":"",
+             "i2c_addr": "",
+             "topic": {
+               "t": "",
+               "h": "",
+               "p": "",  
+             },
+        }
+
         # instanciate the publishers
-        self.temperature_publisher = node.create_publisher(Temperature,'logic_tube/temperature', 10)
-        self.humidity_publisher = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
-        self.pressure_publisher = node.create_publisher(FluidPressure,'logic_tube/pressure', 10)
+        self.temperature_publisher = config["node"].create_publisher(Temperature,'logic_tube/temperature', 10)
+        self.humidity_publisher = config["node"].create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
+        self.pressure_publisher = config["node"].create_publisher(FluidPressure,'logic_tube/pressure', 10)
 
         # instanciate the messages
         self.msg_temperature = Temperature()
@@ -52,7 +71,7 @@ class LogicTubeBME280:
         self.msg_pressure.header.frame_id = "base_link"
 
         # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(config["i2c_bus"], 0x77)
 
     def poll(self):
 
