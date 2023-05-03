@@ -80,7 +80,14 @@ def main(args=None):
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
         # instanciate the sensor classes
-        logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
+        lt_bme280_config = seahawk_rov.LogicTubeBME280.Config(
+            node = node_seahawk_rov,
+            hardware_location = "logic_tube_bme280/"
+            i2c_bus = i2c,
+            # leave i2c_addr out, since it'll default to 0x77 anyway.
+            # If the sensor *isn't* there, then do include it with the correct value.
+        )
+        logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, lt_bme280_config)
         logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
         thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
         

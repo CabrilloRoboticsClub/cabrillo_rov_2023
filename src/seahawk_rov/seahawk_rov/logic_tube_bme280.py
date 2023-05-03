@@ -35,30 +35,28 @@ from sensor_msgs.msg import FluidPressure
 from adafruit_bme280 import basic as adafruit_bme280
 
 class Config:
-    def __init__(self):
+    def __init__(self, node, hardware_location = "unknown_hardware_location/", i2c_bus, i2c_addr = 0x77):
 
-        self.node = ""
+        self.node = node # the ROS2 Node to which the publishers will be attached.
+        #TODO: Ensure hardware_location has a trailing slash. It's important to our topic naming pattern. ("container/sensorvalue" e.g. "logic_tube/temperature")
+        self.hardware_location = hardware_location # Prefix for the topic names. This one should be "logic_tube", but it's defaulted to a generic "unknown..." to better indicate bad usage by the caller.
+        self.i2c_bus = i2c_bus # I2C object. It'll be whatever is returned by busio.I2C(), probably.
+        self.i2c_addr = i2c_addr # The device's I2C address. Defaulted to 0x77.
 
-        self.i2c_bus = ""
+        # I'm not sure how to record the "t", "h", and "p". In the config. I don't know if it makes sense, though.
+        # The sensor, by virtue of being *this* sensor, simply has those properties. Being a LogicTubeBME280 means
+        # that there is a t, h, and p. It doesn't make sense to ask it to have 2 pressures, for instance.
 
 class LogicTubeBME280:
     def __init__(self, config):
-
-        config = {
-             "node": "",
-             "i2c bus":"",
-             "i2c_addr": "",
-             "topic": {
-               "t": "",
-               "h": "",
-               "p": "",  
-             },
-        }
+        
+        # the configuration is passed in. Immediately assigning a new value isn't what we want.
 
         # instanciate the publishers
-        self.temperature_publisher = config["node"].create_publisher(Temperature,'logic_tube/temperature', 10)
-        self.humidity_publisher = config["node"].create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
-        self.pressure_publisher = config["node"].create_publisher(FluidPressure,'logic_tube/pressure', 10)
+        # With a `class Config` we can call the property names by... well by name.
+        self.temperature_publisher = config.node.create_publisher(Temperature, config.hardware_location + 'temperature', 10)
+        self.humidity_publisher = config.node.create_publisher(RelativeHumidity,config.hardware_location + 'humidity', 10)
+        self.pressure_publisher = config.node.create_publisher(FluidPressure, config.hardware_location + 'pressure', 10)
 
         # instanciate the messages
         self.msg_temperature = Temperature()
@@ -71,7 +69,7 @@ class LogicTubeBME280:
         self.msg_pressure.header.frame_id = "base_link"
 
         # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(config["i2c_bus"], 0x77)
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(config.i2c_bus, config.i2c_addr)
 
     def poll(self):
 
