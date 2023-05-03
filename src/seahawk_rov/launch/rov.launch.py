@@ -12,7 +12,7 @@ def generate_launch_description():
             name='front_camera',
             output='screen',
             parameters=[{
-                'input_fn': glob('/sys/devices/virtual/video4linux/video*'),
+                'input_fn': glob('/sys/devices/virtual/video4linux/video*')[0],
                 'fps': 30,
                 'size': '1280x960',
                 'frame_id': 'front_camera',
