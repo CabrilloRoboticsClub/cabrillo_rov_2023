@@ -16,6 +16,28 @@ def generate_launch_description():
             ]
         ),
         Node(
+            package='image_transport',
+            executable='republish',
+            name='republish_down_camera',
+            output='screen',
+            arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
+            remappings=[
+                ('/in/h264', '/down_camera/h264'),
+                ('/out', '/down_camera/image'),
+            ]
+        ),
+        Node(
+            package='image_transport',
+            executable='republish',
+            name='republish_back_camera',
+            output='screen',
+            arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
+            remappings=[
+                ('/in/h264', '/back_camera/h264'),
+                ('/out', '/back_camera/image'),
+            ]
+        ),
+        Node(
             package='seahawk_deck',
             executable='thrust',
             name='thrust',

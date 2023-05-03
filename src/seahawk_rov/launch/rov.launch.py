@@ -1,3 +1,4 @@
+from glob import glob
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
@@ -11,13 +12,43 @@ def generate_launch_description():
             name='front_camera',
             output='screen',
             parameters=[{
-                'input_fn': '/dev/video0',
+                'input_fn': glob('/sys/devices/virtual/video4linux/video*'),
                 'fps': 30,
                 'size': '1280x960',
                 'frame_id': 'front_camera',
             }],
             remappings=[
                 ('image_raw/h264', 'front_camera/h264'),
+            ]
+        ),
+        Node(
+            package='h264_image_transport',
+            executable='h264_cam_node',
+            name='down_camera',
+            output='screen',
+            parameters=[{
+                'input_fn': '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2',
+                'fps': 30,
+                'size': '1280x960',
+                'frame_id': 'down_camera',
+            }],
+            remappings=[
+                ('image_raw/h264', 'down_camera/h264'),
+            ]
+        ),
+        Node(
+            package='h264_image_transport',
+            executable='h264_cam_node',
+            name='back_camera',
+            output='screen',
+            parameters=[{
+                'input_fn': '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2',
+                'fps': 30,
+                'size': '1280x960',
+                'frame_id': 'back_camera',
+            }],
+            remappings=[
+                ('image_raw/h264', 'back_camera/h264'),
             ]
         ),
         Node(
