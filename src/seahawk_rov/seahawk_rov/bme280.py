@@ -38,9 +38,9 @@ class Config:
     def __init__(
             self,
             node,
-            hardware_location = "unknown_hardware_location/",
             i2c_bus,
-            i2c_addr = 0x77
+            i2c_addr = 0x77,
+            hardware_location = "unknown_hardware_location/"
     ):
         # the ros2 node the publishers will be attached to
         self.node = node
