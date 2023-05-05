@@ -34,7 +34,7 @@ from sensor_msgs.msg import FluidPressure
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
 
-class Config:
+class BME280:
     def __init__(
             self,
             node,
@@ -59,9 +59,6 @@ class Config:
         # the address the sensor is at on the i2c bus
         # for the adafruit bme280 the unsoldered addr is 0x77 and soldered is 0x76
         self.i2c_addr = i2c_addr
-
-class BME280:
-    def __init__(self, config):
 
         # instanciate the publishers
         self.temperature_publisher = config.node.create_publisher(Temperature, config.hardware_location + '/temperature', 10)
