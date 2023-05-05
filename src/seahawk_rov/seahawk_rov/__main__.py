@@ -95,7 +95,7 @@ def main(args=None):
             node = node_seahawk_rov,
             callback_group = slow_group,
             i2c_bus = i2c,
-            a2c_addr = 0x76,
+            i2c_addr = 0x76,
             hardware_location = "thrust_box"
         )
         
