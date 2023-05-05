@@ -91,6 +91,7 @@ def main(args=None):
 
         logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
 
+        # setup the thrust box bme280
         thrust_box_bme280_config = seahawk_rov.BME280.Config(
             node = node_seahawk_rov,
             callback_group = slow_group,
