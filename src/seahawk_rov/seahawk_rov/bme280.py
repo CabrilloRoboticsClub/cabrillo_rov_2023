@@ -61,9 +61,9 @@ class BME280:
         self.i2c_addr = i2c_addr
 
         # instanciate the publishers
-        self.temperature_publisher = config.node.create_publisher(Temperature, config.hardware_location + '/temperature', 10)
-        self.humidity_publisher = config.node.create_publisher(RelativeHumidity,config.hardware_location + '/humidity', 10)
-        self.pressure_publisher = config.node.create_publisher(FluidPressure, config.hardware_location + '/pressure', 10)
+        self.temperature_publisher = self.node.create_publisher(Temperature, self.hardware_location + '/temperature', 10)
+        self.humidity_publisher = self.node.create_publisher(RelativeHumidity,self.hardware_location + '/humidity', 10)
+        self.pressure_publisher = self.node.create_publisher(FluidPressure, self.hardware_location + '/pressure', 10)
 
         # instanciate the messages
         self.msg_temperature = Temperature()
@@ -76,10 +76,10 @@ class BME280:
         self.msg_pressure.header.frame_id = "base_link"
 
         # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(config.i2c_bus, config.i2c_addr)
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(self.i2c_bus, self.i2c_addr)
 
         # create the timer
-        publish_timer = config.node.create_timer(1, self.publish, callback_group=config.callback_group)
+        publish_timer = self.node.create_timer(1, self.publish, callback_group=self.callback_group)
 
     def publish(self):
 
