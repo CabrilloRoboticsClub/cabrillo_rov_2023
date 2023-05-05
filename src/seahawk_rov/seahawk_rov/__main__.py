@@ -63,9 +63,9 @@ def main(args=None):
         executor = MultiThreadedExecutor(num_threads=4)
 
         # Callback groups
-        fast_group = MutuallyExclusiveCallbackGroup()
-        slow_group = MutuallyExclusiveCallbackGroup()
-        imu_group = MutuallyExclusiveCallbackGroup()
+        fast_group = MutuallyExclusiveCallbackGroup() # pwm boards
+        slow_group = MutuallyExclusiveCallbackGroup() # sensors
+        imu_group = MutuallyExclusiveCallbackGroup() # imu for independant control
 
         # Add imported nodes to this executor
         node_seahawk_rov = rclpy.create_node('seahawk_rov')
@@ -79,29 +79,33 @@ def main(args=None):
         logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
-        # instanciate the sensor classes
-        lt_bme280_config = seahawk_rov.LogicTubeBME280.Config(
+        # setup the logic tube bme280
+        logic_tube_bme280_config = seahawk_rov.BME280.Config(
             node = node_seahawk_rov,
-            hardware_location = "logic_tube_bme280/"
+            callback_group = slow_group,
             i2c_bus = i2c,
-            # leave i2c_addr out, since it'll default to 0x77 anyway.
-            # If the sensor *isn't* there, then do include it with the correct value.
+            i2c_addr = 0x77,
+            hardware_location = "logic_tube"
         )
-        logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, lt_bme280_config)
+        logic_tube_bme280 = seahawk_rov.BME280(logic_tube_bme280_config)
+
         logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
-        thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
+
+        thrust_box_bme280_config = seahawk_rov.BME280.Config(
+            node = node_seahawk_rov,
+            callback_group = slow_group,
+            i2c_bus = i2c,
+            a2c_addr = 0x76,
+            hardware_location = "thrust_box"
+        )
+        thrust_box_bme280 = seahawk_rov.BME280(thrust_box_bme280_config)
         
-        def publisher():
-            logic_tube_bme280.poll()
-            logic_tube_bme280.publish()
-            thrust_box_bme280.poll()
-            thrust_box_bme280.publish()
         
         def publisher_imu():
             logic_tube_bno085.publish()
             
         publish_imu_timer = node_seahawk_rov.create_timer(0.1, publisher_imu, callback_group=imu_group)
-        publish_timer = node_seahawk_rov.create_timer(1, publisher, callback_group=slow_group)
+        
 
         try:
             # Execute callbacks nodes as they become ready

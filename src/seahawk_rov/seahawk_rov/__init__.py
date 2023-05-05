@@ -25,6 +25,7 @@ cabrillorobotics@gmail.com
 '''
 
 # sensor classes
+from .bme280 import BME280
 from .logic_tube_bme280 import LogicTubeBME280
 from .logic_tube_bno085 import LogicTubeBNO085
 from .thrust_box_bme280 import ThrustBoxBME280

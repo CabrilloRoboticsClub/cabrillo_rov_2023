@@ -55,7 +55,7 @@ class LogicTubeBME280:
         # instanciate the publishers
         # With a `class Config` we can call the property names by... well by name.
         self.temperature_publisher = config.node.create_publisher(Temperature, config.hardware_location + 'temperature', 10)
-        self.humidity_publisher = config.node.create_publisher(RelativeHumidity,config.hardware_location + 'humidity', 10)
+        self.humidity_publisher = config.node.create_publisher(RelativeHumidity, config.hardware_location + 'humidity', 10)
         self.pressure_publisher = config.node.create_publisher(FluidPressure, config.hardware_location + 'pressure', 10)
 
         # instanciate the messages

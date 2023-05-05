@@ -38,12 +38,16 @@ class Config:
     def __init__(
             self,
             node,
+            callback_group,
             i2c_bus,
             i2c_addr = 0x77,
             hardware_location = "unknown_hardware_location/"
     ):
         # the ros2 node the publishers will be attached to
         self.node = node
+
+        # which callback group in threading does this code beling to
+        self.callback_group = callback_group
 
         # topic name prefix for the hardware location
         # in seahawk that would either be "logic_tube" or "thrust_box"
@@ -77,14 +81,15 @@ class BME280:
         # instanciate the sensor
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(config.i2c_bus, config.i2c_addr)
 
-    def poll(self):
+        # create the timer
+        publish_timer = config.node.create_timer(1, self.publish, callback_group=config.callback_group)
+
+    def publish(self):
 
         # get sensor data
         self.msg_temperature.temperature = self.bme.temperature
         self.msg_humidity.relative_humidity = self.bme.humidity
         self.msg_pressure.fluid_pressure = self.bme.pressure
-
-    def publish(self):
 
         # publish data
         self.temperature_publisher.publish(self.msg_temperature)
