@@ -105,7 +105,7 @@ def main(args=None):
         def publisher_imu():
             logic_tube_bno085.publish()
             
-        publish_imu_timer = node_seahawk_rov.create_timer(0.1, publisher_imu, callback_group=imu_group)
+        publish_imu_timer = node_seahawk_rov.create_timer(0.01, publisher_imu, callback_group=imu_group)
         
 
         try:
