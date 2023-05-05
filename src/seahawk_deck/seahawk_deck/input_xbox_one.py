@@ -1,7 +1,7 @@
 '''
 input_xbox_one.py
 
-Handle input from an Xbox One controller and output it on /drive/twist
+Handle input from an Xbox One controller and abstract it
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -34,22 +34,22 @@ from std_msgs.msg import Int8MultiArray
 from std_msgs.msg import Float32
 from rclpy.parameter import Parameter
 
-class Input(Node):
+class XboxInput(Node):
     """
     Class that implements the joystick input.
     """
 
     def __init__(self):
         """Initialize this node"""
-        super().__init__('input_xbox_one')
-        """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0)  # Sideways
-        self.declare_parameter('linear_z_scale', 1.0)  # Depth
-        self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
+        #super().__init__('input_xbox_one')
+        #"""IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
+        #self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
+        #self.declare_parameter('linear_y_scale', 1.0)  # Sideways
+        #self.declare_parameter('linear_z_scale', 1.0)  # Depth
+        #self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
         self.declare_parameter('angular_y_scale', 0.5) # Pitch
         self.declare_parameter('angular_z_scale', 0.5) # Yaw
-        self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
+        #self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
         self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
@@ -71,25 +71,25 @@ class Input(Node):
         # Compute desired motion in <x, y, z, r, p, y>
 
         # CONTROLLER KEYMAPPINGS
-        controller = {
-            'left_stick': {
-                'x':        -joy_msg.axes[0],
-                'y':        joy_msg.axes[1],
-                'press':    joy_msg.buttons[9],
-            },
-            'right_stick': {
-                'x':        -joy_msg.axes[3],
-                'y':        joy_msg.axes[4],
-                'press':    joy_msg.buttons[10],
-            },
-            'left_trigger': joy_msg.axes[2],
-            'right_trigger':joy_msg.axes[5],
-            'dpad': {
-                'up':       int(max(joy_msg.axes[7], 0)), # +
-                'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'left':     int(max(joy_msg.axes[6], 0)), # +
-                'right':    int(-min(joy_msg.axes[6], 0)), # -
-            },
+        self.left_stick = {
+            'x':        -joy_msg.axes[0],
+            'y':        joy_msg.axes[1],
+            'press':    joy_msg.buttons[9],
+        }
+        self.right_stick = {
+            'x':        -joy_msg.axes[3],
+            'y':        joy_msg.axes[4],
+            'press':    joy_msg.buttons[10],
+        }
+        self.left_trigger  = joy_msg.axes[2]
+        self.right_trigger = joy_msg.axes[5]
+        self.dpad = {
+            'up':       int(max(joy_msg.axes[7], 0)), # +
+            'down':     int(-min(joy_msg.axes[7], 0)), # -
+            'left':     int(max(joy_msg.axes[6], 0)), # +
+            'right':    int(-min(joy_msg.axes[6], 0)), # -
+        }
+        self.buttons = {
             'a':            joy_msg.buttons[0],
             'b':            joy_msg.buttons[1],
             'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
@@ -103,27 +103,17 @@ class Input(Node):
 
         # BINDINGS
         twist_msg = Twist()
-        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = -controller['left_stick']['x']# Y (sideways)
-        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
+        twist_msg.linear.x  = controller.left_stick['y'] # X (forwards)
+        twist_msg.linear.y  = -controller.left_stick['x']# Y (sideways)
+        twist_msg.linear.z  = (controller.left_trigger - controller.right_trigger) / 2 # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
-        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = -controller['right_stick']['x'] # Y (yaw)
+        twist_msg.angular.y = controller.right_stick['y'] # P (pitch) 
+        twist_msg.angular.z = -controller.right_stick['x'] # Y (yaw)
 
         # Claw
         claw_msg = Int8MultiArray()
         claw_msg.data = [0,0,0]
         
-        # Makes lb button for z trim incremantal
-        if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
-            self.z_trim -= 0.05
-        self.last_lb_state = controller['left_bumper']
-
-        # Makes rb buttn for z trim incremental 
-        if self.last_rb_state == 0 and controller['right_bumper'] == 1 and self.z_trim < 0.15:
-            self.z_trim += 0.05
-        self.last_rb_state = controller['right_bumper']
-
         # Makes a button for the claw "sticky"
         if self.last_a_state == 0 and controller['a'] == 1:
             self.claw_grab = not self.claw_grab

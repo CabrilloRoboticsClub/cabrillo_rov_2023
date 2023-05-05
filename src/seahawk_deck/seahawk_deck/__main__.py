@@ -1,5 +1,7 @@
 '''
-seahawk_deck/__init__.py
+seahawk_deck/__main__.py
+
+Transform joystick input to motor movement
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -20,7 +22,12 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
+import sys
+import signal
 
-from .input_xbox_one import InputXbox
+import rclpy
+from rclpy.node import Node
 
-from .__main__ import main
+
+if __name__ == '__main__':
+    main(sys.argv)

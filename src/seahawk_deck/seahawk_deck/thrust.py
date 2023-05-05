@@ -44,7 +44,7 @@ class Thrust(Node):
         
 
     # Calculates what a thruster should output based on multiple input values
-    def combine_input(self, direction1:float, direction2:float)->float:
+    def combine_input(direction1:float, direction2:float)->float:
         """Add two directions in such a way that they do not fall outside [-1, 1]"""
         if (direction1 >= 0 and direction2 >= 0): # If both input values are positive (0 included)
             # Combines decimal percentage values based on a probability union operation to determine what the thruster should output
@@ -57,7 +57,7 @@ class Thrust(Node):
             return direction1 + direction2
 
     def _callback(self, twist_msg):
-        """Called every time the twist publishes a message."""
+        """Called every time the imu publishes a message."""
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
         motor_msg = Float32MultiArray()
