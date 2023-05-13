@@ -38,57 +38,39 @@ class BME280:
     def __init__(
             self,
             node,
-            callback_group,
             i2c_bus,
             i2c_addr = 0x77,
-            hardware_location = "unknown_hardware_location/"
+            frame_id = "base_link",
+            hardware_location = "unknown"
     ):
-        # the ros2 node the publishers will be attached to
-        self.node = node
-
-        # which callback group in threading does this code beling to
-        self.callback_group = callback_group
-
-        # topic name prefix for the hardware location
-        # in seahawk that would either be "logic_tube" or "thrust_box"
-        self.hardware_location = hardware_location
-
-        # the i2c bus object from board.i2c in the main file
-        self.i2c_bus = i2c_bus
-
-        # the address the sensor is at on the i2c bus
-        # for the adafruit bme280 the unsoldered addr is 0x77 and soldered is 0x76
-        self.i2c_addr = i2c_addr
-
-        # instanciate the publishers
-        self.temperature_publisher = self.node.create_publisher(Temperature, self.hardware_location + '/temperature', 10)
-        self.humidity_publisher = self.node.create_publisher(RelativeHumidity,self.hardware_location + '/humidity', 10)
-        self.pressure_publisher = self.node.create_publisher(FluidPressure, self.hardware_location + '/pressure', 10)
-
-        # instanciate the messages
-        self.msg_temperature = Temperature()
-        self.msg_humidity = RelativeHumidity()
-        self.msg_pressure = FluidPressure()
-
-        # insert frame id
-        self.msg_temperature.header.frame_id = "base_link"
-        self.msg_humidity.header.frame_id = "base_link"
-        self.msg_pressure.header.frame_id = "base_link"
+        self.frame_id = frame_id
 
         # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(self.i2c_bus, self.i2c_addr)
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c_bus, i2c_addr)
 
-        # create the timer
-        publish_timer = self.node.create_timer(1, self.publish, callback_group=self.callback_group)
+        # instanciate the publishers
+        self.temperature_publisher = node.create_publisher(Temperature, hardware_location + '/' + 'temperature', 10)
+        self.humidity_publisher = node.create_publisher(RelativeHumidity, hardware_location + '/' + 'humidity', 10)
+        self.pressure_publisher = node.create_publisher(FluidPressure, hardware_location + '/' + 'pressure', 10)
 
     def publish(self):
 
+        # instanciate the messages
+        msg_temperature = Temperature()
+        msg_humidity = RelativeHumidity()
+        msg_pressure = FluidPressure()
+
+        # insert frame id
+        msg_temperature.header.frame_id = self.frame_id
+        msg_humidity.header.frame_id = self.frame_id
+        msg_pressure.header.frame_id = self.frame_id
+
         # get sensor data
-        self.msg_temperature.temperature = self.bme.temperature
-        self.msg_humidity.relative_humidity = self.bme.humidity
-        self.msg_pressure.fluid_pressure = self.bme.pressure
+        msg_temperature.temperature = self.bme.temperature
+        msg_humidity.relative_humidity = self.bme.humidity
+        msg_pressure.fluid_pressure = self.bme.pressure
 
         # publish data
-        self.temperature_publisher.publish(self.msg_temperature)
-        self.humidity_publisher.publish(self.msg_humidity)
-        self.pressure_publisher.publish(self.msg_pressure)
+        self.temperature_publisher.publish(msg_temperature)
+        self.humidity_publisher.publish(msg_humidity)
+        self.pressure_publisher.publish(msg_pressure)

@@ -82,23 +82,24 @@ def main(args=None):
         # setup the logic tube bme280
         logic_tube_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
-            callback_group = slow_group,
             i2c_bus = i2c,
             i2c_addr = 0x77,
-            hardware_location = "logic_tube"
+            hardware_location = "logic_tube",
+            frame_id = "base_link"
         )
+        logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
         logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
 
         # setup the thrust box bme280
         thrust_box_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
-            callback_group = slow_group,
             i2c_bus = i2c,
             i2c_addr = 0x76,
-            hardware_location = "thrust_box"
+            hardware_location = "thrust_box",
+            frame_id = "base_link"
         )
-        
+        thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
         
         def publisher_imu():
             logic_tube_bno085.publish()
