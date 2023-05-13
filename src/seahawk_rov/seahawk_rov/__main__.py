@@ -84,28 +84,29 @@ def main(args=None):
             node = node_seahawk_rov,
             i2c_bus = i2c,
             i2c_addr = 0x77,
-            hardware_location = "logic_tube",
-            frame_id = "base_link"
+            frame_id = "base_link",
+            hardware_location = "logic_tube"
         )
         logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
-        logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
+        logic_tube_bno085 = seahawk_rov.BNO085(
+            node = node_seahawk_rov,
+            i2c_bus = i2c,
+            i2c_addr = 0x4a,
+            frame_id = "logic_tube_bno085",
+            hardware_location = 'logic_tube'
+        ) 
+        logic_tube_imu_publish_timer = node_seahawk_rov.create_timer(0.1, logic_tube_bno085.publish, callback_group=imu_group)
 
         # setup the thrust box bme280
         thrust_box_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
             i2c_bus = i2c,
             i2c_addr = 0x76,
-            hardware_location = "thrust_box",
-            frame_id = "base_link"
+            frame_id = "base_link",
+            hardware_location = "thrust_box"
         )
         thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
-        
-        def publisher_imu():
-            logic_tube_bno085.publish()
-            
-        publish_imu_timer = node_seahawk_rov.create_timer(0.01, publisher_imu, callback_group=imu_group)
-        
 
         try:
             # Execute callbacks nodes as they become ready

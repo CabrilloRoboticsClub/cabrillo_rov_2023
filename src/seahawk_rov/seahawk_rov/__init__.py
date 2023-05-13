@@ -26,7 +26,7 @@ cabrillorobotics@gmail.com
 
 # sensor classes
 from .bme280 import BME280
-from .logic_tube_bno085 import LogicTubeBNO085
+from .bno085 import BNO085
 
 # output classes
 from .logic_tube_motor import LogicTubeMotor
