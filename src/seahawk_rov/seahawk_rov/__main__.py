@@ -65,7 +65,7 @@ def main(args=None):
         # Callback groups
         fast_group = MutuallyExclusiveCallbackGroup() # pwm boards
         slow_group = MutuallyExclusiveCallbackGroup() # sensors
-        imu_group = MutuallyExclusiveCallbackGroup() # imu for independant control
+        imu_group = MutuallyExclusiveCallbackGroup() # imu for independent control
 
         # Add imported nodes to this executor
         node_seahawk_rov = rclpy.create_node('seahawk_rov')
@@ -74,7 +74,7 @@ def main(args=None):
         # Grab the i2c interface for us to use
         i2c = board.I2C()
 
-        # instnciate the output classes
+        # instantiate the output classes
         logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
         logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
