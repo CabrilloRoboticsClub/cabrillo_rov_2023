@@ -70,16 +70,8 @@
     state: present
     cache_valid_time: 86400
 
-- name: git clone
-  become: false
-  git:
-    dest: /home/ubuntu/cabrillo_rov_2023
-    repo: https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
-    track_submodules: true
-
 - name: rosdep init
   become: true
   ignore_errors: true
   shell:
-    chdir: /home/ubuntu/cabrillo_rov_2023
     cmd: "rosdep init"
