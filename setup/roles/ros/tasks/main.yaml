@@ -74,5 +74,4 @@
   become: true
   ignore_errors: true
   shell:
-    chdir: /home/ubuntu/cabrillo_rov_2023
     cmd: "rosdep init"
