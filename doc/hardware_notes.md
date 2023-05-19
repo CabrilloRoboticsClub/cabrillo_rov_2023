@@ -43,6 +43,12 @@ ubuntu@SeaHawk:~$
 
 * Sensors
 
+* BNO085 (default)
+      * 0x4a
+
+* BNO085 (Pin DI High)
+      * 0x4b
+
 * BME280 (unbridged)
       * 0x77
 
