@@ -78,11 +78,6 @@
 
 - name: add ros source to .bashrc
   become: false
-  blockinfile:
-    path: /home/ubuntu/.bashrc
-    block: |
-      source /opt/ros/humble/setup.bash
-      if [ -f ~/cabrillo_rov_2023/install/setup.bash ]
-        source ~/cabrillo_rov_2023/install/setup.bash
-      fi
-    mark: CABRILLO_ROV_2023
+  lineinfile:
+    path: /home/ubuntu/.bash_aliases
+    line: alias RIS='source ~/cabrillo_rov_2023/install/setup.bash'
