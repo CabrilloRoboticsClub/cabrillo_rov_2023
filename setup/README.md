@@ -114,6 +114,28 @@ none
 
 ---
 
+## Ansible Deploy Playbook (First Time setup)
+
+Use this playbook to deploy (or upgrade) all the devices in the robot to the latest system configuration.
+
+(Run this from a DevBox in the `cabrillo_rov_2023` folder)
+
+```bash
+ansible-playbook setup/playbook-deploy.yaml -i setup/hosts.yaml
+```
+
+---
+
+## Ansible Build Procedure (Build New Software)
+
+This playbook will build code from the branch of your choosing (on this repository) to all the rov devices
+
+(Run this from a DevBox in the `cabrillo_rov_2023` folder)
+
+```bash
+ansible-playbook setup/playbook-build.yaml -i setup/hosts.yaml
+```
+
 ## Ubuntu Devbox Setup Procedure
 
 1. Install Ubuntu on a fresh computer or a removable drive.
