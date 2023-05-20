@@ -81,3 +81,4 @@
   lineinfile:
     path: /home/ubuntu/.bash_aliases
     line: alias RIS='source ~/cabrillo_rov_2023/install/setup.bash'
+    create: true
