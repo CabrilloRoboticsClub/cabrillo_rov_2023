@@ -72,7 +72,7 @@ def main(args=None):
         executor.add_node(node_seahawk_rov)
 
         # Grab the i2c interface for us to use
-        i2c = board.I2C()
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
 
         # instantiate the output classes
         logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
