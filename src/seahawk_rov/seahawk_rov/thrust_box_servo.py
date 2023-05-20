@@ -36,21 +36,22 @@ from adafruit_servokit import ServoKit
 import  seahawk_rov
 
 class ThrustBoxServo:
-    def __init__(self, node, i2c):
+    def __init__(self, node, i2c, callback_group):
         # subscribe to the motors
-        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10)
+        self.thrusters = node.create_subscription(Float32MultiArray, 'drive/motors', self.receive_thruster, 10, callback_group=callback_group)
 
         # map output channels        
         self.thruster_map = (0,1,2,3,4,5,6,7)
+        self.pwm_offset = -30 # offset in microseconds
 
         # instantiate outputs
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x41)
 
         # configure outputs
         for thruster in self.thruster_map:
-            self.kit.servo[thruster].set_pulse_width_range(1220, 1780)
+            self.kit.servo[thruster].set_pulse_width_range(1220 + self.pwm_offset, 1780 + self.pwm_offset)
             self.kit.servo[thruster].actuation_range = 3000
-            self.kit.servo[thruster].angle = 1500 # zero throttle at bootup
+            self.kit.servo[thruster].angle = 1500 + self.pwm_offset # zero throttle at bootup
 
 
     def receive_thruster(self, message:Float32MultiArray):

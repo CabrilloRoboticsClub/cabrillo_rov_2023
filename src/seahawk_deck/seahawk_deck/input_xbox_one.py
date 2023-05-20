@@ -31,6 +31,7 @@ from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int8MultiArray
+from std_msgs.msg import Float32
 from rclpy.parameter import Parameter
 
 class Input(Node):
@@ -51,18 +52,20 @@ class Input(Node):
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
         self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
+        self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
         self.claw_grab = False
+        self.fish_release = False
         self.bambi_mode = False
         self.last_a_state = 0
+        self.last_b_state = 0
         self.last_x_state = 0
         self.z_trim = 0.0
         self.last_lb_state = 0
         self.last_rb_state = 0
-    
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message."""
-        self.get_logger().info(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Compute desired motion in <x, y, z, r, p, y>
 
@@ -83,13 +86,13 @@ class Input(Node):
             'dpad': {
                 'up':       int(max(joy_msg.axes[7], 0)), # +
                 'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'right':    int(max(joy_msg.axes[6], 0)), # +
-                'left':     int(-min(joy_msg.axes[6], 0)), # -
+                'left':     int(max(joy_msg.axes[6], 0)), # +
+                'right':    int(-min(joy_msg.axes[6], 0)), # -
             },
-            'a':            joy_msg.buttons[0],
+            'a':            joy_msg.buttons[0], # claw 
             'b':            joy_msg.buttons[1],
             'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
-            'y':            joy_msg.buttons[3],
+            'y':            joy_msg.buttons[3], # reset bambi and z trim
             'left_bumper':  joy_msg.buttons[4], # trim -
             'right_bumper': joy_msg.buttons[5], # trim +
             'window':       joy_msg.buttons[6],
@@ -110,6 +113,14 @@ class Input(Node):
         claw_msg = Int8MultiArray()
         claw_msg.data = [0,0,0]
         
+        # Reset bambi and z trim if 'y' is pressed
+        if controller['y']:
+            self.bambi_mode = False
+            self.last_x_state = 0
+            self.z_trim = 0.0
+            self.last_lb_state = 0
+            self.last_rb_state = 0
+        
         # Makes lb button for z trim incremantal
         if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
             self.z_trim -= 0.05
@@ -128,12 +139,32 @@ class Input(Node):
         else:
             claw_msg.data[0] = 0
         self.last_a_state = controller['a']
+
+        if self.last_b_state == 0 and controller['b'] == 1:
+            self.fish_release = not self.fish_release
+        if self.fish_release:
+            claw_msg.data[1] = 1
+        else:
+            claw_msg.data[1] = 0
+        self.last_b_state = controller['b']
         self.claw_pub.publish(claw_msg)
 
         # Makes x button for bambi mode activation "sticky" 
         if self.last_x_state == 0 and controller['x'] == 1:
             self.bambi_mode = not self.bambi_mode
         self.last_x_state = controller['x']
+
+        cam_servo_msg = Float32()
+
+        if controller['dpad']['left']:
+            cam_servo_msg.data = 0.0
+        elif controller['dpad']['up']:
+            cam_servo_msg.data = 1.0
+        elif controller['dpad']['down']:
+            cam_servo_msg.data = -1.0
+        
+        if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
+            self.cam_servo_pub.publish(cam_servo_msg)
 
         # Stores thrust values in local variables
         linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value

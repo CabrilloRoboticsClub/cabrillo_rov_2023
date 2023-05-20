@@ -1,7 +1,7 @@
 '''
-seahawk_rov/logic_tube_bme280.py
+seahawk_rov/bme280.py
 
-code for publishing the data from the bme280 sensor in the logic tube
+code for publishing data from bme280 sensors
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -34,26 +34,36 @@ from sensor_msgs.msg import FluidPressure
 # import the bme280 circuit python sensor library
 from adafruit_bme280 import basic as adafruit_bme280
 
-class LogicTubeBME280:
-    def __init__(self, node, i2c):
-        # instanciate the publishers
-        self.temperature_publisher = node.create_publisher(Temperature,'logic_tube/temperature', 10)
-        self.humidity_publisher = node.create_publisher(RelativeHumidity,'logic_tube/humidity', 10)
-        self.pressure_publisher = node.create_publisher(FluidPressure,'logic_tube/pressure', 10)
-        
+class BME280:
+    def __init__(
+            self,
+            node,
+            i2c_bus,
+            i2c_addr = 0x77,
+            frame_id = "base_link",
+            hardware_location = "unknown"
+    ):
+        self.frame_id = frame_id
+
         # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x77)
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c_bus, i2c_addr)
+
+        # instanciate the publishers
+        self.temperature_publisher = node.create_publisher(Temperature, hardware_location + '/' + 'temperature', 10)
+        self.humidity_publisher = node.create_publisher(RelativeHumidity, hardware_location + '/' + 'humidity', 10)
+        self.pressure_publisher = node.create_publisher(FluidPressure, hardware_location + '/' + 'pressure', 10)
 
     def publish(self):
+
         # instanciate the messages
         msg_temperature = Temperature()
         msg_humidity = RelativeHumidity()
         msg_pressure = FluidPressure()
 
         # insert frame id
-        msg_temperature.header.frame_id = "base_link"
-        msg_humidity.header.frame_id = "base_link"
-        msg_pressure.header.frame_id = "base_link"
+        msg_temperature.header.frame_id = self.frame_id
+        msg_humidity.header.frame_id = self.frame_id
+        msg_pressure.header.frame_id = self.frame_id
 
         # get sensor data
         msg_temperature.temperature = self.bme.temperature

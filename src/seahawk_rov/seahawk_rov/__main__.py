@@ -46,45 +46,91 @@ from rclpy.node import Node
 import board
 import busio
 
+# threading imports
+import sys
+from rclpy.executors import ExternalShutdownException
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+
 import seahawk_rov
 
 def main(args=None):
     rclpy.init(args=args)
 
     # this creates the node "i2c_proxy"
-    node_seahawk_rov = rclpy.create_node('seahawk_rov')
+    try:
+        # Runs all callbacks in the main thread
+        executor = MultiThreadedExecutor(num_threads=4)
 
-    # grab the i2c interface for us to use
-    i2c = board.I2C()
+        # Callback groups
+        fast_group = MutuallyExclusiveCallbackGroup() # pwm boards
+        slow_group = MutuallyExclusiveCallbackGroup() # sensors
+        imu_group = MutuallyExclusiveCallbackGroup() # imu for independent control
 
-    # instnciate the output classes
-    logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c)
-    logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c)
-    thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c)
+        # Add imported nodes to this executor
+        node_seahawk_rov = rclpy.create_node('seahawk_rov')
+        executor.add_node(node_seahawk_rov)
 
-    # instanciate the sensor classes
-    logic_tube_bme280 = seahawk_rov.LogicTubeBME280(node_seahawk_rov, i2c)
-    logic_tube_bno085 = seahawk_rov.LogicTubeBNO085(node_seahawk_rov, i2c)
-    thrust_box_bme280 = seahawk_rov.ThrustBoxBME280(node_seahawk_rov, i2c)
-    
-    def publisher():
-        logic_tube_bme280.publish()
-        logic_tube_bno085.publish()
-        thrust_box_bme280.publish()
+        # Grab the i2c interface for us to use
+        i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
 
-    # publish_timer = node_seahawk_rov.create_timer(1, publisher)
+        # instantiate the output classes
+        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
+        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
+        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
-    rclpy.spin(node_seahawk_rov)
+        # setup the logic tube bme280
+        logic_tube_bme280 = seahawk_rov.BME280(
+            node = node_seahawk_rov,
+            i2c_bus = i2c,
+            i2c_addr = 0x77,
+            frame_id = "base_link",
+            hardware_location = "logic_tube"
+        )
+        logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
+
+        logic_tube_bno085 = seahawk_rov.BNO085(
+            node = node_seahawk_rov,
+            i2c_bus = i2c,
+            i2c_addr = 0x4a,
+            frame_id = "logic_tube_bno085",
+            hardware_location = 'logic_tube'
+        ) 
+        logic_tube_imu_publish_timer = node_seahawk_rov.create_timer(0.1, logic_tube_bno085.publish, callback_group=imu_group)
+
+        # setup the thrust box bme280
+        thrust_box_bme280 = seahawk_rov.BME280(
+            node = node_seahawk_rov,
+            i2c_bus = i2c,
+            i2c_addr = 0x76,
+            frame_id = "base_link",
+            hardware_location = "thrust_box"
+        )
+        thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
+
+        try:
+            # Execute callbacks nodes as they become ready
+            executor.spin()
+        finally:
+            executor.shutdown()
+            seahawk_rov.distroy_node()
+    except KeyboardInterrupt:
+        pass
+    except ExternalShutdownException:
+        sys.exit(1)
+    finally:
+        rclpy.try_shutdown()
+
 
 # # # # # # # #
 #
 # graceful shutdown
 #
 # # # # # # # #
-def signal_handler(sig, frame):
-    sys.exit(0)
+# def signal_handler(sig, frame):
+#     sys.exit(0)
 
-signal.signal(signal.SIGINT, signal_handler)
+# signal.signal(signal.SIGINT, signal_handler)
 
 # # # # # # # #
 #
