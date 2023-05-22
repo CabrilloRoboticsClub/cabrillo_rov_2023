@@ -1,44 +1,70 @@
+# devbox.yaml
+# 
+# ansible playbook file
+#
+# Configures hosts for Cabrillo ROV 2023
+# devbox playbook file
+#
+# Copyright (C) 2022-2023 Cabrillo Robotics Club
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Cabrillo Robotics Club
+# 6500 Soquel Drive Aptos, CA 95003
+# cabrillorobotics@gmail.com
+#
+---
 
+# this is a playbook designed for use with ansible-pull to configure devkit hosts
+# the devkit is essentially a deck with some extras for development
 
 - name: Install development box tools.
   hosts: all 
   become: yes
+
+  # run the common, ros and deck roles against the devbox host
   roles:
-    - common 
+    - common
     - ros
+    - deck
+
+# bespoke tasks for devbox
   tasks:
+
+# we have standardized on vscode for our IDE
   - name: Install vscode
     community.general.snap:
       name: code
       classic: true
+
+# ros packages specific to devkit
   - name: Install extra ROS packages.
     apt:
       name:
-        - sshpass
-        - rviz
         - ros-humble-desktop-full
-        - python3-colcon-common-extensions
         - qemu-user-static
         - python3-venv 
-        - python3-rosdep2
-#        - docker.io 
       state: present
-#  - name: Add student to the docker group
-#    user:
-#      name: student
-#      groups: docker
-#      append: yes
+
   - name: Make sudo passwordless 
     lineinfile:
       path: /etc/sudoers
       regexp: "^%sudo"
       line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
+
   - name: Update user's config.
     ansible.builtin.blockinfile:
       path: /home/student/.bashrc
       block: |
-        source /opt/ros/humble/setup.bash
-        if [ -f ~/cabrillo_rov_2023/install/local_setup.bash ]; then
-          source ~/cabrillo_rov_2023/install/local_setup.bash
-        fi
         alias cabrillo-update='sudo ansible-pull -U https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/devbox.yaml'
