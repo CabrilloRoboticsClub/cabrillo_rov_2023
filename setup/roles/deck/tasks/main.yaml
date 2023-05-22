@@ -26,6 +26,10 @@
 #
 ---
 
+# the deck starts with ubuntu server and then we install the ubuntu-desktop package
+# this is because ssh-server is not installed by default on ubuntu desktop and we need it to use ansible
+# the deck gets the desktop version of ros
+# we use rviz for the robot controller interface
 - name: deck apt parts
   become: True
   become_user: root
