@@ -114,36 +114,14 @@ none
 
 ---
 
-## Ansible Deploy Playbook (First Time setup)
-
-Use this playbook to deploy (or upgrade) all the devices in the robot to the latest system configuration.
-
-(Run this from a DevBox in the `cabrillo_rov_2023` folder)
-
-```bash
-ansible-playbook setup/playbook-deploy.yaml -i setup/hosts.yaml
-```
-
----
-
-## Ansible Build Procedure (Build New Software)
-
-This playbook will build code from the branch of your choosing (on this repository) to all the rov devices
-
-(Run this from a DevBox in the `cabrillo_rov_2023` folder)
-
-```bash
-ansible-playbook setup/playbook-build.yaml -i setup/hosts.yaml
-```
-
 ## Ubuntu Devbox Setup Procedure
 
-1. Install Ubuntu on a fresh computer or a removable drive.
-    1. Install a regular system with proprietary software (which may be needed for robot video encode/decode)
+1. Install Ubuntu on a fresh computer or a removable drive following the deck procedure
 1. On first boot install needed packages:
 
     ```console
-    sudo apt install -y git ansible 
+    sudo apt install -y git python3-pip
+    pip3 install ansible
     ```
 
 1. Use Ansible to run the `devbox.yaml` file locally.
@@ -179,4 +157,26 @@ Your development box has a command `cabrillo-update`. Running the command will u
 
 ---
 
-`<this guide is incomplete>`
+## Ansible Deploy Playbook (First Time setup)
+
+Use this playbook to deploy (or upgrade) all the devices in the robot to the latest system configuration.
+
+(Run this from a DevBox in the `cabrillo_rov_2023` folder)
+
+```bash
+ansible-playbook setup/playbook-deploy.yaml -i setup/hosts.yaml
+```
+
+---
+
+## Ansible Build Procedure (Build New Software)
+
+This playbook will build code from the branch of your choosing (on this repository) to all the rov devices
+
+(Run this from a DevBox in the `cabrillo_rov_2023` folder)
+
+```bash
+ansible-playbook setup/playbook-build.yaml -i setup/hosts.yaml
+```
+
+---
