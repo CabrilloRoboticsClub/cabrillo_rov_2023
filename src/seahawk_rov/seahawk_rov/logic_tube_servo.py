@@ -47,19 +47,26 @@ class LogicTubeServo:
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x40)
 
         # configure outputs
-        self.kit.servo[self.drive_cam_servo].set_pulse_width_range(1000, 2000)
-        self.kit.servo[self.drive_cam_servo].actuation_range = 180
-        self.kit.servo[self.drive_cam_servo].angle = 90
-        self.servo_degrees_delta = 5
-        self.angle = 90
+        self.kit.servo[self.drive_cam_servo].set_pulse_width_range(1000, 2000) # servo has pulse width range 1000-2000
+        self.kit.servo[self.drive_cam_servo].actuation_range = 180 # servo can spin its horn 180 degrees
+        self.kit.servo[self.drive_cam_servo].angle = 90 # center the servo on boot
+
+        self.servo_degrees_delta = 5 # degree step to take with each button push (higher number = move faster)
+        self.angle = 90 # start at the center
 
 
-    def receive_drive_camera(self, message):
-        if message.data == 0:
-            self.angle = 90
-        elif message.data == 1 and self.angle < 135:
-            self.angle += self.servo_degrees_delta
-        elif message.data == -1 and self.angle > 45:
-            self.angle -= self.servo_degrees_delta
+    def receive_drive_camera(self, message): # callback function that is run every time a camera_control message is received
         
-        self.kit.servo[self.drive_cam_servo].angle = self.angle
+        # the camera control float can be -1 or 0 or 1
+        # left dpad sets 0
+        # up dpad sets 1
+        # down dpad sets -1
+
+        if message.data == 0: # if left dpad
+            self.angle = 90 # center servo (camera look straight ahead)
+        elif message.data == 1 and self.angle < 135: # if dpad up and servo isn't at its upper bound of 135 degrees
+            self.angle += self.servo_degrees_delta # increase angle by step value to look up
+        elif message.data == -1 and self.angle > 45: # if the dpad down and servo isn't at its lower bound of 45 degrees
+            self.angle -= self.servo_degrees_delta # decrease angle by step value to look down
+        
+        self.kit.servo[self.drive_cam_servo].angle = self.angle # set the servo angle to the angle value created in the if else tree
