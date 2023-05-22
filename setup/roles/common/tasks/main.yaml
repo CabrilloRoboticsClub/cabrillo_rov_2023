@@ -26,7 +26,10 @@
 #
 ---
 
-- name: Install apt depends
+# our codebase is all in python so we need python3 on all hosts
+# we need python3-pip because all our python libraries from from pip
+# ssh pass is needed because we are using passwords in the ansible hosts file instead of distributing keys
+- name: Install common apt packages
   become: true
   ansible.builtin.apt:
     state: present
@@ -37,7 +40,10 @@
       - sshpass
     cache_valid_time: 86400
 
-- name: install pip depends
+# these are the python packages we need
+# all the adafruit packages are the libraries for the adafruit hardware on the robot.
+# additional packages are needed for different python things
+- name: install common python packages
   become: false
   pip:
     name:
@@ -65,13 +71,18 @@
     - typing_extensions
     - hidapi
 
-- name: apt remove unattended-upgrades
+# we are removing unatended upgrades
+# we need it removed so our robot platform doesnt change out from under us.
+# we need it removed so ansible can use apt
+# we need it removed because it causes significant overhead on the pi
+- name: remove common apt packages
   become: true
   ansible.builtin.apt:
     state: absent
     name:
       - unattended-upgrades
 
+# upgrade all apt packages to the latest versions
 - name: apt upgrade
   become: true
   ansible.builtin.apt:
