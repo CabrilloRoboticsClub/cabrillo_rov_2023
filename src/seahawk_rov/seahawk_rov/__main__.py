@@ -52,6 +52,7 @@ from rclpy.executors import ExternalShutdownException
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
+# import the init file so we dont have to import everything
 import seahawk_rov
 
 def main(args=None):
@@ -87,6 +88,7 @@ def main(args=None):
             frame_id = "base_link",
             hardware_location = "logic_tube"
         )
+        # create the publish timer
         logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
         logic_tube_bno085 = seahawk_rov.BNO085(
@@ -96,6 +98,7 @@ def main(args=None):
             frame_id = "logic_tube_bno085",
             hardware_location = 'logic_tube'
         ) 
+        # create the publish timer
         logic_tube_imu_publish_timer = node_seahawk_rov.create_timer(0.1, logic_tube_bno085.publish, callback_group=imu_group)
 
         # setup the thrust box bme280
@@ -106,6 +109,7 @@ def main(args=None):
             frame_id = "base_link",
             hardware_location = "thrust_box"
         )
+        # create the publish timer
         thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
 
         try:
@@ -121,22 +125,6 @@ def main(args=None):
     finally:
         rclpy.try_shutdown()
 
-
-# # # # # # # #
-#
-# graceful shutdown
-#
-# # # # # # # #
-# def signal_handler(sig, frame):
-#     sys.exit(0)
-
-# signal.signal(signal.SIGINT, signal_handler)
-
-# # # # # # # #
-#
-# huh?
-#
-# # # # # # # #
 
 if __name__ == '__main__':
     main(sys.argv)
