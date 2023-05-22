@@ -42,38 +42,23 @@
     # this also sets update_cache: true implicitly, so that can be left out
 
 # these are the python packages we need
-# all the adafruit packages are the libraries for the adafruit hardware on the robot.
+# all the Adafruit packages are the libraries for the Adafruit hardware on the robot.
 # additional packages are needed for different python things
 - name: install common python packages
   become: false
   pip:
     name:
     - setuptools
+    - RPi.GPIO
     - Adafruit-Blinka
+    - adafruit-python-shell
     - adafruit-circuitpython-bme280
     - adafruit-circuitpython-bno08x
-    - adafruit-circuitpython-busdevice
-    - adafruit-circuitpython-motor
     - adafruit-circuitpython-motorkit
-    - adafruit-circuitpython-pca9685
-    - adafruit-circuitpython-register
-    - adafruit-circuitpython-requests
     - adafruit-circuitpython-servokit
-    - adafruit-circuitpython-typing
-    - Adafruit-PlatformDetect
-    - Adafruit-PureIO
-    - adafruit-python-shell
-    - args
-    - clint
-    - pyftdi
-    - pyserial
-    - pyusb
-    - RPi.GPIO
-    - typing_extensions
-    - hidapi
 
-# we are removing unatended upgrades
-# we need it removed so our robot platform doesnt change out from under us.
+# we are removing unattended upgrades
+# we need it removed so our robot platform doesn't change out from under us.
 # we need it removed so ansible can use apt
 # we need it removed because it causes significant overhead on the pi
 - name: remove common apt packages
