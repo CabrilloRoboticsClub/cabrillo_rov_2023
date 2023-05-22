@@ -26,6 +26,7 @@
 #
 ---
 
+# we need the ros gpg kes to verify their signed packages
 - name: Install ROS2 GPG keys
   become: true
   ansible.builtin.get_url:
@@ -35,21 +36,15 @@
     group: root
     mode: 0644
 
-# This is just for debugging. It can go away whenever, really.
-- name: Print host arch
-  ansible.builtin.debug:
-    msg: "{{ [ansible_architecture] | map('extract', deb_architecture) | first }}"
-
-
+# install the ros2 hunble apt repo for ubuntu 22.04 into the apt sources list.
 - name: Add ROS2 Humble apt repo
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch={{ [ansible_architecture] | map('extract', deb_architecture) | first }}
       signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
-    # TODO: Test to see if we're on Ubuntu 22.04, aborting in case we're not.
-    # this task assumes that all systems in the inventory are running ubuntu 22.04 lts
 
-# TODO:Turn this into a handler. It can run if and only if the package version is too old
+# upgrade systemd before we install ros packages
+# there is a warning on the ros install docs saying this is required
 - name: Ensure systemd and udev upgrades happen first
   become: true
   ansible.builtin.apt:
@@ -59,6 +54,9 @@
     cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
     # this also sets update_cache: true implicitly, so that can be left out
 
+# install ros core
+# install ros client library for python
+# install colcon
 - name: Install components from apt
   become: true
   ansible.builtin.apt:
@@ -68,15 +66,18 @@
       - python3-rosdep2
       - python3-colcon-common-extensions
     state: present
-    cache_valid_time: 86400
+    cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
+    # this also sets update_cache: true implicitly, so that can be left out
 
+# initialize the ros dependency system
 - name: rosdep init
   become: true
   ignore_errors: true
   shell:
     cmd: "rosdep init"
 
-- name: add ros source to .bashrc
+# add an alias to make sourcing the install bash setup faster
+- name: add "RIS" alias to source install bash setup
   become: false
   lineinfile:
     path: /home/ubuntu/.bash_aliases

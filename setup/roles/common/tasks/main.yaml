@@ -38,7 +38,8 @@
       - python3-pip
       - python3-setuptools
       - sshpass
-    cache_valid_time: 86400
+    cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
+    # this also sets update_cache: true implicitly, so that can be left out
 
 # these are the python packages we need
 # all the adafruit packages are the libraries for the adafruit hardware on the robot.
@@ -87,4 +88,4 @@
   become: true
   ansible.builtin.apt:
     upgrade: "yes"
-    autoremove: true
+    autoremove: true # automatically remove old kernel versions and vestigial dependencies

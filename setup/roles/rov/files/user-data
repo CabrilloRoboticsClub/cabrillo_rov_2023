@@ -17,7 +17,7 @@ ssh_import_id:
 # enable ssh password auth
 ssh_pwauth: true
 
-# set hostname to SeaHawk
+# set hostname to SeaHawk-ROV
 hostname: SeaHawk-ROV
 
 # reboot when finished

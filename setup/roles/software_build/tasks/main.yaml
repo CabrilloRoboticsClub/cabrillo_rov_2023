@@ -27,10 +27,12 @@
 #
 ---
 
+#  echo the branch chosen for building
 - name: print branch
   debug:
     msg: "using branch {{ git_branch }}"
 
+# pull the latest version of that branch
 - name: git pull
   become: false
   git:
@@ -39,18 +41,21 @@
     track_submodules: true
     version: "{{ git_branch }}"
 
+# update ros packages list
 - name: rosdep update
   become: false
   shell:
     chdir: /home/ubuntu/cabrillo_rov_2023
     cmd: rosdep update
-  
+
+# install ros dependencies
 - name: rosdep install
   become: false
   shell:
     chdir: /home/ubuntu/cabrillo_rov_2023
     cmd: rosdep install -i --from-path src/ --rosdistro humble -y
 
+# build codebase
 - name: make
   become: false
   shell:

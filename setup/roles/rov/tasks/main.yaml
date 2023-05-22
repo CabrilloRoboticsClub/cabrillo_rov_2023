@@ -35,6 +35,7 @@
     groups: dialout
     append: yes
 
+# install packages required for the h264 image transport library we have as a submodule
 - name: h264 image transport extra paclages
   become: true
   apt:
@@ -50,12 +51,16 @@
     state: present
     cache_valid_time: 86400
 
+# copy the cloud init file from the repo to the rov
+# if we make changes to the cloud init it will be reflected on the rov
+# we dont change the hostname line for the rov-spare and rov-ciaran devices so after ansible runs those devices will also be called rov
 - name: copy cloud init file
   become: true
   copy:
     src: user-data
     dest: /boot/user-data
 
+# line required for pi camera v2 to work
 - name: disable camera auto detect
   become: true
   lineinfile:
@@ -64,6 +69,7 @@
     line: "#camera_auto_detect="
     state: present
 
+# required for pi camera v2 to work
 - name: boot config set vram to 256
   become: true
   lineinfile:
@@ -71,12 +77,14 @@
     search_string: gpu_mem=
     line: gpu_mem=256
 
+# required for our imu to work
 - name: boot config i2c freq for imu
   become: true
   lineinfile:
     path: /boot/firmware/config.txt
     line: 'dtparam=i2c_arm_baudrate=400000'
 
+# required for pi camera v2 to work
 - name: enable xserver
   become: true
   lineinfile:
@@ -84,6 +92,7 @@
     search_string: start_x=
     line: start_x=1
 
+# so the new boot config parameters are active
 - name: reboot to apply boot config
   become: true
   reboot:
