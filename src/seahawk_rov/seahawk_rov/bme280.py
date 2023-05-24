@@ -66,9 +66,9 @@ class BME280:
         msg_pressure.header.frame_id = self.frame_id
 
         # get sensor data
-        msg_temperature.temperature = self.bme.temperature
-        msg_humidity.relative_humidity = self.bme.humidity
-        msg_pressure.fluid_pressure = self.bme.pressure
+        msg_temperature.temperature = float(self.bme.temperature)
+        msg_humidity.relative_humidity = float(self.bme.humidity)
+        msg_pressure.fluid_pressure = float(self.bme.pressure)
 
         # publish data
         self.temperature_publisher.publish(msg_temperature)
