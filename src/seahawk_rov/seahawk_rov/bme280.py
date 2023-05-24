@@ -45,17 +45,17 @@ class BME280:
     ):
         self.frame_id = frame_id
 
-        # instanciate the sensor
-        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c_bus, i2c_addr)
+        # instantiate the sensor
+        self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c=i2c_bus, address=i2c_addr)
 
-        # instanciate the publishers
+        # instantiate the publishers
         self.temperature_publisher = node.create_publisher(Temperature, hardware_location + '/' + 'temperature', 10)
         self.humidity_publisher = node.create_publisher(RelativeHumidity, hardware_location + '/' + 'humidity', 10)
         self.pressure_publisher = node.create_publisher(FluidPressure, hardware_location + '/' + 'pressure', 10)
 
     def publish(self):
 
-        # instanciate the messages
+        # instantiate the messages
         msg_temperature = Temperature()
         msg_humidity = RelativeHumidity()
         msg_pressure = FluidPressure()
