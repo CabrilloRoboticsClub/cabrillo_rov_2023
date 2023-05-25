@@ -51,7 +51,7 @@ class BNO085:
         self.publisher = node.create_publisher(Imu, hardware_location + '/' + 'imu', 10)
 
         # instantiate the sensor
-        self.bno = BNO08X_I2C(i2c_bus, i2c_addr)
+        self.bno = BNO08X_I2C(i2c_bus=i2c_bus, address=i2c_addr)
 
         # enable raw data outputs
         self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR)
