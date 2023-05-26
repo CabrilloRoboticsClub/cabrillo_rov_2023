@@ -89,6 +89,7 @@ def main(args=None):
         )
         logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
+        # setup the logic tube bno085
         logic_tube_bno085 = seahawk_rov.BNO085(
             node = node_seahawk_rov,
             i2c_bus = i2c,
