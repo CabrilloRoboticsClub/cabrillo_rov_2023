@@ -71,6 +71,12 @@
     search_string: gpu_mem=
     line: gpu_mem=256
 
+- name: boot config i2c freq for imu
+  become: true
+  lineinfile:
+    path: /boot/firmware/config.txt
+    line: 'dtparam=i2c_arm_baudrate=400000'
+
 - name: enable xserver
   become: true
   lineinfile:

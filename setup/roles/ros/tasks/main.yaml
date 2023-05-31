@@ -74,5 +74,11 @@
   become: true
   ignore_errors: true
   shell:
-    chdir: /home/ubuntu/cabrillo_rov_2023
     cmd: "rosdep init"
+
+- name: add ros source to .bashrc
+  become: false
+  lineinfile:
+    path: /home/ubuntu/.bash_aliases
+    line: alias RIS='source ~/cabrillo_rov_2023/install/setup.bash'
+    create: true

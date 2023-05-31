@@ -1,7 +1,7 @@
 '''
-seahawk_rov/logic_tube_bno085.py
+seahawk_rov/bno085.py
 
-code for publishing the data from the bno085 sensor in the logic tube
+code for publishing the data from the bno085 sensor
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -34,13 +34,24 @@ import adafruit_bno08x
 from adafruit_bno08x.i2c import BNO08X_I2C
 
 
-class LogicTubeBNO085:
-    def __init__(self, node, i2c):
+class BNO085:
+    def __init__(
+            self, 
+            node, 
+            i2c_bus,
+            i2c_addr = 0x4a,
+            frame_id = 'base_link',
+            hardware_location = 'unknown'
+
+        ):
+
+        self.frame_id = frame_id
+
         # instantiate the publisher
-        self.publisher = node.create_publisher(Imu, 'logic_tube/imu', 10)
+        self.publisher = node.create_publisher(Imu, hardware_location + '/' + 'imu', 10)
 
         # instantiate the sensor
-        self.bno = BNO08X_I2C(i2c)
+        self.bno = BNO08X_I2C(i2c_bus=i2c_bus, address=i2c_addr)
 
         # enable raw data outputs
         self.bno.enable_feature(adafruit_bno08x.BNO_REPORT_GEOMAGNETIC_ROTATION_VECTOR)
@@ -52,7 +63,7 @@ class LogicTubeBNO085:
         msg = Imu()
 
         # add the frame id
-        msg.header.frame_id = "logic_tube_bno085"
+        msg.header.frame_id = self.frame_id
 
         # load the message with data from the sensor
         # IMU X right, Y forward, Z up
