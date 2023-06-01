@@ -1,8 +1,30 @@
-from glob import glob
+from os import readlink
+from sys import exit
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
 # from math import pi
+
+
+# this is so cursed but it works so
+# basically the reason it works is that the usb cameras always mount 4 /dev/video devices in sequence, and then
+# the csi port camera only has one <10 device it mounts, so depending on the mounting order the csi port camera
+# can be either /dev/video0, /dev/video4, or /dev/video8
+# 0: 3 + 7 = 10
+# 4: 2 + 7 = 9
+# 8: 2 + 6 = 8
+claw_camera_path = readlink('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2')
+top_camera_path = readlink('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2')
+match int(claw_camera_path[-1]) + int(top_camera_path[-1]):
+    case 10:
+        front_camera_path = '/dev/video0'
+    case 9:
+        front_camera_path = '/dev/video4'
+    case 8:
+        front_camera_path = '/dev/video8'
+    case _:
+        exit(1)
+
 
 def generate_launch_description():
     return LaunchDescription([
@@ -12,43 +34,43 @@ def generate_launch_description():
             name='front_camera',
             output='screen',
             parameters=[{
-                'input_fn': glob('/sys/devices/virtual/video4linux/video*')[0],
+                'input_fn': front_camera_path,
                 'fps': 30,
                 'size': '1280x960',
                 'frame_id': 'front_camera',
             }],
             remappings=[
-                ('image_raw/h264', 'front_camera/h264'),
+                ('image_raw/h264', 'camera/front/h264'),
             ]
         ),
         Node(
             package='h264_image_transport',
             executable='h264_cam_node',
-            name='down_camera',
+            name='claw_camera',
             output='screen',
             parameters=[{
-                'input_fn': '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2',
+                'input_fn': claw_camera_path,
                 'fps': 30,
                 'size': '1280x960',
-                'frame_id': 'down_camera',
+                'frame_id': 'claw_camera',
             }],
             remappings=[
-                ('image_raw/h264', 'down_camera/h264'),
+                ('image_raw/h264', 'camera/top/h264'),
             ]
         ),
         Node(
             package='h264_image_transport',
             executable='h264_cam_node',
-            name='back_camera',
+            name='top_camera',
             output='screen',
             parameters=[{
-                'input_fn': '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2',
+                'input_fn': top_camera_path,
                 'fps': 30,
                 'size': '1280x960',
-                'frame_id': 'back_camera',
+                'frame_id': 'top_camera',
             }],
             remappings=[
-                ('image_raw/h264', 'back_camera/h264'),
+                ('image_raw/h264', 'camera/top/h264'),
             ]
         ),
         Node(

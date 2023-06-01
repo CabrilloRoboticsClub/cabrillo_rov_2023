@@ -11,30 +11,30 @@ def generate_launch_description():
             output='screen',
             arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
             remappings=[
-                ('/in/h264', '/front_camera/h264'),
-                ('/out', '/front_camera/image'),
+                ('/in/h264', 'camera/front/h264'),
+                ('/out', 'camera/front/image'),
             ]
         ),
         Node(
             package='image_transport',
             executable='republish',
-            name='republish_down_camera',
+            name='republish_claw_camera',
             output='screen',
             arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
             remappings=[
-                ('/in/h264', '/down_camera/h264'),
-                ('/out', '/down_camera/image'),
+                ('/in/h264', 'camera/claw/h264'),
+                ('/out', 'camera/claw/image'),
             ]
         ),
         Node(
             package='image_transport',
             executable='republish',
-            name='republish_back_camera',
+            name='republish_top_camera',
             output='screen',
             arguments=['h264', 'raw', '--ros-args', '--log-level', 'fatal'],
             remappings=[
-                ('/in/h264', '/back_camera/h264'),
-                ('/out', '/back_camera/image'),
+                ('/in/h264', 'camera/top/h264'),
+                ('/out', 'camera/top/image'),
             ]
         ),
         Node(
