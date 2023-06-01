@@ -114,7 +114,7 @@ def main(args=None):
             executor.spin()
         finally:
             executor.shutdown()
-            seahawk_rov.distroy_node()
+            seahawk_rov.destroy_node()
     except KeyboardInterrupt:
         pass
     except ExternalShutdownException:
