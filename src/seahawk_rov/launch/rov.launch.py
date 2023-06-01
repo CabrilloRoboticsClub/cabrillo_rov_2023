@@ -43,7 +43,7 @@ def generate_launch_description():
                 'frame_id': 'claw_camera',
             }],
             remappings=[
-                ('image_raw/h264', 'camera/top/h264'),
+                ('image_raw/h264', 'camera/claw/h264'),
             ]
         ),
         Node(
