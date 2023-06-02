@@ -76,13 +76,9 @@ def main(args=None):
 
         # instantiate the output classes
         logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
-        #logic_tube_servo_shutdown = rclpy.get_default_context().on_shutdown(logic_tube_servo.on_shutdown)
-
         logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
-        
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
-        #thrust_box_servo_shutdown = rclpy.get_default_context().on_shutdown(thrust_box_servo.on_shutdown)
-
+        
         # setup the logic tube bme280
         logic_tube_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
