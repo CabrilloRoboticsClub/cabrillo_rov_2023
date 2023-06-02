@@ -117,8 +117,8 @@ def main(args=None):
             # Execute callbacks nodes as they become ready
             executor.spin()
         finally:
-            executor.shutdown()
             node_seahawk_rov.destroy_node()
+            executor.shutdown()
     except KeyboardInterrupt:
         pass
     except ExternalShutdownException:
