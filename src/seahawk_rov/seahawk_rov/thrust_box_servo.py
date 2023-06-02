@@ -57,5 +57,6 @@ class ThrustBoxServo:
             self.kit.continuous_servo[thruster].throttle = message.data[thruster] # set the thruster throttle to the value from the message data
 
     def on_shutdown(self):
+        print ("RELEASING THRUST BOX SERVOS")
         for thruster in self.thruster_map: # for loop to step through thruster map 
             self.kit.continuous_servo[thruster].throttle = None # set the thruster throttle to None to disable the output
