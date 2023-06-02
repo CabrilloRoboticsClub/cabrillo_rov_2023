@@ -117,7 +117,6 @@ def main(args=None):
             # Execute callbacks nodes as they become ready
             executor.spin()
         finally:
-            node_seahawk_rov.destroy_node()
             executor.shutdown()
     except KeyboardInterrupt:
         pass
@@ -125,6 +124,7 @@ def main(args=None):
         sys.exit(1)
     finally:
         rclpy.try_shutdown()
+        node_seahawk_rov.destroy_node()
 
 
 # # # # # # # #
