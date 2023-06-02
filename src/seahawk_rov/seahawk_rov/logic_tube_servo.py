@@ -53,9 +53,6 @@ class LogicTubeServo:
         self.servo_degrees_delta = 5
         self.angle = 90
 
-    def __del__(self):
-        self.on_shutdown()
-
     def receive_drive_camera(self, message):
         if message.data == 0:
             self.angle = 90
