@@ -78,7 +78,7 @@ def main(args=None):
         logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
         logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
-        
+
         # setup the logic tube bme280
         logic_tube_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
