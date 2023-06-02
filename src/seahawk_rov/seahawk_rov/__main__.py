@@ -114,13 +114,13 @@ def main(args=None):
             executor.spin()
         finally:
             executor.shutdown()
+            node_seahawk_rov.destroy_node()
     except KeyboardInterrupt:
         pass
     except ExternalShutdownException:
         sys.exit(1)
     finally:
         rclpy.try_shutdown()
-        node_seahawk_rov.destroy_node()
 
 
 # # # # # # # #
