@@ -63,3 +63,6 @@ class LogicTubeServo:
             self.angle -= self.servo_degrees_delta
         
         self.kit.servo[self.drive_cam_servo].angle = self.angle
+
+    def __del__(self):
+        self.kit.servo[self.drive_cam_servo].angle = None
