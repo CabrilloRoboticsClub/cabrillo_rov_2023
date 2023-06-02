@@ -51,6 +51,8 @@ class ThrustBoxServo:
         for thruster in self.thruster_map:
             self.kit.continuous_servo[thruster].set_pulse_width_range(1220 + self.pwm_offset, 1780 + self.pwm_offset)
 
+    def __del__(self):
+        self.on_shutdown()
 
     def receive_thruster(self, message:Float32MultiArray):
         for thruster in self.thruster_map: # for loop to step through thruster map 
