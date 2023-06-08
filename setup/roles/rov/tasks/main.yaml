@@ -56,6 +56,15 @@
     src: user-data
     dest: /boot/user-data
 
+- name: copy rc.local file
+  become: true
+  copy:
+    src: rc.local
+    dest: /etc/rc.local
+    owner: root 
+    group: root 
+    mode: '0755'
+
 - name: disable camera auto detect
   become: true
   lineinfile:

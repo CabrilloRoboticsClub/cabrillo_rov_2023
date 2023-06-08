@@ -1,0 +1,3 @@
+#! /bin/bash 
+
+ethtool --set-eee eth0 eee off
