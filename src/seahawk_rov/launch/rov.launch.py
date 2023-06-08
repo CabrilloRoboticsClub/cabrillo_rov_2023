@@ -80,6 +80,9 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/claw/h264'),
                 ]
             ))
+    except:
+        pass
+
     try:
         nodes.append(
             Node(
@@ -97,6 +100,8 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/top/h264'),
                 ]
             ))
+    except:
+        pass
 
     return LaunchDescription(nodes)
 
