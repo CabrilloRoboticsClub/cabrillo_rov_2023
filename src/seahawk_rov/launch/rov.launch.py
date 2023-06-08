@@ -7,15 +7,15 @@ from launch_ros.actions import Node
 # from math import pi
 
 
-claw_camera_path = str(pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2').resolve())
-top_camera_path = str(pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2').resolve())
+claw_camera_path = pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2')
+top_camera_path = pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2')
 v4l2_regex = r"mmal.*\n\s*(/dev/video\d)"
 v4l2_devices = os.popen("v4l2-ctl --list-devices").read()
 
 front_camera_path = re.search(v4l2_regex, v4l2_devices).group(1)
 
 def generate_launch_description():
-    return LaunchDescription([
+    nodes = [
         Node(
             package='h264_image_transport',
             executable='h264_cam_node',
@@ -29,36 +29,6 @@ def generate_launch_description():
             }],
             remappings=[
                 ('image_raw/h264', 'camera/front/h264'),
-            ]
-        ),
-        Node(
-            package='h264_image_transport',
-            executable='h264_cam_node',
-            name='claw_camera',
-            output='screen',
-            parameters=[{
-                'input_fn': claw_camera_path,
-                'fps': 30,
-                'size': '1280x960',
-                'frame_id': 'claw_camera',
-            }],
-            remappings=[
-                ('image_raw/h264', 'camera/claw/h264'),
-            ]
-        ),
-        Node(
-            package='h264_image_transport',
-            executable='h264_cam_node',
-            name='top_camera',
-            output='screen',
-            parameters=[{
-                'input_fn': top_camera_path,
-                'fps': 30,
-                'size': '1280x960',
-                'frame_id': 'top_camera',
-            }],
-            remappings=[
-                ('image_raw/h264', 'camera/top/h264'),
             ]
         ),
         Node(
@@ -92,4 +62,41 @@ def generate_launch_description():
                 "--child-frame-id", "logic_tube_bno085",
             ]
         )
-    ])
+    ]
+    try:
+        nodes.append(
+            Node(
+                package='h264_image_transport',
+                executable='h264_cam_node',
+                name='claw_camera',
+                output='screen',
+                parameters=[{
+                    'input_fn': str(claw_camera_path.resolve()),
+                    'fps': 30,
+                    'size': '1280x960',
+                    'frame_id': 'claw_camera',
+                }],
+                remappings=[
+                    ('image_raw/h264', 'camera/claw/h264'),
+                ]
+            ))
+    try:
+        nodes.append(
+            Node(
+                package='h264_image_transport',
+                executable='h264_cam_node',
+                name='top_camera',
+                output='screen',
+                parameters=[{
+                    'input_fn': str(top_camera_path.resolve()),
+                    'fps': 30,
+                    'size': '1280x960',
+                    'frame_id': 'top_camera',
+                }],
+                remappings=[
+                    ('image_raw/h264', 'camera/top/h264'),
+                ]
+            ))
+
+    return LaunchDescription(nodes)
+
