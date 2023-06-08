@@ -80,6 +80,8 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/claw/h264'),
                 ]
             ))
+    else:
+        print("Claw camera not found!")
 
     if pathlib.Path(top_camera_path).exists():
         nodes.append(
@@ -98,6 +100,8 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/top/h264'),
                 ]
             ))
+    else:
+        print("Top camera not found!")
 
     return LaunchDescription(nodes)
 
