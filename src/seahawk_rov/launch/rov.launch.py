@@ -1,4 +1,5 @@
 import os, re
+import pathlib
 from sys import exit
 from launch import LaunchDescription
 from launch_ros.actions import Node
@@ -6,9 +7,8 @@ from launch_ros.actions import Node
 # from math import pi
 
 
-claw_camera_path = '/dev/' + os.path.basename(os.readlink('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'))
-top_camera_path = '/dev/' + os.path.basename(os.readlink('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2'))
-
+claw_camera_path = str(pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2').resolve())
+top_camera_path = str(pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2').resolve())
 v4l2_regex = r"mmal.*\n\s*(/dev/video\d)"
 v4l2_devices = os.popen("v4l2-ctl --list-devices").read()
 
