@@ -64,6 +64,7 @@ def generate_launch_description():
         )
     ]
     try:
+        pathlib.Path(claw_camera_path).exists()
         nodes.append(
             Node(
                 package='h264_image_transport',
@@ -84,6 +85,7 @@ def generate_launch_description():
         print("CLAW CAMERA MISSING")
 
     try:
+        pathlib.Path(top_camera_path).exists()
         nodes.append(
             Node(
                 package='h264_image_transport',
