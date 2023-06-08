@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 
 claw_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'
-top_camera_path = pathlib.Path('/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2')
+top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2'
 v4l2_regex = r"mmal.*\n\s*(/dev/video\d)"
 v4l2_devices = os.popen("v4l2-ctl --list-devices").read()
 
@@ -91,7 +91,7 @@ def generate_launch_description():
                 name='top_camera',
                 output='screen',
                 parameters=[{
-                    'input_fn': str(top_camera_path.resolve()),
+                    'input_fn': str(pathlib.Path(top_camera_path).resolve()),
                     'fps': 30,
                     'size': '1280x960',
                     'frame_id': 'top_camera',
