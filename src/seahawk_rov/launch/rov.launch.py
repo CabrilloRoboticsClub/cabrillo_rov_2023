@@ -81,7 +81,7 @@ def generate_launch_description():
                 ]
             ))
     except:
-        pass
+        print("CLAW CAMERA MISSING")
 
     try:
         nodes.append(
@@ -101,7 +101,7 @@ def generate_launch_description():
                 ]
             ))
     except:
-        pass
+        print("TOP CAMERA MISSING")
 
     return LaunchDescription(nodes)
 
