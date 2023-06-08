@@ -63,8 +63,7 @@ def generate_launch_description():
             ]
         )
     ]
-    try:
-        pathlib.Path(claw_camera_path).exists()
+    if pathlib.Path(claw_camera_path).exists():
         nodes.append(
             Node(
                 package='h264_image_transport',
@@ -81,11 +80,8 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/claw/h264'),
                 ]
             ))
-    except:
-        print("CLAW CAMERA MISSING")
 
-    try:
-        pathlib.Path(top_camera_path).exists()
+    if pathlib.Path(top_camera_path).exists():
         nodes.append(
             Node(
                 package='h264_image_transport',
@@ -102,8 +98,6 @@ def generate_launch_description():
                     ('image_raw/h264', 'camera/top/h264'),
                 ]
             ))
-    except:
-        print("TOP CAMERA MISSING")
 
     return LaunchDescription(nodes)
 
