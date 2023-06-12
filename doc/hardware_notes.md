@@ -28,29 +28,28 @@ cabrillorobotics@gmail.com
 ## i2c Addresses
 
 ```console
-ubuntu@SeaHawk:~$ i2cdetect -y 1
+ubuntu@SeaHawk-ROV:~$ i2cdetect -y 1
      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
 00:                         -- -- -- -- -- -- -- -- 
 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-40: 40 41 -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: 40 41 -- -- -- -- -- -- -- -- 4a -- -- -- -- -- 
 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 60: 60 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 70: 70 -- -- -- -- -- 76 77                         
-ubuntu@SeaHawk:~$ 
 ```
 
 * Sensors
 
-* BNO085 (default)
-      * 0x4a
+  * BNO085 (default)
+    * 0x4a
 
-* BNO085 (Pin DI High)
-      * 0x4b
+  * BNO085 (Pin DI High)
+    * 0x4b
 
-* BME280 (unbridged)
-      * 0x77
+  * BME280 (unbridged)
+    * 0x77
 
   * BME280 (bridged)
     * 0x76
