@@ -1,0 +1,68 @@
+# /setup/roles/MCP2221/tasks/main.yml
+#
+# ansible playbook file
+#
+# configures hosts for Cabrillo ROV 2023
+# sub-playbook for MCP2221 configuration
+#
+# Copyright (C) 2022-2023 Cabrillo Robotics Club
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Cabrillo Robotics Club
+# 6500 Soquel Drive Aptos, CA 95003
+# cabrillorobotics@gmail.com
+#
+---
+
+- name: "install libusb"
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name:
+    - libusb-1.0
+    - libudev-dev
+
+- name: "add udev rule"
+  become: true
+  ansible.builtin.blockinfile:
+    create: true
+    block: 'SUBSYSTEM=="usb", ATTRS{idVendor}=="04d8", ATTR{idProduct}=="00dd", MODE="0666"'
+    path: /etc/udev/rules.d/99-mcp2221.rules
+
+- name: "pip install hidapi"
+  become: false
+  ansible.builtin.pip:
+    name: hidapi
+
+- name: "blacklist mcp2221 kernel module"
+  become: true
+  ansible.builtin.blockinfile:
+    block: 'blacklist hid_mcp2221'
+    path: /etc/modprobe.d/blacklist.conf
+    marker: "# {mark} SeaHawk-ROV MCP2221 Configuration"
+
+- name: "initramfs update"
+  become: true
+  ansible.builtin.shell:
+    cmd: 'update-initramfs -u'
+
+- name: "reboot system to apply kernel module changes"
+  become: true
+  ansible.builtin.reboot:
+
+- name: "install blinka"
+  become: false
+  ansible.builtin.pip:
+    name: adafruit-blinka

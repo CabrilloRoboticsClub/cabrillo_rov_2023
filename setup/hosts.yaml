@@ -39,24 +39,43 @@
 
 rov:
   hosts:
-    SeaHawk-1:
+    SeaHawk-ROV:
+      ansible_host: seahawk-rov.local
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
-      ansible_host: 192.168.254.101
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
-    SeaHawk-2:
+    SeaHawk-ROV-SPARE:
+      ansible_host: seahawk-rov-spare.local
       ansible_user: ubuntu
       ansible_ssh_pass: Cabri11o
       ansible_become_pass: Cabri11o
-      ansible_host: 192.168.254.102
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+    SeaHawk-ROV-Ciaran:
+      #ansible_host: seahawk-rov-ciaran.local
+      ansible_host: 192.168.22.41
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
       ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
 deck:
   hosts:
-    Deck_Placeholder_Name:
-      # TODO: The whole deck computer. Oops.
+    SeaHawk-DECK:
+      ansible_host: seahawk-deck.local
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    SeaHawk-DECK-Ciaran:
+      ansible_host: seahawk-deck-ciaran.local
+      ansible_user: ubuntu
+      ansible_ssh_pass: Cabri11o
+      ansible_become_pass: Cabri11o
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
 
 devkits:
   hosts:
@@ -64,22 +83,3 @@ devkits:
     # If we get a dedicated development machine, we can add it here.
     # NEVER use the local connection from this main inventory.
     # For that, use the hosts_devkit.yaml file. It's already set up for self-operation
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# The following groups are for a component-wise separation of roles. Things   #
-# that have "ros-core" will be "ros_hosts". Things with the Python hardware   #
-# interface libraries are "pyparts". etc, etc. Add more as necessary          #
-# !! Take care !! not to re-define hosts here. We're only adding them to      #
-# these secondary groups.                                                     #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-ros_hosts:
-  hosts:
-    SeaHawk-1:
-    SeaHawk-2:
-    Deck_Placeholder_Name: # TODO: duh. Finish the deck
-
-pyparts:
-  hosts:
-    SeaHawk-1:
-    SeaHawk-2:
-
