@@ -61,11 +61,15 @@
 source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_deck deck.launch.py
 ```
 
-1. in the second tab ssh into the rov and launch the rov
+1. In the second tab ssh into the rov
 
 ```console
 ssh ubuntu@SeaHawk-ROV.lan
+```
 
+1. In the second tab launch the ROV
+
+```console
 source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_rov rov.launch.py
 ```
 
