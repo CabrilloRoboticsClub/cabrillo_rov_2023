@@ -42,8 +42,7 @@ class ThrustBoxServo:
 
         # map output channels        
         self.thruster_map = (0,1,2,3,4,5,6,7)
-        #self.pwm_offset = -30 # offset in microseconds
-        self.pwm_offset = 0
+        self.pwm_offset = -100 # offset in microseconds
 
         # instantiate outputs
         self.kit = ServoKit(channels=16, i2c=i2c, address=0x41)
