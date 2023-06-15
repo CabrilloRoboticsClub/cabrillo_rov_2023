@@ -16,7 +16,7 @@
 
 1. If WAN is available, connect it to the WAN port on the deck box.
 
-1. Plug the IEC-C13 Cable into the 120v power supplied by MATE.
+1. Plug the IEC-C13 Cable into the 120V power supplied by MATE.
 
 1. Plug the IEC-C13 cable into the IEC-C14 "POWER IN" port on the deck box.
 
@@ -35,6 +35,12 @@
 
 1. Connect the tether pneumatic line to the compressor
 
+1. Plug the IEC-C19 cable for the 48V PSU into the 120V power supplied by mate
+
+1. Plug the IEC-C19 cable into the IEC-C20 socket on the 48V PSU
+
+1. Flip the "INPUT SW" to "I" on the 48V PSU
+
 1. Flip the "OUTPUT SW" to "ON" on the 48V PSU
 
 1. Uncoil the XBOX Controller cable.
@@ -42,6 +48,8 @@
 1. Plug the XBOX Controller into "REAR USB 2"
 
 ## Person 1 (Ciaran or Orion) (part 2)
+
+1. Wait for the monitor to show the Ubuntu Desktop.
 
 1. On the Keyboard use the `ctrl+alt+t` keyboard shortcut to open a Terminal window
 
@@ -56,7 +64,7 @@ source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_deck deck.l
 1. in the second tab ssh into the rov and launch the rov
 
 ```console
-ssh ubuntu@SeaHawk-Rov.lan
+ssh ubuntu@SeaHawk-ROV.lan
 
 source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_rov rov.launch.py
 ```
