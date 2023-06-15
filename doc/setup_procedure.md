@@ -1,5 +1,9 @@
 # Setup Procedure
 
+This is the procedure to use for our 5 minutes alloted setup time at the competition
+
+
+
 Person 1 and person 2 work in parallel
 
 ## Person 1 (Ciaran or Orion)
@@ -39,9 +43,6 @@ Person 1 and person 2 work in parallel
     * pneumatic line to the compressor
 
 1. Connect and turn on the power Supply
-
-    ![IEC-C19](img/IEC-C19.png)
-    IEC-C19
 
     1. IEC-C19 cable to the "wall"
     1. IEC-C19 Cable to the IEC-C20 socket on the psu (POWER IN)
@@ -90,3 +91,9 @@ source ~/cabrillo_rov_2023/install/setup.bash && rqt
 ```
 
 ## YOU ARE READY TO DRIVE THE ROV
+
+## Reference Images
+
+| IEC-C19 | IEC-C13 | NEMA 5-15P |
+|---------|---------|----------|
+| ![IEC-C19](img/IEC-C19.png) | ![IEC-C13](img/IEC-C13.png) | ![NEMA 5-15P](img/NEMA_5-15P.png)
