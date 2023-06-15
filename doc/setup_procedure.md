@@ -37,6 +37,10 @@
 
 1. Flip the "OUTPUT SW" to "ON" on the 48V PSU
 
+1. Uncoil the XBOX Controller cable.
+
+1. Plug the XBOX Controller into "REAR USB 2"
+
 ## Person 1 (Ciaran or Orion) (part 2)
 
 1. On the Keyboard use the `ctrl+alt+t` keyboard shortcut to open a Terminal window
