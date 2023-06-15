@@ -26,18 +26,26 @@ Person 1 and person 2 work in parallel
 
 ## Person 2 (Tether Manager)
 
-1. Connect the tether to the ROV.
-    * Ethernet
-    * Pneumatic Line
-    * Power Connector
+1. Connect the rov side of the tether rov.
+    * strain relief
+    * ethernet
+    * pneumatic
+    * 48V power
 
-1. Connect the tether SBS50 to the 48v PSU
+1. Connect the deck side of the tether
+    * strain relief to the table
+    * SBS50 to the 48v PSU
+    * Ethernet to the "ROV LAN" port on the deck box
+    * pneumatic line to the compressor
 
-1. Connect the tether Ethernet to the "ROV LAN" port on the deck box
+1. Connect and turn on the power Supply
 
-1. Connect the tether pneumatic line to the compressor
+    ![IEC-C19](img/IEC-C19.png)
+    IEC-C19
 
-1. Plug the IEC-C19 cable for the 48V PSU into the 120V power supplied by mate
+    1. IEC-C19 cable to the "wall"
+    1. IEC-C19 Cable to the IEC-C20 socket on the psu (POWER IN)
+    1. 
 
 1. Plug the IEC-C19 cable into the IEC-C20 socket on the 48V PSU
 
