@@ -2,7 +2,7 @@
 
 ## Person 1 (Ciaran or Orion)
 
-1. Open the thrust box on table in front of the pilot.
+1. Open the Deck box on table in front of the pilot.
 
 1. Look through the Lexan sheet on the deck box and check for any connectors that have fallen out.
 
