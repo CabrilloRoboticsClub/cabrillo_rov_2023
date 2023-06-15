@@ -75,7 +75,7 @@ ssh ubuntu@SeaHawk-ROV.lan
 source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_rov rov.launch.py
 ```
 
-1. in the third tab open rqt
+1. In the third tab open rqt
 
 ```console
 source ~/cabrillo_rov_2023/install/setup.bash && rqt
