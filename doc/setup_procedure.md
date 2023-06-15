@@ -1,5 +1,7 @@
 # Setup Procedure
 
+Person 1 and person 2 work in parallel
+
 ## Person 1 (Ciaran or Orion)
 
 1. Open the Deck box on table in front of the pilot.
