@@ -12,13 +12,11 @@ Person 1 and person 2 work in parallel
 
     1. Look through lexan sheet for loose connectors.
 
-        * [wiring diagram](example.com)
-
     1. Wifi Antennas to RP-SMA Jacks
 
-    1. 48V PSU Cable (IEC-C13 / NEMA 5-15P) to the MATE Provided "wall outlet" (NEMA 5-15R)
+    1. Deck Box Power Cable (IEC-C13 / NEMA 5-15P) to an Extension Cord Outlet (NEMA 5-15R)
 
-    1. Deck box cable (IEC-C13) to the IEC-C14 "POWER IN"
+    1. Deck box Power cable (IEC-C13) to the Deck Box "POWER IN" (IEC-C14)
 
     1. Flip the "POWER IN" switch to "ON"
 
@@ -42,8 +40,8 @@ Person 1 and person 2 work in parallel
 
 1. Connect and turn on the ROV 48V Power Supply.
 
-    1. IEC-C19 / NEMA 5-15P cable to the MATE Provided NEMA 5-15R.
-    1. IEC-C19 Cable to the IEC-C20 "POWER IN"
+    1. 48V PSU Power Cable (IEC-C19 / NEMA 5-15P) to an Extension Cord Outlet (NEMA 5-15R.)
+    1. 48V PSU Power Cable (IEC-C19) to the 48V PSU "POWER IN" (IEC-C20)
     1. Flip the "INPUT SW" to "I"
     1. Flip the "OUTPUT SW" to "ON"
 
