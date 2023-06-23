@@ -16,9 +16,9 @@ Person 1 and person 2 work in parallel
 
     1. Wifi Antennas to RP-SMA Jacks
 
-    1. IEC-C13 / NEMA 5-15P Cable to the MATE Provided NEMA 5-15R
+    1. 48V PSU Cable (IEC-C13 / NEMA 5-15P) to the MATE Provided "wall outlet" (NEMA 5-15R)
 
-    1. IEC-C13 cable to the IEC-C14 "POWER IN"
+    1. Deck box cable (IEC-C13) to the IEC-C14 "POWER IN"
 
     1. Flip the "POWER IN" switch to "ON"
 
@@ -51,7 +51,7 @@ Person 1 and person 2 work in parallel
 
 1. Wait for the monitor to show the Ubuntu Desktop.
 
-1. On the Keyboard use the `ctrl+alt+t` keyboard shortcut 3 times to open 3 Terminal windows
+1. On the Keyboard use the `ctrl`+`alt`+`t` keyboard shortcut 3 times to open 3 Terminal windows
 
 1. in the first window launch the deck
 
