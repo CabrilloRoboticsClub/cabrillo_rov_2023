@@ -54,7 +54,7 @@ sudo shutdown now
 
 1. wait for the fans to stop spinning on the deck box pc
 
-1. switch the `POWER IN` switch too `OFF`
+1. switch the `POWER IN` switch to `OFF`
 
 1. unplug the Deck power Cable (IEC-C13) from the power entry socket (IEC-C14).
 
