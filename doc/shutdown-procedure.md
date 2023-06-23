@@ -4,7 +4,7 @@ This is the procedure for packing up from a product demo
 
 ## Shutdown the ROV
 
-1. In the Second Terminal Window use the `ctrl+c` keyboard shortcut to Keyboard Interrupt ros.
+1. In the Second Terminal Window use the `ctrl`+`c` keyboard shortcut to Keyboard Interrupt ros.
 
 1. type in
 
@@ -14,7 +14,7 @@ sudo shutdown now
 
 1. you will be disconnected as the rov shuts down
 
-1. In the second terminal window use the keyboard shortcut `ctrl+d` to close the window
+1. In the second terminal window use the keyboard shortcut `ctrl`+`d` to close the window
 
 1. watch for the activity (green) light on the rov pi to be off for 10 seconds
 
@@ -24,9 +24,9 @@ sudo shutdown now
 
 1. unplug the SBS50 from the 48v PSU
 
-1. unplug the IEC-C19 cable from the IEC-C20 socket on the 48V PSU
+1. unplug the 48V PSU Power Cable (IEC-C19) from the Power Input Socket (IEC-C20) on the 48V PSU
 
-1. unplug the IEC-C19 / NEMA 5-15P Cable from the NEMA 5-15R socket
+1. unplug the 48V PSU Power Cable (IEC-C19 / NEMA 5-15P) from the Extension Cord Outlet (NEMA 5-15R)
 
 1. Coil the cable inside the PSU box
 
@@ -42,9 +42,9 @@ sudo shutdown now
 
 1. Close the RQT window with the X on the top right
 
-1. in the first terminal window use the keyboard shortcut `ctrl+c` to Keyboard Interrupt ros
+1. in the first terminal window use the keyboard shortcut `ctrl`+`c` to Keyboard Interrupt ros
 
-1. in the first terminal window use the keyboard shortcut `ctrl+d` to close the window
+1. in the first terminal window use the keyboard shortcut `ctrl`+`d` to close the window
 
 1. in the third terminal window type the following to shutdown the DECK
 
@@ -56,7 +56,7 @@ sudo shutdown now
 
 1. switch the `POWER IN` switch too `OFF`
 
-1. unplug the IEC-C13 Cable from the IEC-C14 power entry socket.
+1. unplug the Deck power Cable (IEC-C13) from the power entry socket (IEC-C14).
 
 1. unplug the xbox controller and coil its cable and secure it with the velcro tie
 
