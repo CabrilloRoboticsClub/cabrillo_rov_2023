@@ -167,18 +167,10 @@ class Input(Node):
         # AXIS SCALE
         twist_msg.linear.x  *= linear_x_scale
         twist_msg.linear.y  *= linear_y_scale
+        twist_msg.linear.z  *= linear_z_scale
         twist_msg.angular.x *= angular_x_scale
         twist_msg.angular.y *= angular_y_scale
         twist_msg.angular.z *= angular_z_scale
-
-        # Ensures linear z does not excede 1 or -1 due to z_trim and z axis scale
-        temp_linear_z = twist_msg.linear.z * linear_z_scale + self.z_trim
-        if temp_linear_z < -1.0:
-            twist_msg.linear.z = -1.0
-        elif temp_linear_z > 1.0:
-            twist_msg.linear.z = 1.0
-        else:
-            twist_msg.linear.z = temp_linear_z
 
         self.twist_pub.publish(twist_msg)
 
