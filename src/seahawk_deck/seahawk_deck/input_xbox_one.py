@@ -59,9 +59,6 @@ class Input(Node):
         self.last_a_state = 0
         self.last_b_state = 0
         self.last_x_state = 0
-        self.z_trim = 0.0
-        self.last_lb_state = 0
-        self.last_rb_state = 0
 
     def _callback(self, joy_msg):
         """Called every time the joystick publishes a message."""
@@ -113,24 +110,6 @@ class Input(Node):
         claw_msg = Int8MultiArray()
         claw_msg.data = [0,0,0]
         
-        # Reset bambi and z trim if 'y' is pressed
-        if controller['y']:
-            self.bambi_mode = False
-            self.last_x_state = 0
-            self.z_trim = 0.0
-            self.last_lb_state = 0
-            self.last_rb_state = 0
-        
-        # Makes lb button for z trim incremantal
-        if self.last_lb_state == 0 and controller['left_bumper'] == 1 and self.z_trim > -0.15:
-            self.z_trim -= 0.05
-        self.last_lb_state = controller['left_bumper']
-
-        # Makes rb buttn for z trim incremental 
-        if self.last_rb_state == 0 and controller['right_bumper'] == 1 and self.z_trim < 0.15:
-            self.z_trim += 0.05
-        self.last_rb_state = controller['right_bumper']
-
         # Makes a button for the claw "sticky"
         if self.last_a_state == 0 and controller['a'] == 1:
             self.claw_grab = not self.claw_grab
