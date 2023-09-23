@@ -12,7 +12,7 @@
       become: true
       lineinfile:
         path: /boot/firmware/config.txt
-        search_string: camera_auto_detect=
+        regexp: camera_auto_detect=
         line: "#camera_auto_detect="
         state: present
 
@@ -20,20 +20,21 @@
       become: true
       lineinfile:
         path: /boot/firmware/config.txt
-        search_string: gpu_mem=
+        regexp: gpu_mem=
         line: gpu_mem=256
 
     - name: Set i2c baud rate
       become: true
       lineinfile:
         path: /boot/firmware/config.txt
+        regexp: dtparam=i2c_arm_baudrate=
         line: 'dtparam=i2c_arm_baudrate=400000'
 
     - name: Set start_x  
       become: true
       lineinfile:
         path: /boot/firmware/config.txt
-        search_string: start_x=
+        regexp: start_x=
         line: start_x=1
 
     # Access to i2c
