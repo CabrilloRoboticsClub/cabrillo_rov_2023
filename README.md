@@ -29,13 +29,23 @@ Take the following steps to get started.
     ```console
     $ cd 
     $ git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    $ cd ~/cabrillo_rov_2023
+    $ git submodule init 
+    $ git submodule update
     ```
 1. Use `make` to install ROS2 and all the necessary packages. 
     ```console 
-    $ cd ~/cabrillo_rov_2023
     $ make devbox
     ```
     This will take a while! 
+1. Put ROS on your path 
+    ```console
+    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    ```
+1. **Start a new shell** and build the repository
+    ```console
+    $ make 
+    ```
 
 ## Building
 
