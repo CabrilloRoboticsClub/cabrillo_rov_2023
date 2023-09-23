@@ -26,6 +26,20 @@
 #
 ---
 
+- name: Installing extra packages needed by Seahawk
+  apt:
+    name:
+      - libavdevice-dev 
+      - libavformat-dev 
+      - libavcodec-dev 
+      - libavutil-dev 
+      - libswscale-dev
+      - ros-humble-v4l2-camera
+      - ros-humble-image-transport-plugins
+      - v4l-utils
+      - python3-pip 
+    state: present
+
 - name: Installing Python packages in your home directory with PIP
   become: false
   pip:
@@ -56,15 +70,3 @@
     - wheel
     - pip
 
-- name: Installing extra packages needed by Seahawk
-  apt:
-    name:
-      - libavdevice-dev 
-      - libavformat-dev 
-      - libavcodec-dev 
-      - libavutil-dev 
-      - libswscale-dev
-      - ros-humble-v4l2-camera
-      - ros-humble-image-transport-plugins
-      - v4l-utils
-    state: present
