@@ -4,41 +4,15 @@
   hosts: all 
   become: yes
   roles:
-    - common 
     - ros
+    - common
   tasks:
-  - name: Install vscode
-    community.general.snap:
-      name: code
-      classic: true
-  - name: Install extra ROS packages.
+  - name: Install ROS2 desktop packages.
     apt:
       name:
-        - sshpass
         - rviz
         - ros-humble-desktop-full
         - python3-colcon-common-extensions
-        - qemu-user-static
         - python3-venv 
         - python3-rosdep2
-#        - docker.io 
       state: present
-#  - name: Add student to the docker group
-#    user:
-#      name: student
-#      groups: docker
-#      append: yes
-  - name: Make sudo passwordless 
-    lineinfile:
-      path: /etc/sudoers
-      regexp: "^%sudo"
-      line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
-  - name: Update user's config.
-    ansible.builtin.blockinfile:
-      path: /home/student/.bashrc
-      block: |
-        source /opt/ros/humble/setup.bash
-        if [ -f ~/cabrillo_rov_2023/install/local_setup.bash ]; then
-          source ~/cabrillo_rov_2023/install/local_setup.bash
-        fi
-        alias cabrillo-update='sudo ansible-pull -U https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/devbox.yaml'

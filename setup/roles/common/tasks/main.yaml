@@ -26,18 +26,7 @@
 #
 ---
 
-- name: Install apt depends
-  become: true
-  ansible.builtin.apt:
-    state: present
-    name:
-      - python3
-      - python3-pip
-      - python3-setuptools
-      - sshpass
-    cache_valid_time: 86400
-
-- name: install pip depends
+- name: Installing Python packages in your home directory with PIP
   become: false
   pip:
     name:
@@ -64,16 +53,18 @@
     - RPi.GPIO
     - typing_extensions
     - hidapi
+    - wheel
+    - pip
 
-- name: apt remove unattended-upgrades
-  become: true
-  ansible.builtin.apt:
-    state: absent
+- name: Installing extra packages needed by Seahawk
+  apt:
     name:
-      - unattended-upgrades
-
-- name: apt upgrade
-  become: true
-  ansible.builtin.apt:
-    upgrade: "yes"
-    autoremove: true
+      - libavdevice-dev 
+      - libavformat-dev 
+      - libavcodec-dev 
+      - libavutil-dev 
+      - libswscale-dev
+      - ros-humble-v4l2-camera
+      - ros-humble-image-transport-plugins
+      - v4l-utils
+    state: present
