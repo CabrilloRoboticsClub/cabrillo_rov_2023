@@ -45,9 +45,31 @@
         groups: dialout
         append: yes
 
-- name: Install development box tools.
+- name: Install ROV tools.
   hosts: all 
   become: yes
   roles:
     - ros
     - common
+
+- name: Add users 
+  hosts: all 
+  become: yes
+  vars:
+    users:
+      - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
+  tasks:
+    - name: "Add user {{ item.name }}"
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        comment: "{{ item.comment }}"
+        shell: /usr/bin/bash
+        groups:  adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,lxd
+        state: present
+      loop: "{{ users }}"
+    - name: "Import {{ item.name }} keys from GitHub user {{ item.ghuser }}"
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "https://github.com/{{ item.ghuser }}.keys"
+        state: present
+      loop: "{{ users }}"

@@ -11,7 +11,7 @@ devbox:
 		--inventory 127.0.0.1, \
 		--limit 127.0.0.1 devbox.yaml
 
-rovsetup:
+rov:
 	# Need sudo here for when password authentication is on
 	cd setup && sudo ansible-playbook \
 		--connection=local \

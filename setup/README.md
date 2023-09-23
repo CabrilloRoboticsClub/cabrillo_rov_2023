@@ -78,9 +78,13 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
     ```
 1. Use `make` to install ROS2 and all the necessary packages. 
     ```console 
-    $ make rovsetup
+    $ make rov
     ```
-    **This will take a long, long time!** Up to an hour. 
+    **This will take a long, long time!** 30 minutes or more. 
+1. Reboot the Pi 
+    ```console
+    $ sudo reboot
+    ```
 1. Put ROS on your path 
     ```console
     echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
