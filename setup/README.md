@@ -1,10 +1,49 @@
 # Setup
 
-**TODO:** flesh this out with description of the contents of this folder
+This readme will describe how to setup various things.
 
----
+## Development Box Setup 
 
-## Raspberry Pi (ROV) Setup procedure
+Take the following steps to get started. 
+
+1. Install necessary packages (skip this if you're using a removable drive provided by the club)
+    ```console
+    $ sudo apt update -y && sudo apt install -y git ansible python3-pip vim 
+    ```
+1. Create an SSH key if you don't have one already. 
+    ```console 
+    $ ssh-keygen -t ed25519
+    ```
+    Use the default location, set a password if you like. 
+1. Copy and paste your public key into GitHub
+    ```console
+    $ cat ~/.ssh/id_ed25519.pub
+    ```
+1. Check out this repository into your home directory. 
+    ```console
+    $ cd 
+    $ git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    $ cd ~/cabrillo_rov_2023
+    $ git submodule init 
+    $ git submodule update
+    ```
+1. Use `make` to install ROS2 and all the necessary packages. 
+    ```console 
+    $ make devbox
+    ```
+    This will take a while! 
+1. Put ROS on your path 
+    ```console
+    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    ```
+1. **Start a new shell** and build the repository
+    ```console
+    $ make 
+    ```
+
+## Raspberry Pi (ROV) Setup Procedure
+
+Start by creating a bootable SD card image: 
 
 1. On your local computer download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 1. Attach a Micro SD card to your local computer
@@ -12,171 +51,42 @@
     * `CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 22.04 LTS (64-bit)`
     * Choose the Micro SD card as the storage and hit `WRITE`
 1. Unplug the Micro SD card from your local computer, plug it back in to your local computer.
-1. Copy the `user-data` file from `setup/roles/rov/files` into the `system-boot` volume that shows up (overwrite the existing file).
+1. Copy the `user-data` file from `setup/image` into the `system-boot` volume that shows up (overwrite the existing file).
 1. Install the SD card into the Raspberry Pi
 1. Connect the Pi to an ethernet connection with internet access
 1. Plug the power cable in to the Pi.
 
----
+The Pi will boot, then reboot. Give it 10 minutes or so. The hostname and passwords are now set. SSH is enabled. You can connect with:
 
-## DECK BOX Setup Procedure
-
-1. On your local machine download [ubuntu-server 22.04 LTS](https://releases.ubuntu.com/22.04.2/ubuntu-22.04.2-live-server-amd64.iso) installer iso.
-1. Flash the installer iso to a flash drive.
-1. Boot the installer iso on the deck box.
-1. install ubuntu server.
-
-### language
-
-* english
-
-### keyboard
-
-Layout:
-
-* English (US)
-
-Variant:
-
-* English (US)
-
-### Choose type of install
-
-Base for the installation:
-
-* Ubuntu Server
-
-Additional Options:
-
-* enable search for third party drivers
-
-### Network Connections
-
-* DHCPv4
-
-### Configure Proxy
-
-* n/a
-
-### Configure Ubuntu Archive Mirror
-
-* use default
-
-### Guided Storage Configuration
-
-* (X) Use Entire Disk
-* (X) Set up this disk as an LVM group
-* no encryption
-
-### Storage Configuration
-
-just hit done
-
-### Profile Setup
-
-Your name:
-
-* ubuntu
-
-Your Server's Name:
-
-* seahawk-deck
-
-Pick a username:
-
-* ubuntu
-
-Choose a password:
-
-* Cabri11o
-
-### Upgrade to ubuntu pro
-
-* skip for now
-
-### SSH Setup
-
-YES install OpenSSH Server
-
-SSH Identity
-
-* From GitHub
-
-GitHub Username:
-
-* cabrillorobotics
-
-YES allow password authentication over ssh
-
-### Featured Server Snaps
-
-none
-
----
-
-## Ansible Deploy Playbook (First Time setup)
-
-Use this playbook to deploy (or upgrade) all the devices in the robot to the latest system configuration.
-
-(Run this from a DevBox in the `cabrillo_rov_2023` folder)
-
-```bash
-ansible-playbook setup/playbook-deploy.yaml -i setup/hosts.yaml
+```console
+$ ssh -A ubuntu@seahawk.local
 ```
 
----
+Once you have SSHed into the new Pi image run the ROV specific playbooks:
 
-## Ansible Build Procedure (Build New Software)
-
-This playbook will build code from the branch of your choosing (on this repository) to all the rov devices
-
-(Run this from a DevBox in the `cabrillo_rov_2023` folder)
-
-```bash
-ansible-playbook setup/playbook-build.yaml -i setup/hosts.yaml
-```
-
-## Ubuntu Devbox Setup Procedure
-
-1. Install Ubuntu on a fresh computer or a removable drive.
-    1. Install a regular system with proprietary software (which may be needed for robot video encode/decode)
-1. On first boot install needed packages:
-
+1. Check out this repository into your home directory. 
     ```console
-    sudo apt install -y git ansible 
+    $ cd 
+    $ git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    $ cd ~/cabrillo_rov_2023
+    $ git submodule init 
+    $ git submodule update
+    ```
+1. Install make and Ansible command
+    ```console
+    $ sudo apt install make ansible
+    ```
+1. Use `make` to install ROS2 and all the necessary packages. 
+    ```console 
+    $ make rovsetup
+    ```
+    **This will take a long, long time!** Up to an hour. 
+1. Put ROS on your path 
+    ```console
+    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    ```
+1. **Start a new shell** and build the repository
+    ```console
+    $ make 
     ```
 
-1. Use Ansible to run the `devbox.yaml` file locally.
-
-    ```console
-    sudo ansible-pull -U https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git --inventory 127.0.0.1, --connection local setup/devbox.yaml
-    ```
-
-    > This will take a long time!
-
-1. Generate an SSH key for your development box. Follow the instructions in the [GitHub documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh).
-
-1. Clone the Cabrillo ROV repository:
-
-    ```console
-    cd 
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    ```
-
-1. Start `vscode`
-
-    ```console
-    cd cabrillo_rov_2023
-    code . 
-    ```
-
-   1. In order to develop on the Pi, install the `Remote SSH` extension.
-   1. Install the Python extension
-
-### Keeping up with Project Updates
-
-Your development box has a command `cabrillo-update`. Running the command will update your box with the latest changes from the infrastructure team.
-
----
-
-`<this guide is incomplete>`

@@ -10,42 +10,7 @@ ROS 2 Humble Hawksbill (Ubuntu 22.04 LTS)
 
 ## Getting Started 
 
-Take the following steps to get started. 
-
-1. Install necessary packages (skip this if you're using a removable drive provided by the club)
-    ```console
-    $ sudo apt update -y && sudo apt install -y git ansible python3-pip vim 
-    ```
-1. Create an SSH key if you don't have one already. 
-    ```console 
-    $ ssh-keygen -t ed25519
-    ```
-    Use the default location, set a password if you like. 
-1. Copy and paste your public key into GitHub
-    ```console
-    $ cat ~/.ssh/id_ed25519.pub
-    ```
-1. Check out this repository into your home directory. 
-    ```console
-    $ cd 
-    $ git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    $ cd ~/cabrillo_rov_2023
-    $ git submodule init 
-    $ git submodule update
-    ```
-1. Use `make` to install ROS2 and all the necessary packages. 
-    ```console 
-    $ make devbox
-    ```
-    This will take a while! 
-1. Put ROS on your path 
-    ```console
-    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
-    ```
-1. **Start a new shell** and build the repository
-    ```console
-    $ make 
-    ```
+Check out the [README](./setup/README.md) in the `setup` directory. 
 
 ## Building
 
