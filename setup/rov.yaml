@@ -39,7 +39,6 @@
 
     # Access to i2c
     - name: Add ubuntu to the dialout group
-      become_user: "{{ ansible_user }}"
       become: true
       user:
         name: ubuntu
