@@ -8,6 +8,10 @@ ROS 2 Humble Hawksbill (Ubuntu 22.04 LTS)
 
 [ROS Documentation](http://docs.ros.org/en/humble/index.html)
 
+## Getting Started 
+
+Check out the [README](./setup/README.md) in the `setup` directory. 
+
 ## Building
 
 The ROS nodes are built with the `colcon` program. A `makefile` is present to help me remember what the `colcon` commands are. Build the project with:
