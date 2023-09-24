@@ -59,7 +59,7 @@
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
   tasks:
-    - name: "Add user {{ item.name }}"
+    - name: Add user
       ansible.builtin.user:
         name: "{{ item.name }}"
         comment: "{{ item.comment }}"
@@ -67,7 +67,7 @@
         groups:  adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,lxd
         state: present
       loop: "{{ users }}"
-    - name: "Import {{ item.name }} keys from GitHub user {{ item.ghuser }}"
+    - name: Import keys from GitHub
       ansible.posix.authorized_key:
         user: "{{ item.name }}"
         key: "https://github.com/{{ item.ghuser }}.keys"

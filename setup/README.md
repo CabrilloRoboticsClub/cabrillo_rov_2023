@@ -85,6 +85,10 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
     ```console
     $ sudo reboot
     ```
+1. Disable the building of the `seahawk_description` package 
+    ```console 
+    $ touch src/seahawk_description/COLCON_IGNORE 
+    ```
 1. Put ROS on your path 
     ```console
     echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
@@ -93,4 +97,3 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
     ```console
     $ make 
     ```
-

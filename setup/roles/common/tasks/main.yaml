@@ -37,7 +37,11 @@
       - ros-humble-v4l2-camera
       - ros-humble-image-transport-plugins
       - v4l-utils
-      - python3-pip 
+      - python3-pip
+      - ros-humble-tf2
+      - ros-humble-tf2-py
+      - ros-humble-tf2-ros
+      - ros-humble-tf2-ros-py
     state: present
 
 - name: Installing Python packages in your home directory with PIP
