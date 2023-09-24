@@ -3,7 +3,7 @@
 # 
 # This assumes a fresh Ubuntu install.
 # 
-- name: Install development box tools.
+- name: Configure the RPi to be an ROV
   hosts: all 
   become: yes
   tasks:
@@ -55,14 +55,22 @@
         group: root
         mode: '0755'
 
-- name: Install ROV tools.
+
+    - name: Make sudo passwordless for members of sudo
+      lineinfile:
+        path: /etc/sudoers
+        regexp: "^%sudo"
+        line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
+
+- name: Install ROV tools
   hosts: all 
   become: yes
   roles:
     - ros
     - common
 
-- name: Add users 
+    
+- name: Add user accounts
   hosts: all 
   become: yes
   vars:
