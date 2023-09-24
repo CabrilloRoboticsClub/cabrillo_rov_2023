@@ -1,7 +1,22 @@
 from launch import LaunchDescription
+from launch.actions import ExecuteProcess
 from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
 
+import pathlib
+import os
 
+def find_resource(package_name, relpath):
+    """This is probably done somewhere in launch but the documentation is garbage."""
+    relpath = pathlib.Path(relpath)
+    for searchpath in os.environ['AMENT_PREFIX_PATH'].split(':'):
+        search = pathlib.Path(searchpath) / 'share' / package_name / relpath
+        if search.exists():
+            print("Found: ", search)
+            return str(search)
+    print("WARNING: Not Found:", relpath)
+    return str(relpath)
+        
 def generate_launch_description():
     return LaunchDescription([
         Node(
@@ -54,5 +69,12 @@ def generate_launch_description():
             executable='joy_node',
             name='joy_node',
             output='screen'
-        )
+        ),
+        Node(
+            package='rqt_gui',
+            executable='rqt_gui',
+            name='viewer_node',
+            output='screen',
+            arguments=['--perspective-file', find_resource('seahawk_deck', 'resource/deck.perspective'),]
+        ),
     ])
