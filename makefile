@@ -2,6 +2,7 @@
 .PHONY: all clean
 
 all:
+	if [ "$$(uname -m)" = "aarch64" ]; then touch src/seahawk_description/COLCON_IGNORE; fi
 	colcon build --symlink
 
 devbox:
