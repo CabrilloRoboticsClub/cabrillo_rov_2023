@@ -19,5 +19,9 @@ rov-install:
 		--inventory 127.0.0.1, \
 		--limit 127.0.0.1 rov.yaml
 
+rov:
+	. ./install/local_setup.sh && \
+		ros2 launch seahawk_rov rov.launch.py
+
 clean:
 	-rm -rf build install log 
