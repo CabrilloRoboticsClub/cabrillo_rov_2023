@@ -82,6 +82,7 @@
   vars:
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
+      - { name: 'liam', comment: 'Liam Gilligan', ghuser: 'liamgilligan' }
   tasks:
     - name: Add user
       ansible.builtin.user:
