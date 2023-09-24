@@ -45,6 +45,16 @@
         groups: dialout
         append: yes
 
+    - name: Disable eee using /etc/rc.local
+      ansible.builtin.copy:
+        content: |
+          #! /bin/bash 
+          ethtool --set-eee eth0 eee off
+        dest: /etc/rc.local
+        owner: root
+        group: root
+        mode: '0755'
+
 - name: Install ROV tools.
   hosts: all 
   become: yes
