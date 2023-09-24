@@ -20,7 +20,7 @@ The ROS nodes are built with the `colcon` program. A `makefile` is present to he
 make 
 ```
 
-The built artifacts are in:
+The build artifacts are in:
 
 - `build`
 - `install`
@@ -32,9 +32,23 @@ Clean the build with:
 make clean 
 ```
 
-## Launching all Nodes
+## Starting the ROV and Deck ROS2 Nodes
 
-We've migrated all the launch files to their respective ROS packages. To run all the configured nodes on the ROV:
+The easiest way to launch is by `make`. To launch the deck nodes and RQT viewer run:
+
+```console
+$ make deck
+```
+
+To launch all the nodes on the ROV run: 
+
+```console
+$ make rov
+```
+
+## Launch Files 
+
+We've migrated all the launch files to their respective ROS packages. To use the launch files you must first run the `install/local_setup.XXX` script. 
 
 ```console 
 ros2 launch seahawk_rov rov.launch.py  
