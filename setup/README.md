@@ -29,7 +29,7 @@ Take the following steps to get started.
     ```
 1. Use `make` to install ROS2 and all the necessary packages. 
     ```console 
-    $ make devbox
+    $ make devbox-install
     ```
     This will take a while! 
 1. Put ROS on your path 
@@ -78,7 +78,7 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
     ```
 1. Use `make` to install ROS2 and all the necessary packages. 
     ```console 
-    $ make rov
+    $ make rov-install
     ```
     **This will take a long, long time!** 30 minutes or more. 
 1. Reboot the Pi 
