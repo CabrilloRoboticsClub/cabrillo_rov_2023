@@ -2,9 +2,13 @@
 
 This is the construction and customization of the developer disks.
 
+## Download the 2024 Image 
+
+An [Ubuntu image](https://drive.google.com/file/d/1PHmEwpXliKuy4DiJp5DwF8t5_xciZzM5/view?usp=sharing) is available for download. It was built using the procedure in the next part. 
+
 ## Create an Ubuntu Image 
 
-This procedure assumes you're working on Ubuntu 22.04 Desktop. 
+This procedure is how the downloadable image was generated. The process assumes you're working on Ubuntu 22.04 Desktop with `virt-manager` installed. 
 
 1. Download the installer ISO. 
 
