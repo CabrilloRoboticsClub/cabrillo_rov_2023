@@ -84,6 +84,8 @@
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
       - { name: 'liam', comment: 'Liam Gilligan', ghuser: 'liamgilligan' }
       - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'hugo10123' }
+      - { name: 'steph', comment: "Stephanie L'Heureux", ghuser: 'steph1111' }
+      - { name: 'cjbf', comment: 'CJ Bridgman-Ford', ghuser: 'cjikaika' }
   tasks:
     - name: Add user
       ansible.builtin.user:
