@@ -75,15 +75,6 @@ ros2 run seahawk_rov example_pub
 ros2 run seahawk_rov example_sub
 ```
 
-## Launching the deck
-
-Do this to launch the deck nodes:
-
-```console 
-$ ros2 launch seahawk_deck deck.launch.py
-$ ros2 topic echo /drive/twist
-```
-
 ## Launching the Kinematics Debug Nodes
 
 Do this to launch the debug nodes. It also starts RViz:
@@ -91,3 +82,5 @@ Do this to launch the debug nodes. It also starts RViz:
 ```console 
 $ ros2 launch seahawk_deck kinematics_viz.launch.py
 ```
+
+You have to separately launch the other deck nodes. 
