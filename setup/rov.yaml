@@ -86,6 +86,7 @@
       - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'hugo10123' }
       - { name: 'steph', comment: "Stephanie L'Heureux", ghuser: 'steph1111' }
       - { name: 'cjbf', comment: 'CJ Bridgman-Ford', ghuser: 'cjikaika' }
+      - { name: 'michaelatobias', comment: 'Michael Tobias', ghuser: 'michaelatobias' }
   tasks:
     - name: Add user
       ansible.builtin.user:
