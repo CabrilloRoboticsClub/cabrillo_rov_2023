@@ -21,11 +21,11 @@ rov-install:
 
 rov:
 	. ./install/local_setup.sh && \
-		ros2 launch seahawk_rov rov.launch.py
+		ros2 launch seahawk rov.launch.py
 
 deck:
 	. ./install/local_setup.sh && \
-		ros2 launch seahawk_deck deck.launch.py
+		ros2 launch seahawk deck.launch.py
 
 clean:
 	-rm -rf build install log 
