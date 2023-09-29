@@ -33,7 +33,7 @@ def generate_launch_description():
             ]
         ),
         Node(
-            package='seahawk_rov',
+            package='seahawk',
             executable='seahawk_rov',
             name='seahawk_rov',
             output='screen'

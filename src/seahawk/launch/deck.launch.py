@@ -53,13 +53,13 @@ def generate_launch_description():
             ]
         ),
         Node(
-            package='seahawk_deck',
+            package='seahawk',
             executable='thrust',
             name='thrust',
             output='screen'
         ),
         Node(
-            package='seahawk_deck',
+            package='seahawk',
             executable='input_xbox_one',
             name='input',
             output='screen'
@@ -75,6 +75,6 @@ def generate_launch_description():
             executable='rqt_gui',
             name='viewer_node',
             output='screen',
-            arguments=['--perspective-file', find_resource('seahawk_deck', 'resource/deck.perspective'),]
+            arguments=['--perspective-file', find_resource('seahawk', 'resources/deck.perspective'),]
         ),
     ])

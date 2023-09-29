@@ -2,18 +2,18 @@ import os
 from glob import glob
 from setuptools import setup
 
-package_name = 'seahawk_deck'
+package_name = 'seahawk'
 
 setup(
     name=package_name,
     version='0.0.1',
-    packages=[package_name],
+    packages=['seahawk_deck', 'seahawk_rov'],
     data_files=[
-        ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
+        ('share/ament_index/resource_index/packages', ['resources/' + package_name]),
         (os.path.join('share', package_name), ['package.xml']),
         (os.path.join('share', package_name, 'rviz'), glob(os.path.join('rviz', '*.rviz'))),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
-        (os.path.join('share', package_name, 'resource'), glob(os.path.join('resource', '*.perspective'))),
+        (os.path.join('share', package_name, 'resources'), glob(os.path.join('resources', '*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,6 +27,7 @@ setup(
             "thrust=seahawk_deck.thrust:main",
             "input_xbox_one=seahawk_deck.input_xbox_one:main",
             "rviz_markers=seahawk_deck.rviz_markers:main",
+            'seahawk_rov = seahawk_rov:main'
         ],
     },
 )

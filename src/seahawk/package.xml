@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>seahawk_deck</name>
-  <version>0.0.1</version>
-  <description>Nodes for the Seahawk Deck machine</description>
+  <name>seahawk</name>
+  <version>0.1.1</version>
+  <description>ROS2 packages for Seahawk</description>
   <maintainer email="cabrillorobotics@gmail.com">Cabrillo Robotics Club</maintainer>
-  <license>TODO: License declaration</license>
-
+  <license>AGPL V3</license>
+  
   <build_depend>python3-setuptools</build_depend>
 
   <exec_depend>rclpy</exec_depend>
@@ -15,6 +15,9 @@
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>python3</exec_depend>
+  <exec_depend>python-rpi.gpio-pip</exec_depend>
+  <exec_depend>python3-adafruit-blinka-pip</exec_depend>
 
   <exec_depend>python3</exec_depend>
 
@@ -22,6 +25,8 @@
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_python</build_type>
