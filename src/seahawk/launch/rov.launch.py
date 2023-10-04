@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 import subprocess
 
 claw_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'
-top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2'
+top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-video-index2'
 
 v4l2_regex = r"mmal.*\n\s*(/dev/video\d)"
 v4l2_devices = os.popen("v4l2-ctl --list-devices").read()
@@ -27,6 +27,10 @@ def generate_launch_description():
                 'fps': 30,
                 'size': '1280x960',
                 'frame_id': 'front_camera',
+                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                'qos_overrides./parameter_events.publisher.depth': 1,
             }],
             remappings=[
                 ('image_raw/h264', 'camera/front/h264'),
@@ -76,10 +80,14 @@ def generate_launch_description():
                     'fps': 30,
                     'size': '1280x960',
                     'frame_id': 'claw_camera',
+                    'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                    'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                    'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                    'qos_overrides./parameter_events.publisher.depth': 1,
                 }],
                 remappings=[
                     ('image_raw/h264', 'camera/claw/h264'),
-                ]
+                ],
             ))
     else:
         print("Claw camera not found!")
@@ -96,6 +104,10 @@ def generate_launch_description():
                     'fps': 30,
                     'size': '1280x960',
                     'frame_id': 'top_camera',
+                    'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                    'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                    'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                    'qos_overrides./parameter_events.publisher.depth': 1,
                 }],
                 remappings=[
                     ('image_raw/h264', 'camera/top/h264'),
