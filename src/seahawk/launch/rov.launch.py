@@ -22,6 +22,8 @@ def generate_launch_description():
             executable='h264_cam_node',
             name='front_camera',
             output='screen',
+            respawn=True,
+            respawn_delay=0,
             parameters=[{
                 'input_fn': front_camera_path,
                 'fps': 30,
@@ -34,7 +36,7 @@ def generate_launch_description():
             }],
             remappings=[
                 ('image_raw/h264', 'camera/front/h264'),
-            ]
+            ],
         ),
         Node(
             package='seahawk',
@@ -75,6 +77,8 @@ def generate_launch_description():
                 executable='h264_cam_node',
                 name='claw_camera',
                 output='screen',
+                respawn=True,
+                respawn_delay=0,
                 parameters=[{
                     'input_fn': str(pathlib.Path(claw_camera_path).resolve()),
                     'fps': 30,
@@ -99,6 +103,8 @@ def generate_launch_description():
                 executable='h264_cam_node',
                 name='top_camera',
                 output='screen',
+                respawn=True,
+                respawn_delay=0,
                 parameters=[{
                     'input_fn': str(pathlib.Path(top_camera_path).resolve()),
                     'fps': 30,
