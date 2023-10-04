@@ -28,7 +28,13 @@ def generate_launch_description():
             remappings=[
                 ('/in/h264', 'camera/front/h264'),
                 ('/out', 'camera/front/image'),
-            ]
+            ],
+            parameters=[{
+                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                'qos_overrides./parameter_events.publisher.depth': 1,
+            }],            
         ),
         Node(
             package='image_transport',
@@ -39,7 +45,13 @@ def generate_launch_description():
             remappings=[
                 ('/in/h264', 'camera/claw/h264'),
                 ('/out', 'camera/claw/image'),
-            ]
+            ],
+            parameters=[{
+                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                'qos_overrides./parameter_events.publisher.depth': 1,
+            }],            
         ),
         Node(
             package='image_transport',
@@ -50,7 +62,13 @@ def generate_launch_description():
             remappings=[
                 ('/in/h264', 'camera/top/h264'),
                 ('/out', 'camera/top/image'),
-            ]
+            ],
+            parameters=[{
+                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                'qos_overrides./parameter_events.publisher.depth': 1,
+            }],            
         ),
         Node(
             package='seahawk',
