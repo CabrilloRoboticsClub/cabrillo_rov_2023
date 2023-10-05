@@ -12,6 +12,8 @@ class DebugNode(Node):
         self.timer = self.create_timer(0.5, self.pub_callback) 
     
     def pub_callback(self):
+        BYTE_TO_MEGABYTE = 1024 ^ 2
+
         msg = String()
         cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
         load_ave = psutil.getloadavg()
@@ -21,6 +23,15 @@ class DebugNode(Node):
         temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
 
         net = psutil.net_io_counters()
+
+        sent = net[0] / BYTE_TO_MEGABYTE
+        received = net[1] / BYTE_TO_MEGABYTE
+        
+        # self.get_logger().info(f"{sent}")
+        # self.get_logger().info(f"{received}")
+        self.get_logger().info(f"{net}")
+        
+
 
         msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nNet: {net}"
         self._publisher.publish(msg)
