@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rclpy 
 import psutil
+import json
 from rclpy.node import Node 
 from std_msgs.msg import String
 
@@ -15,11 +16,21 @@ class DebugNode(Node):
         msg = String()
         cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
         load_ave = psutil.getloadavg()
-        mem = psutil.virtual_memory()
-        temps = psutil.sensors_temperatures()
-        net = psutil.net_if_stats()
+        mem = psutil.virtual_memory().percent
 
-        msg.data = f"CPU:{cpu_usage}\nLoad Average:{load_ave}\nMemory:{mem}\nTemperatures:{temps}\nNet:{net}"
+        temp_all = psutil.sensors_temperatures()["coretemp"]
+        temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
+
+        net = psutil.net_io_counters()
+
+        self.get_logger().info("-------------")
+        self.get_logger().info(f"CPU: {cpu_usage}%")
+        self.get_logger().info(f"Load Average: {load_ave}")
+        self.get_logger().info(f"Memory: {mem}%")
+        self.get_logger().info(f"Temperature Average: {temp_ave}°C")
+        self.get_logger().info(f"Network Stuff: {net}")
+
+        msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nNet: {net}"
         self._publisher.publish(msg)
 
 def main(args=None):
