@@ -89,6 +89,7 @@
       - { name: 'michaelatobias', comment: 'Michael Tobias', ghuser: 'michaelatobias' }
       - { name: 'katew', comment: 'Kate Wolsfeld', ghuser: 'Katewolsfeld10' }
       - { name: 'akcarney', comment: 'Ava Carney', ghuser: 'akcarney' }
+      - { name: 'orion', comment: 'Orion Ellefson', ghuser: 'OrionOth' }
   tasks:
     - name: Add user
       ansible.builtin.user:
