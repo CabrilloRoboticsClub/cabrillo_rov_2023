@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import rclpy 
 import psutil
+import time
+from psutil._common import bytes2human
 from rclpy.node import Node 
 from std_msgs.msg import String
 
@@ -12,28 +14,31 @@ class DebugNode(Node):
         self.timer = self.create_timer(0.5, self.pub_callback) 
     
     def pub_callback(self):
-        BYTE_TO_MEGABYTE = 1024 ^ 2
-
         msg = String()
+
+        # Grab CPU usage, load average, and memory usage percent
         cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
         load_ave = psutil.getloadavg()
         mem = psutil.virtual_memory().percent
 
+        # Grabs CPU temps and averages temperature across cores
         temp_all = psutil.sensors_temperatures()["coretemp"]
         temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
 
+        # Gets Net Stats, wait for 0.25s to catch traffic
         net = psutil.net_io_counters()
+        sent_before = net.bytes_sent
+        recv_before = net.bytes_recv
+        time.sleep(0.25)
+        net = psutil.net_io_counters()
+        sent_after = net.bytes_sent
+        recv_after = net.bytes_recv
 
-        sent = net[0] / BYTE_TO_MEGABYTE
-        received = net[1] / BYTE_TO_MEGABYTE
-        
-        # self.get_logger().info(f"{sent}")
-        # self.get_logger().info(f"{received}")
-        self.get_logger().info(f"{net}")
-        
+        # Converts to b/kb/mb based on size
+        sent = bytes2human(sent_after - sent_before)
+        recv = bytes2human(recv_after - recv_before)
 
-
-        msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nNet: {net}"
+        msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nSent: {sent}\nReceived: {recv}"
         self._publisher.publish(msg)
 
 def main(args=None):
