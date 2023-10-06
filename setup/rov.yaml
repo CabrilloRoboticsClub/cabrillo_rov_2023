@@ -83,7 +83,7 @@
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
       - { name: 'liam', comment: 'Liam Gilligan', ghuser: 'liamgilligan' }
-      - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'hugo10123' }
+      - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'taschnell' }
       - { name: 'steph', comment: "Stephanie L'Heureux", ghuser: 'steph1111' }
       - { name: 'cjbf', comment: 'CJ Bridgman-Ford', ghuser: 'cjikaika' }
       - { name: 'michaelatobias', comment: 'Michael Tobias', ghuser: 'michaelatobias' }
