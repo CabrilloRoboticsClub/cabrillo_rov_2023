@@ -22,8 +22,9 @@ class DebugNode(Node):
         mem = psutil.virtual_memory().percent
 
         # Grabs CPU temps and averages temperature across cores
-        temp_all = psutil.sensors_temperatures()["coretemp"]
+        temp_all = psutil.sensors_temperatures()["cpu_thermal"]
         temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
+
 
         # Gets Net Stats, wait for 0.25s to catch traffic
         net = psutil.net_io_counters()
