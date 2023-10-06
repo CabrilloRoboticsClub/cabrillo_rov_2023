@@ -23,19 +23,10 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# # # # # # # # 
-#
-# IMPORTS
-#
-# # # # # # # #
-
-# time is needed
-import time
+###################################### IMPORTS ######################################
 
 # enable command line arguments
 import sys
-# enable signal handling
-import signal
 
 # ros stuff
 import rclpy
@@ -47,7 +38,6 @@ import board
 import busio
 
 # threading imports
-import sys
 from rclpy.executors import ExternalShutdownException
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
@@ -89,16 +79,6 @@ def main(args=None):
         )
         logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
-        # setup the logic tube bno085
-#        logic_tube_bno085 = seahawk_rov.BNO085(
-#            node = node_seahawk_rov,
-#            i2c_bus = i2c,
-#            i2c_addr = 0x4a,
-#            frame_id = "logic_tube_bno085",
-#            hardware_location = 'logic_tube'
-#        ) 
-#        logic_tube_imu_publish_timer = node_seahawk_rov.create_timer(0.1, logic_tube_bno085.publish, callback_group=imu_group)
-
         # setup the thrust box bme280
         thrust_box_bme280 = seahawk_rov.BME280(
             node = node_seahawk_rov,
@@ -133,11 +113,6 @@ def main(args=None):
 
 # signal.signal(signal.SIGINT, signal_handler)
 
-# # # # # # # #
-#
-# huh?
-#
-# # # # # # # #
 
 if __name__ == '__main__':
     main(sys.argv)

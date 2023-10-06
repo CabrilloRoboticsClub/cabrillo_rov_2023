@@ -23,12 +23,7 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# time is needed
-import time
-
 # ros messages
-from sensor_msgs.msg import Temperature
-from sensor_msgs.msg import RelativeHumidity
 from sensor_msgs.msg import FluidPressure
 
 # import the bme280 circuit python sensor library
@@ -49,28 +44,18 @@ class BME280:
         self.bme = adafruit_bme280.Adafruit_BME280_I2C(i2c=i2c_bus, address=i2c_addr)
 
         # instantiate the publishers
-        self.temperature_publisher = node.create_publisher(Temperature, hardware_location + '/' + 'temperature', 10)
-        self.humidity_publisher = node.create_publisher(RelativeHumidity, hardware_location + '/' + 'humidity', 10)
         self.pressure_publisher = node.create_publisher(FluidPressure, hardware_location + '/' + 'pressure', 10)
 
     def publish(self):
 
         # instantiate the messages
-        msg_temperature = Temperature()
-        msg_humidity = RelativeHumidity()
         msg_pressure = FluidPressure()
 
         # insert frame id
-        msg_temperature.header.frame_id = self.frame_id
-        msg_humidity.header.frame_id = self.frame_id
         msg_pressure.header.frame_id = self.frame_id
 
         # get sensor data
-        msg_temperature.temperature = float(self.bme.temperature)
-        msg_humidity.relative_humidity = float(self.bme.humidity)
         msg_pressure.fluid_pressure = float(self.bme.pressure)
 
         # publish data
-        self.temperature_publisher.publish(msg_temperature)
-        self.humidity_publisher.publish(msg_humidity)
         self.pressure_publisher.publish(msg_pressure)
