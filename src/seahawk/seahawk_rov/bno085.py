@@ -23,15 +23,15 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 
-# time is needed
-import time
-
 # ros message
 from sensor_msgs.msg import Imu
 
 # import the bno085 circuit python sensor library
 import adafruit_bno08x
 from adafruit_bno08x.i2c import BNO08X_I2C
+
+from rclpy import executors
+import rclpy
 
 
 class BNO085:
@@ -46,7 +46,7 @@ class BNO085:
         ):
 
         self.frame_id = frame_id
-
+        self.node = node
         # instantiate the publisher
         self.publisher = node.create_publisher(Imu, hardware_location + '/' + 'imu', 10)
 
@@ -79,5 +79,15 @@ class BNO085:
         msg.linear_acceleration.y = -self.bno.linear_acceleration[0]
         msg.linear_acceleration.z = self.bno.linear_acceleration[2]
 
-        # publish
-        self.publisher.publish(msg)
+        try:
+            self.publisher.publish(msg)
+        except executors.handler.exception():
+            self.node.get_logger().warn("Warning: IMU failed to publish")
+
+def main(args=None):
+    rclpy.init(args=args)
+    test = BNO085()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
