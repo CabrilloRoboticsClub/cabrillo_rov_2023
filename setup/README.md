@@ -34,7 +34,7 @@ Take the following steps to get started.
     This will take a while! 
 1. Put ROS on your path 
     ```console
-    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    echo 'if [ -z "$ROS_DISTRO" ]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
     ```
 1. **Start a new shell** and build the repository
     ```console
