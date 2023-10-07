@@ -1,3 +1,9 @@
 [submodule "src/h264_image_transport"]
-	path = src/h264_image_transport
-	url = https://github.com/clydemcqueen/h264_image_transport.git
+  path = src/h264_image_transport
+  url = ../../clydemcqueen/h264_image_transport.git
+[submodule "setup"]
+  path = setup
+  url = ../setup.git
+  update = checkout
+  ignore = none
+  branch = seahawk_1
