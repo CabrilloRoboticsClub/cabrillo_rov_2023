@@ -19,6 +19,7 @@ Take the following steps to get started.
     ```console
     cat ~/.ssh/id_ed25519.pub
     ```
+    Full instructions for how to add a public key to GitHub can be found in [GitHub's official documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 1. Check out this repository into your home directory. 
     ```console
     cd 
