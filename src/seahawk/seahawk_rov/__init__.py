@@ -25,7 +25,6 @@ cabrillorobotics@gmail.com
 '''
 
 # sensor classes
-from .bme280 import BME280
 from .bno085 import BNO085
 
 # output classes

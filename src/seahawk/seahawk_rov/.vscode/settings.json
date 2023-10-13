@@ -1,0 +1,20 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/build/seahawk_rov",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/install/seahawk_rov/lib/python3.10/site-packages",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/build/seahawk_deck",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/install/seahawk_deck/lib/python3.10/site-packages",
+        "/home/steph/Documents/robotics/ros_playground/install/mini_hawk_contoller/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/build/seahawk_rov",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/install/seahawk_rov/lib/python3.10/site-packages",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/build/seahawk_deck",
+        "/home/steph/Documents/robotics/mate_2023/cabrillo_rov_2023/install/seahawk_deck/lib/python3.10/site-packages",
+        "/home/steph/Documents/robotics/ros_playground/install/mini_hawk_contoller/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
+}
