@@ -1,3 +1,3 @@
 [submodule "src/h264_image_transport"]
-	path = src/h264_image_transport
-	url = https://github.com/clydemcqueen/h264_image_transport.git
+  path = src/h264_image_transport
+  url = ../../clydemcqueen/h264_image_transport.git
