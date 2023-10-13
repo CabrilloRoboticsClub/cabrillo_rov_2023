@@ -19,6 +19,7 @@ Take the following steps to get started.
     ```console
     cat ~/.ssh/id_ed25519.pub
     ```
+    Full instructions for how to add a public key to GitHub can be found in [GitHub's official documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
 1. Check out this repository into your home directory. 
     ```console
     cd 
@@ -34,7 +35,7 @@ Take the following steps to get started.
     This will take a while! 
 1. Put ROS on your path 
     ```console
-    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    echo 'if [ -z "$ROS_DISTRO" ]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
     ```
 1. **Start a new shell** and build the repository
     ```console
