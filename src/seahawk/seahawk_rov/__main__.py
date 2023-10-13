@@ -65,10 +65,11 @@ def main(args=None):
         i2c = busio.I2C(board.SCL, board.SDA, frequency=400000)
 
         # instantiate the output classes
-        logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
-        logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
-        thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
+        # logic_tube_servo = seahawk_rov.LogicTubeServo(node_seahawk_rov, i2c, fast_group)
+        # logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
+        # thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
+        #############################BME280##########################
         # setup the logic tube bme280
         # logic_tube_bme280 = seahawk_rov.BME280(
         #     node = node_seahawk_rov,
@@ -88,6 +89,15 @@ def main(args=None):
         #     hardware_location = "thrust_box"
         # )
         # thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
+       # setup the logic tube bno085
+        logic_tube_bno085 = seahawk_rov.BNO085(
+            node = node_seahawk_rov,
+            i2c_bus = i2c,
+            i2c_addr = 0x4a,
+            frame_id = "logic_tube_bno085",
+            hardware_location = 'logic_tube'
+        ) 
+        logic_tube_imu_publish_timer = node_seahawk_rov.create_timer(0.1, logic_tube_bno085.publish, callback_group=imu_group)
 
         try:
             # Execute callbacks nodes as they become ready
