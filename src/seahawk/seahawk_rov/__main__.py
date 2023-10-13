@@ -69,27 +69,6 @@ def main(args=None):
         # logic_tube_motors = seahawk_rov.LogicTubeMotor(node_seahawk_rov, i2c, fast_group)
         # thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
-        #############################BME280##########################
-        # setup the logic tube bme280
-        # logic_tube_bme280 = seahawk_rov.BME280(
-        #     node = node_seahawk_rov,
-        #     i2c_bus = i2c,
-        #     i2c_addr = 0x77,
-        #     frame_id = "base_link",
-        #     hardware_location = "logic_tube"
-        # )
-        # logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
-
-        # setup the thrust box bme280
-        # thrust_box_bme280 = seahawk_rov.BME280(
-        #     node = node_seahawk_rov,
-        #     i2c_bus = i2c,
-        #     i2c_addr = 0x76,
-        #     frame_id = "base_link",
-        #     hardware_location = "thrust_box"
-        # )
-        # thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
-       # setup the logic tube bno085
         logic_tube_bno085 = seahawk_rov.BNO085(
             node = node_seahawk_rov,
             i2c_bus = i2c,
