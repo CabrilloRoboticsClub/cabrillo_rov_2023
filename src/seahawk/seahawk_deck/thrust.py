@@ -59,20 +59,6 @@ class Thrust(Node):
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         
 
-    # # Calculates what a thruster should output based on multiple input values
-    # def combine_input(self, direction1:float, direction2:float)->float:
-    #     """Add two directions in such a way that they do not fall outside [-1, 1]"""
-    #     if (direction1 >= 0 and direction2 >= 0): # If both input values are positive (0 included)
-    #         # Combines decimal percentage values based on a probability union operation to determine what the thruster should output
-    #         return direction1 + direction2 - (direction1 * direction2)
-    #     elif (direction1 < 0 and direction2 < 0): # If both input values are negative
-    #         # Tweaked probability union operation similar to above to work with negative values
-    #         return direction1 + direction2 + (direction1 * direction2)
-    #     else:
-    #         # If one value is positive and one value is negative, adds the values of different signs to offset each other
-    #         return direction1 + direction2        
-
-
     def _callback(self, twist_msg):
         """Called every time the twist publishes a message."""
 
@@ -92,6 +78,7 @@ class Thrust(Node):
         #  7   1
         #  5   3
 
+        # Convert Twist to single vector for multiplication
         twist_array = [
             twist_msg.linear.x,
             twist_msg.linear.y,
@@ -101,37 +88,9 @@ class Thrust(Node):
             twist_msg.angular.z
         ]
 
+        # Multiply twist with inverse of motor config to get motor effort values
         motor_msg.data = np.matmul(self.inverse_config, twist_array)
 
-
-
-        # motor_msg.data = [
-        #     0.0,  # Motor 0 thrust 
-        #     0.0,  # Motor 1 thrust
-        #     0.0,  # Motor 2 thrust
-        #     0.0,  # Motor 3 thrust
-        #     0.0,  # Motor 4 thrust
-        #     0.0,  # Motor 5 thrust
-        #     0.0,  # Motor 6 thrust
-        #     0.0  # Motor 7 thrust
-        # ]
-
-
-
-        # Lower motors
-        # motor_msg.data[0] = motor_values[0]
-        # motor_msg.data[2] = self.combine_input(self.combine_input(twist_msg.linear.x, -twist_msg.linear.y), twist_msg.angular.z)
-        # motor_msg.data[4] = self.combine_input(self.combine_input(twist_msg.linear.x, twist_msg.linear.y), -twist_msg.angular.z)
-        # motor_msg.data[6] = self.combine_input(self.combine_input(-twist_msg.linear.x, twist_msg.linear.y), twist_msg.angular.z)
-
-        # # Upper motors
-        # motor_msg.data[1] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
-        # motor_msg.data[3] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
-        # motor_msg.data[5] = self.combine_input(twist_msg.linear.z, twist_msg.angular.y)
-        # motor_msg.data[7] = self.combine_input(twist_msg.linear.z, -twist_msg.angular.y)
-        
-
-        # Publish data to the motors
         self.motor_pub.publish(motor_msg)
 
 
