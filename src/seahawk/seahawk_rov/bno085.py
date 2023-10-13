@@ -82,7 +82,7 @@ class BNO085:
         try:
             self.publisher.publish(msg)
         except executors.handler.exception():
-            self.node.get_logger().warn("Warning: IMU failed to publish")
+            self.node.get_logger().info("Warning: IMU failed to publish")
 
 def main(args=None):
     rclpy.init(args=args)

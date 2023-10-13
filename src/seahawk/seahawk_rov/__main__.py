@@ -54,7 +54,7 @@ def main(args=None):
 
         # Callback groups
         fast_group = MutuallyExclusiveCallbackGroup() # pwm boards
-        slow_group = MutuallyExclusiveCallbackGroup() # sensors
+        # slow_group = MutuallyExclusiveCallbackGroup() # sensors
         imu_group = MutuallyExclusiveCallbackGroup() # imu for independent control
 
         # Add imported nodes to this executor
@@ -70,24 +70,24 @@ def main(args=None):
         thrust_box_servo = seahawk_rov.ThrustBoxServo(node_seahawk_rov, i2c, fast_group)
 
         # setup the logic tube bme280
-        logic_tube_bme280 = seahawk_rov.BME280(
-            node = node_seahawk_rov,
-            i2c_bus = i2c,
-            i2c_addr = 0x77,
-            frame_id = "base_link",
-            hardware_location = "logic_tube"
-        )
-        logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
+        # logic_tube_bme280 = seahawk_rov.BME280(
+        #     node = node_seahawk_rov,
+        #     i2c_bus = i2c,
+        #     i2c_addr = 0x77,
+        #     frame_id = "base_link",
+        #     hardware_location = "logic_tube"
+        # )
+        # logic_tube_bme280_publish_timer = node_seahawk_rov.create_timer(5, logic_tube_bme280.publish, callback_group=slow_group)
 
         # setup the thrust box bme280
-        thrust_box_bme280 = seahawk_rov.BME280(
-            node = node_seahawk_rov,
-            i2c_bus = i2c,
-            i2c_addr = 0x76,
-            frame_id = "base_link",
-            hardware_location = "thrust_box"
-        )
-        thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
+        # thrust_box_bme280 = seahawk_rov.BME280(
+        #     node = node_seahawk_rov,
+        #     i2c_bus = i2c,
+        #     i2c_addr = 0x76,
+        #     frame_id = "base_link",
+        #     hardware_location = "thrust_box"
+        # )
+        # thrust_box_bme280_publish_timer = node_seahawk_rov.create_timer(5, thrust_box_bme280.publish, callback_group=slow_group)
 
         try:
             # Execute callbacks nodes as they become ready
