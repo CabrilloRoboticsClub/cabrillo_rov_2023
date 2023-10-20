@@ -92,7 +92,7 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
     ```
 1. Put ROS on your path 
     ```console
-    echo 'if [ -z "$ROS_DISTRO"]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    echo 'if [ -z "$ROS_DISTRO" ]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
     ```
 1. **Start a new shell** and build the repository
     ```console
