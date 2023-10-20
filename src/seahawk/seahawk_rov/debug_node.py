@@ -6,16 +6,17 @@ from psutil._common import bytes2human
 from rclpy.node import Node 
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
+from seahawk_msgs.msg import Debug
 
 
 class DebugNode(Node):
     def __init__(self):
         super().__init__("debug")
-        self._publisher = self.create_publisher(Vector3, "debug_info", 10)
+        self._publisher = self.create_publisher(Debug, "debug_info", 10)
         self.timer = self.create_timer(0.5, self.pub_callback) 
     
     def pub_callback(self):
-        msg = Vector3()
+        msg = Debug()
 
         # Grab CPU usage, load average, and memory usage percent
         cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
@@ -41,9 +42,11 @@ class DebugNode(Node):
         recv = bytes2human(recv_after - recv_before)
 
         # msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nSent: {sent}\nReceived: {recv}"
-        msg.x = temp_ave
-        msg.y = cpu_usage
-        msg.z = mem
+        msg.cpu_temperature = temp_ave
+        msg.cpu_usage = cpu_usage
+        msg.memory_usage = mem
+        msg.net_sent = sent
+        msg.net_recv = recv
         self._publisher.publish(msg)
 
 def main(args=None):
