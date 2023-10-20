@@ -5,6 +5,45 @@ from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPolygon, QGuiApplication
 #from std_msgs.msg import Float32
 #from .map_subscribers import *
 
+#creates subscriber, assuming ROV is publisher
+import rclpy
+from rclpy.node import Node
+
+from std_msgs.msg import String
+
+
+class MinimalSubscriber(Node):
+
+    def __init__(self):
+        super().__init__('minimal_subscriber')
+        self.subscription = self.create_subscription(
+            String,
+            'topic',
+            self.listener_callback,
+            10)
+        self.subscription  # prevent unused variable warning
+
+    def listener_callback(self, msg):
+        self.get_logger().info('I heard: "%s"' % msg.data)
+
+#is this ok here or does it need to be at the top/bottom of the file?
+def main(args=None):
+    rclpy.init(args=args)
+
+    minimal_subscriber = MinimalSubscriber()
+
+    rclpy.spin(minimal_subscriber)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    minimal_subscriber.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+#from here down is the horizon code
 class ArtificialHorizon(QtWidgets.QWidget):
     def __init__(self):
         super(ArtificialHorizon, self).__init__()
@@ -39,7 +78,9 @@ class ArtificialHorizon(QtWidgets.QWidget):
 
     def drawArtificialHorizon(self, event, painter):
 
-        ## FIXME: Need to adapt this for our subscribers. 
+        ## FIXME: Need to adapt this for our subscribers.
+        #vars should be updated with readings from the IMU
+        #what do we write to access the output (it has a compass on it so we would probably be reading from that for each var) 
         self.roll = 15
         self.pitch = 15
         self.speed = 100
