@@ -5,7 +5,7 @@ import time
 from psutil._common import bytes2human
 from rclpy.node import Node 
 from std_msgs.msg import String
-from geometry_msgs import Vector3
+from geometry_msgs.msg import Vector3
 
 
 class DebugNode(Node):
@@ -41,9 +41,9 @@ class DebugNode(Node):
         recv = bytes2human(recv_after - recv_before)
 
         # msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nSent: {sent}\nReceived: {recv}"
-        msg[0] = temp_ave
-        msg[1] = cpu_usage
-        msg[2] = mem
+        msg.x = temp_ave
+        msg.y = cpu_usage
+        msg.z = mem
         self._publisher.publish(msg)
 
 def main(args=None):
