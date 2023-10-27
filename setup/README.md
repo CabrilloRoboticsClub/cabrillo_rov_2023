@@ -42,6 +42,63 @@ Take the following steps to get started.
     make 
     ```
 
+## Using vscode to Connect to a Pi
+
+The best way to access the Raspberry Pi is using vscode. You can use the access to develop and test nodes that run on the Pi or to just start the ROV during development of deck-side nodes. Assuming you have your devbox setup per the instructions above, perform the following steps to access the Pi. 
+
+1. Install the [Remote SSH plugin](https://code.visualstudio.com/docs/remote/remote-overview) into vscode
+1. Click the remote status bar on the very bottom left of the window. (You can find some tips in the [Remote SSH tutorial](https://code.visualstudio.com/docs/remote/ssh-tutorial).)
+
+    ![](https://code.visualstudio.com/assets/docs/remote/ssh-tutorial/remote-status-bar.png)
+
+    The Remote Status bar item can quickly show you in which context VS Code is running (local or remote) and clicking on the item will bring up the Remote - SSH commands.
+
+    ![](https://code.visualstudio.com/assets/docs/remote/ssh-tutorial/remote-ssh-commands.png)
+1. Type the ssh command into the top bar: 
+
+    ![](https://code.visualstudio.com/assets/docs/remote/ssh-tutorial/set-user-host.png)
+
+    > The command will look like: **ssh yourname@seachicken.local -A** 
+
+1. Follow the prompts:
+    1. Choose the first option for where to save the configuration. 
+    1. Choose "Linux" type if asked. 
+    1. Choose "Yes" if this is your first time connecting to this Pi.
+
+1. You should see that you are connected:
+
+    ![](https://code.visualstudio.com/assets/docs/remote/ssh-tutorial/ssh-status-bar.png)
+
+1. Now that you're connected, start a new Terminal. 
+1. Create a copy of the repo in your home directory: 
+
+    ```console 
+    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    ```
+
+1. Configure git:
+
+    ```console 
+    git config --global user.name "Your Name"
+    git config --global user.email "you@you.com"
+    ```
+
+1. Add ROS to your startup scripts:
+
+    ```console 
+    echo 'if [ -z "$ROS_DISTRO" ]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
+    ```
+
+1. Exit your current terminal and start a new one. 
+1. Build the ROS project
+
+    ```console 
+    cd ~/cabrillo_rov_2023
+    make
+    ```
+
+Vscode will remember everything for next time. You should only have to do this once. 
+
 ## Raspberry Pi (ROV) Setup Procedure
 
 Start by creating a bootable SD card image: 
@@ -68,7 +125,7 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
 1. Check out this repository into your home directory. 
     ```console
     cd 
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
     cd ~/cabrillo_rov_2023
     git submodule init 
     git submodule update
