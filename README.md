@@ -51,13 +51,13 @@ $ make rov
 We've migrated all the launch files to their respective ROS packages. To use the launch files you must first run the `install/local_setup.XXX` script. 
 
 ```console 
-ros2 launch seahawk_rov rov.launch.py  
+ros2 launch seahawk rov.launch.py  
 ```
 
 To launch all the nodes on the deck:
 
 ```console 
-ros2 launch seahawk_deck deck.launch.py  
+ros2 launch seahawk deck.launch.py  
 ```
 
 ## Running Individual Nodes

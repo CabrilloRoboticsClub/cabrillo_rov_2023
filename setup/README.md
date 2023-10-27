@@ -74,6 +74,9 @@ The best way to access the Raspberry Pi is using vscode. You can use the access 
 
     ```console 
     git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
+    cd cabrillo_rov_2023
+    git submodule init 
+    git submodule update
     ```
 
 1. Configure git:
