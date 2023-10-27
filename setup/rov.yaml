@@ -95,6 +95,7 @@
       - { name: 'katerosep', comment: 'Kate Rosenbloom Pohl', ghuser: 'katerosep' }
       - { name: 'theo', comment: 'Theo Paris', ghuser: 'theoparis'}
       - { name: 'whitlockmcorbett', comment: 'Corbett Whitlock', ghuser: 'whitlockmcorbett'}
+      - { name: 'daniel', comment: 'Daniel Bledsoe', ghuser: 'epic-coding-23' }
   tasks:
     - name: Add user
       ansible.builtin.user:
