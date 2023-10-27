@@ -5,13 +5,18 @@ from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPolygon, QGuiApplication
 #from std_msgs.msg import Float32
 #from .map_subscribers import *
 
-#creates subscriber, assuming ROV is publisher
+
 import rclpy
 from rclpy.node import Node
+#creates subscriber, assuming ROV is publisher
 
 from std_msgs.msg import String
 
+import threading
+import time
+#added in order to use threading with the subscriber (runs as infinite loop)
 
+#SUBSCRIBER
 class MinimalSubscriber(Node):
 
     def __init__(self):
@@ -26,24 +31,7 @@ class MinimalSubscriber(Node):
     def listener_callback(self, msg):
         self.get_logger().info('I heard: "%s"' % msg.data)
 
-#is this ok here or does it need to be at the top/bottom of the file?
-def main(args=None):
-    rclpy.init(args=args)
-
-    minimal_subscriber = MinimalSubscriber()
-
-    rclpy.spin(minimal_subscriber)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
-
-#from here down is the horizon code
+#HORIZON CODE
 class ArtificialHorizon(QtWidgets.QWidget):
     def __init__(self):
         super(ArtificialHorizon, self).__init__()
@@ -324,8 +312,28 @@ class ArtificialHorizon(QtWidgets.QWidget):
                 painter.drawLine(
                     int(self.width*(0.45)),int(self.height*(height)),
                     int(self.width*(0.55)),int(self.height*(height)))
+def main(args=None):
+    rclpy.init(args=args)
 
-if __name__ == '__main__':
+    minimal_subscriber = MinimalSubscriber()
+    #runs in thread
+    rclpy.spin(minimal_subscriber)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+
+    minimal_subscriber.destroy_node()
+    rclpy.shutdown()
     app = QtWidgets.QApplication(sys.argv)
     ah = ArtificialHorizon()
-    sys.exit(app.exec_())
+    #threading on first infinite loop: allows it to run separately
+    t = threading.Thread(target = rclpy.spin,args=(minimal_subscriber,))
+    t.start()
+    #"func2" (other infinite loop)
+    guiValue = app.exec_()
+    sys.exit(guiValue)
+
+
+if __name__ == '__main__':
+    main()
