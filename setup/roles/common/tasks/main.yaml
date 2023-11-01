@@ -42,6 +42,7 @@
       - ros-humble-tf2-py
       - ros-humble-tf2-ros
       - ros-humble-tf2-ros-py
+      - docker.io
     state: present
 
 - name: Installing Python packages in your home directory with PIP
