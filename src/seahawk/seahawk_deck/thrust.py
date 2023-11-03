@@ -23,7 +23,7 @@ Cabrillo Robotics Club
 cabrillorobotics@gmail.com
 '''
 import sys 
-
+import math
 import rclpy
 
 from rclpy.node import Node 
@@ -46,12 +46,12 @@ class Thrust(Node):
         
 
         self.motor_config = [
-            [root3, root3, root3, root3, -root3, -root3, -root3, -root3], 
-            [-root3, root3, -root3, root3, -root3, root3, -root3, root3], 
-            [root3, root3, -root3, -root3, root3, root3, -root3, -root3],
-            [root3, -root3, -root3, root3, root3, -root3, -root3, root3],
-            [-2*root3, -2*root3, 2*root3, 2*root3, 2*root3, 2*root3, -2*root3, -2*root3],
-            [-1/root3, 1/root3, -1/root3, 1/root3, 1/root3, -1/root3, 1/root3, -1/root3]
+            [0, 0, 0, 0, 0.7071, 0.7071, -0.7071, -0.7071], 
+            [0, 0, 0, 0, -0.7071, 0.7071, -0.7071, 0.7071], 
+            [1, 1, 1, 1, 0, 0, 0, 0],
+            [-.19, -.19, .19, .19, -.105, -.105, .105, .105],
+            [-.12, .12, -.12, .12, -.15, .15, -.15, .15],
+            [-.047,-.047,-.047, -.047, 0.038, 0.038, 0.038, 0.038]
         ]
         self.inverse_config = np.linalg.pinv(motor_config, rcond=1e-15, hermitian=False)
 
