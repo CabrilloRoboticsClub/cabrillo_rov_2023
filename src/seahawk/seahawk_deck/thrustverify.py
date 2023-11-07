@@ -1,7 +1,7 @@
 '''
-thrust.py
+thrustverify.py
 
-Calculate correct output of motors and output it on /drive/motors
+Calculate predicted thrust and angular vector based on motor status and output it on /drive/predict
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
