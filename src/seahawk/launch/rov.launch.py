@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 from launch.substitutions import FindExecutable
 from launch.event_handlers import OnShutdown
 
-microros_serial_device = '/dev/ttyS0'
+microros_serial_device = None # '/dev/ttyS0'
 
 claw_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'
 top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-video-index2'

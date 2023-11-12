@@ -44,10 +44,6 @@
       - ros-humble-tf2-ros-py
       - docker.io
       - build-essential 
-      - gcc-arm-none-eabi 
-      - libnewlib-arm-none-eabi 
-      - cmake 
-      - doxygen 
     state: present
 
 - name: Installing Python packages in your home directory with PIP
