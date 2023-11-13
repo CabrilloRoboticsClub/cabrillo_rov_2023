@@ -2,46 +2,6 @@
 
 This readme will describe how to setup various things.
 
-## Development Box Setup 
-
-Take the following steps to get started. 
-
-1. Install necessary packages (skip this if you're using a removable drive provided by the club)
-    ```console
-    sudo apt update -y && sudo apt install -y git ansible python3-pip vim 
-    ```
-1. Create an SSH key if you don't have one already. 
-    ```console 
-    ssh-keygen -t ed25519
-    ```
-    Use the default location, set a password if you like. 
-1. Copy and paste your public key into GitHub
-    ```console
-    cat ~/.ssh/id_ed25519.pub
-    ```
-    Full instructions for how to add a public key to GitHub can be found in [GitHub's official documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
-1. Check out this repository into your home directory. 
-    ```console
-    cd 
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    cd ~/cabrillo_rov_2023
-    git submodule init 
-    git submodule update
-    ```
-1. Use `make` to install ROS2 and all the necessary packages. 
-    ```console 
-    make devbox-install
-    ```
-    This will take a while! 
-1. Put ROS on your path 
-    ```console
-    echo 'if [ -z "$ROS_DISTRO" ]; then source /opt/ros/humble/setup.bash; fi' >> ~/.bashrc 
-    ```
-1. **Start a new shell** and build the repository
-    ```console
-    make 
-    ```
-
 ## Using vscode to Connect to a Pi
 
 The best way to access the Raspberry Pi is using vscode. You can use the access to develop and test nodes that run on the Pi or to just start the ROV during development of deck-side nodes. Assuming you have your devbox setup per the instructions above, perform the following steps to access the Pi. 
