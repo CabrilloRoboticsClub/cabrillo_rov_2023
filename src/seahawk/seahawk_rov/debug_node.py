@@ -14,6 +14,9 @@ class DebugNode(Node):
         super().__init__("debug")
         self._publisher = self.create_publisher(Debug, "debug_info", 10)
         self.timer = self.create_timer(0.5, self.pub_callback) 
+        net = psutil.net_io_counters()
+        self.sent = net.bytes_sent
+        self.recv = net.bytes_recv
     
     def pub_callback(self):
         msg = Debug()
@@ -28,18 +31,16 @@ class DebugNode(Node):
         temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
 
 
-        # Gets Net Stats, wait for 0.25s to catch traffic
+        # Gets Net Stats
         net = psutil.net_io_counters()
-        sent_before = net.bytes_sent
-        recv_before = net.bytes_recv
-        time.sleep(0.25)
-        net = psutil.net_io_counters()
-        sent_after = net.bytes_sent
-        recv_after = net.bytes_recv
+        curr_sent = net.bytes_sent
+        curr_recv = net.bytes_recv
 
-        # Converts to b/kb/mb based on size
-        sent = bytes2human(sent_after - sent_before)
-        recv = bytes2human(recv_after - recv_before)
+        sent = bytes2human(curr_sent - self.sent)
+        recv = bytes2human(curr_recv - self.recv)
+
+        self.sent = curr_sent
+        self.recv = curr_recv
 
         # msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nSent: {sent}\nReceived: {recv}"
         msg.cpu_temperature = temp_ave
