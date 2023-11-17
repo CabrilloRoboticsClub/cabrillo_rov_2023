@@ -42,9 +42,6 @@ class Thrust(Node):
         """Initialize this node"""
         super().__init__('thrust')
 
-        root3 = 1/math.sqrt(3)
-        
-
         self.motor_config = [
             [0, 0, 0, 0, 0.7071, 0.7071, -0.7071, -0.7071], 
             [0, 0, 0, 0, -0.7071, 0.7071, -0.7071, 0.7071], 
