@@ -38,6 +38,11 @@
     state: latest
     cache_valid_time: 86400 # consider cache up-to-date if its < 1 day old
 
+- name: Check for ROS2 repos in apt sources 
+  command: /bin/bash -c "grep -q packages.ros.org /etc/apt/sources.list /etc/apt/sources.list.d/*"
+  register: ros_repos
+  ignore_errors: true
+
 - name: Install ROS2 GPG keys
   become: true
   ansible.builtin.get_url:
@@ -46,11 +51,13 @@
     owner: root
     group: root
     mode: 0644
+  when: ros_repos is failed
 
 - name: Add ROS2 Humble/Iron apt repo
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
+  when: ros_repos is failed
 
 - name: Install ROS2 base packages
   become: true
