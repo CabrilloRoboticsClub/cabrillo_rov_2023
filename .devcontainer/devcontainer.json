@@ -3,8 +3,8 @@
 {
 	"name": "SeahawkTank",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	// "image": "mcr.microsoft.com/devcontainers/base:jammy",
-	"build": { "dockerfile": "Dockerfile" }
+	"image": "ghcr.io/cabrilloroboticsclub/cabrillo_rov_2023:devcontainer",
+	// "build": { "dockerfile": "Dockerfile" },
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -13,7 +13,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
+	"postCreateCommand": "make devbox-install"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
@@ -22,6 +22,6 @@
 	// "remoteUser": "root",
 
 	//"runArgs": [
-	//	"--network=host"
+	//	"--network=host", "-v", "/dev/shm:/dev/shm"
 	//]
 }
