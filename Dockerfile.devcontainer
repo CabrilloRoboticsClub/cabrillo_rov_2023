@@ -8,9 +8,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 COPY . /seahawk
 RUN make -C /seahawk devbox-install
 
-# For vulcanexus container... make a user. 
-RUN useradd -Um -d /home/student -s /usr/bin/bash --uid 1000 -G adm,sudo student \
-    && echo 'student ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/student_nopasswd \
-    && echo '. /opt/vulcanexus/humble/setup.bash' >> /home/student/.bashrc 
+ARG USERNAME=student
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-USER student 
+# For vulcanexus container... make a user. 
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd -m -s /usr/bin/bash --uid $USER_UID --gid $USER_GID -G adm,sudo $USERNAME \
+    && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME
+    && echo '. /opt/vulcanexus/humble/setup.bash' >> /home/${USERNAME}/.bashrc 
+
+USER $USERNAME
