@@ -15,7 +15,7 @@ ARG USER_GID=$USER_UID
 # For vulcanexus container... make a user. 
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd -m -s /usr/bin/bash --uid $USER_UID --gid $USER_GID -G adm,sudo $USERNAME \
-    && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME
+    && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME \
     && echo '. /opt/vulcanexus/humble/setup.bash' >> /home/${USERNAME}/.bashrc 
 
 USER $USERNAME
