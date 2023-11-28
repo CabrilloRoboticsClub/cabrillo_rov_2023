@@ -64,6 +64,12 @@ If you have a Windows or Mac desktop (or Linux that's not Ubuntu 22.04) you can 
     make 
     ```
 
+Alternatively, if you don't want to use the container inside of VSCode, you can run
+```console
+docker build -t ros2-container:<tag> .devcontainer
+docker run --user vscode -v .:/home/vscode/cabrillo_rov_2023 --network host -it ros2-container:<tag>
+```
+
 ## Ubuntu 22.04 Desktop Setup 
 
 If you have Ubuntu 22.04 on your desktop you don't need a dev container because you can run everything natively. Only Ubuntu machines will be able to use hardware and communicate with other machines in the ROS2 network. These instructions assume you have already cloned the repository by following the "Checkout the Code" procedure above.

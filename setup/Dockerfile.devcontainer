@@ -1,0 +1,27 @@
+FROM docker.io/eprosima/vulcanexus:humble-desktop
+
+# Setup packages needed for `make devbox-install`
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install git ansible python3-pip vim sudo 
+
+# Install the latest devbox playbook from git
+COPY . /dev-setup
+RUN cd /dev-setup \
+    && ansible-playbook \
+		--connection=local \
+		--inventory 127.0.0.1, \
+		--limit 127.0.0.1 devbox.yaml \
+    && rm -rf /dev-setup \
+    && apt clean 
+
+ARG USERNAME=student
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# For vulcanexus container... make a user. 
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd -m -s /usr/bin/bash --uid $USER_UID --gid $USER_GID -G adm,sudo $USERNAME \
+    && echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USERNAME \
+    && echo '. /opt/vulcanexus/humble/setup.bash' >> /home/${USERNAME}/.bashrc 
+
+USER $USERNAME
