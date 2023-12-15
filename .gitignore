@@ -57,3 +57,6 @@ COLCON_IGNORE
 # From colcon build 
 install/
 log/
+
+# Apple
+.DS_Store
