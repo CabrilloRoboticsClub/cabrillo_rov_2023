@@ -47,7 +47,7 @@ class Motor_encoding(Node):
         super().__init__("motor_encoding")
         self.subscription = self.create_subscription(Float32MultiArray, "drive/motors", self._callback, 10)
         self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
-        self.params = self._generate_curve_fit_params()
+        self.params = Motor_encoding._generate_curve_fit_params()
 
     @staticmethod
     def _newtons_to_pwm(x:float, a:float, b:float, c:float, d:float, e:float, f:float)->int:
