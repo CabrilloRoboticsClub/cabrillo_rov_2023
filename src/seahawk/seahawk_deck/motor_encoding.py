@@ -37,57 +37,61 @@ class Motor_encoding(Node):
     """
 
     def __init__(self):
-        """Initialize this node"""
-        super().__init__('motor_encoding')
-        self.subscription = self.create_subscription(Float32MultiArray, 'kinematics', self._callback, 10)
-        self.motor_pub = self.create_publisher(Int16MultiArray, 'motor_msgs', 10)
+        """
+        Initialize 'motor_encoding' node
+        """
+        super().__init__("motor_encoding")
+        self.subscription = self.create_subscription(Float32MultiArray, "kinematics", self._callback, 10)
+        self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
         
     @staticmethod
-    def _convert_to_pwm(newtons:float):
+    def _newtons_to_pwm(newtons:float):
         pass
     
     @staticmethod
-    def _convert_to_dshot(pwm: int):
-        pass
-
-    @staticmethod
-    def _create_packet(newton:float, telemetry: bool = False)->int:
-        '''
+    def _pwm_to_dshot(pwm:int, telemetry:bool = False):
+        """
         Generates a DSHOT packet given newtons and a telemetry request
 
-        params:
+        Frames are organized in the following 16 bit pattern: SSSSSSSSSSSTCCCC
+            (S) 11 bit throttle
+            (T) 1 bit telemetry request
+            (C) 4 bit Cyclic Redundancy Check (CRC) (calculated in this function)
+
+        Parameters:
             newton: A thrust value in newtons to be sent to a motor
             telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not. Defaults to False
-        returns:
-            A 16 bit package of data to send following the pattern SSSSSSSSSSSTCCCC
-        '''
-        # Given newtons, convert to pwm valye
-        pwm_throttle = Motor_encoding._convert_to_pwm(newton)
         
-        # Given pwm value, convert to dshot
-        dshot_throttle = Motor_encoding._convert_to_dshot(pwm_throttle)
-
-        # Create DSHOT packet
-        # Frames are organized in the following 16 bit pattern: SSSSSSSSSSSTCCCC
-        # (S) 11 bit throttle
-        # (T) 1 bit telemetry request
-        # (C) 4 bit Cyclic Redundancy Check (CRC) (calculated in this function)
+        Returns:
+            A 16 bit package of data to send following the pattern SSSSSSSSSSSTCCCC
+        """
+        throttle = None
         # Shift everything over by one bit then append telemetry
-        data = (dshot_throttle << 1) | telemetry
+        data = (throttle << 1) | telemetry
         # CRC calculation
         crc = (data ^ (data >> 4) ^ (data >> 8)) & 0x0F
         # Shift everything over by 4 bits then append crc
         return (data << 4) | crc
 
-    def _callback(self, kine_msg):
-        """Called every time kinematics publishes a message."""
+    def _callback(self, kine_msg:Float32MultiArray)->None:
+        """
+        For every time kinematics publishes a message to the kinematics topic, this callback is
+        executed. The eight newton values found in 'kine_msg' are converted them to dshot packages.
+        Then the encoded motor values are published to the motor_msgs topic
+
+        Parameters:
+            kine_msg: Message from the kinematics node
+        """
+        # Each DSHOT package is 16 bits
         motor_msg = Int16MultiArray()
     
-        # For every newton value provided by kinematics
-        for index, newtons in enumerate(kine_msg().data):
-            motor_msg.data[index] = Motor_encoding._create_packet(newtons)
+        # For every newton value provided by kinematics, convert it to pwm then to a dshot package
+        for index, newtons in enumerate(kine_msg.data):
+            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(Motor_encoding._newtons_to_pwm(newtons))
 
+        # Publish the encoded motor values to 'motor_msgs' topicS
         self.motor_pub.publish(motor_msg)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -95,5 +99,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)
