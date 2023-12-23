@@ -32,6 +32,9 @@ from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Int16MultiArray
 
+from scipy.optimize import curve_fit
+
+
 class Motor_encoding(Node):
     """
     Class that converts newtons to pwm values then to DSHOT packets
@@ -44,11 +47,41 @@ class Motor_encoding(Node):
         super().__init__("motor_encoding")
         self.subscription = self.create_subscription(Float32MultiArray, "kinematics", self._callback, 10)
         self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
-        
+        self.params = self._generate_curve_fit_params()
+
     @staticmethod
-    def _newtons_to_pwm(newtons:float)->int:
-        pass
+    def _newtons_to_pwm(x:float, a:float, b:float, c:float, d:float, e:float, f:float)->int:
+        """
+        Converts desired newtons into its corresponding PWM value.
+
+        Parameters:
+            x: The force in newtons desired
+            a-f: Arbitrary parameters to map newtons to pwm, see _generate_curve_fit_params()
+
+        Returns:
+            PWM value corresponding to the desired thrust
+        """
+        return int((a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f)
     
+    def _generate_curve_fit_params(self)->list:
+        """
+        Generates Optimal Parameters for _newtowns_to_pwm() to have a best fit
+
+        Returns:
+            List of optimal parameters
+        """
+        x, y = list()
+
+        with open("newtons_to_pwm.tsv", "r") as file:
+            for line in file:
+                words = line.split("\t")
+                x.append(words[0])
+                y.append(words[1])
+        
+        optimal_params, param_covariance = curve_fit(self._newtons_to_pwm, x, y)
+        return optimal_params
+    
+    # TODO
     @staticmethod
     def _pwm_to_dshot(pwm:int, telemetry:bool = False)->int:
         """
@@ -90,9 +123,7 @@ class Motor_encoding(Node):
 
     def _callback(self, kine_msg:Float32MultiArray)->None:
         """
-        For every time kinematics publishes a message to the 'kinematics' topic, this callback is
-        executed. The eight newton values found in 'kine_msg' are converted to dshot packages.
-        Then the encoded motor values are published to the 'motor_msgs' topic
+        Converts newtons in kine_msg to PWM values and republishes them.
 
         Parameters:
             kine_msg: Message from the kinematics node
@@ -102,7 +133,15 @@ class Motor_encoding(Node):
     
         # For every newton value provided by kinematics, convert it to pwm then to a dshot package
         for index, newton in enumerate(kine_msg.data):
-            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(Motor_encoding._newtons_to_pwm(newton))
+            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(
+                Motor_encoding._newtons_to_pwm(
+                    newton,
+                    self.params[0],
+                    self.params[1],
+                    self.params[2],
+                    self.params[3],
+                    self.params[4],
+                    self.params[5]))
 
         # Publish the encoded motor values to 'motor_msgs' topic
         self.motor_pub.publish(motor_msg)
