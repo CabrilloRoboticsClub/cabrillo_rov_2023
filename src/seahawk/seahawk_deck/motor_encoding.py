@@ -93,7 +93,7 @@ class Motor_encoding(Node):
             (C) 4 bit Cyclic Redundancy Check (CRC) (calculated in this function)
 
         Parameters:
-            newton: A thrust value in newtons to be sent to a motor
+            pwm: A thrust value in newtons to be sent to a motor
             telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not
 
         Returns:
