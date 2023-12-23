@@ -45,7 +45,7 @@ class Motor_encoding(Node):
         Initialize 'motor_encoding' node
         """
         super().__init__("motor_encoding")
-        self.subscription = self.create_subscription(Float32MultiArray, "kinematics", self._callback, 10)
+        self.subscription = self.create_subscription(Float32MultiArray, "drive/motors", self._callback, 10)
         self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
         self.params = self._generate_curve_fit_params()
 
