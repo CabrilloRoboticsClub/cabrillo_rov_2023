@@ -45,11 +45,11 @@ class Motor_encoding(Node):
         self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
         
     @staticmethod
-    def _newtons_to_pwm(newtons:float):
+    def _newtons_to_pwm(newtons:float)->int:
         pass
     
     @staticmethod
-    def _pwm_to_dshot(pwm:int, telemetry:bool = False):
+    def _pwm_to_dshot(pwm:int, telemetry:bool = False)->int:
         """
         Generates a DSHOT packet given newtons and a telemetry request
 
@@ -60,11 +60,25 @@ class Motor_encoding(Node):
 
         Parameters:
             newton: A thrust value in newtons to be sent to a motor
-            telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not. Defaults to False
-        
+            telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not
+
         Returns:
             A 16 bit package of data to send following the pattern SSSSSSSSSSSTCCCC
         """
+        # ***********Convert pwm to dshot***********
+        
+        # If you enable 3D mode, the throttle ranges split in two:
+        #   Direction 1) 48 is the slowest, 1047 is the fastest
+        #   Direction 2) 1049 is the slowest, 2047 is the fastest
+        DIR_1_LOW = 48
+        DIR_1_HIGH = 1047
+        DIR_2_LOW = 1049
+        DIR_2_HIGH = 2047
+
+        # 1048 does NOT stop the motor, the following constant should be used instead
+        # Note: One website says this command is not currently implemented, this needs to be tested TODO
+
+        # ************Encode dshot value************
         throttle = None
         # Shift everything over by one bit then append telemetry
         data = (throttle << 1) | telemetry
@@ -86,8 +100,8 @@ class Motor_encoding(Node):
         motor_msg = Int16MultiArray()
     
         # For every newton value provided by kinematics, convert it to pwm then to a dshot package
-        for index, newtons in enumerate(kine_msg.data):
-            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(Motor_encoding._newtons_to_pwm(newtons))
+        for index, newton in enumerate(kine_msg.data):
+            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(Motor_encoding._newtons_to_pwm(newton))
 
         # Publish the encoded motor values to 'motor_msgs' topicS
         self.motor_pub.publish(motor_msg)
