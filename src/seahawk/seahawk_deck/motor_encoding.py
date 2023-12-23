@@ -63,6 +63,7 @@ class Motor_encoding(Node):
         """
         return int((a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f)
     
+    @staticmethod
     def _generate_curve_fit_params(self)->list:
         """
         Generates Optimal Parameters for _newtowns_to_pwm() to have a best fit
@@ -78,7 +79,7 @@ class Motor_encoding(Node):
                 x.append(words[0])
                 y.append(words[1])
         
-        optimal_params, param_covariance = curve_fit(self._newtons_to_pwm, x, y)
+        optimal_params, param_covariance = curve_fit(Motor_encoding._newtons_to_pwm, x, y)
         return optimal_params
     
     # TODO
