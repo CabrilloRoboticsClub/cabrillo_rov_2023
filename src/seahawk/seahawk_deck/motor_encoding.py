@@ -24,6 +24,7 @@ cabrillorobotics@gmail.com
 '''
 import sys 
 
+# ROS2 imports
 import rclpy
 from rclpy.node import Node 
 
@@ -33,7 +34,7 @@ from std_msgs.msg import Int16MultiArray
 
 class Motor_encoding(Node):
     """
-    Class that converts newtons to pwm values then to dshot packets
+    Class that converts newtons to pwm values then to DSHOT packets
     """
 
     def __init__(self):
@@ -89,9 +90,9 @@ class Motor_encoding(Node):
 
     def _callback(self, kine_msg:Float32MultiArray)->None:
         """
-        For every time kinematics publishes a message to the kinematics topic, this callback is
-        executed. The eight newton values found in 'kine_msg' are converted them to dshot packages.
-        Then the encoded motor values are published to the motor_msgs topic
+        For every time kinematics publishes a message to the 'kinematics' topic, this callback is
+        executed. The eight newton values found in 'kine_msg' are converted to dshot packages.
+        Then the encoded motor values are published to the 'motor_msgs' topic
 
         Parameters:
             kine_msg: Message from the kinematics node
@@ -103,7 +104,7 @@ class Motor_encoding(Node):
         for index, newton in enumerate(kine_msg.data):
             motor_msg.data[index] = Motor_encoding._pwm_to_dshot(Motor_encoding._newtons_to_pwm(newton))
 
-        # Publish the encoded motor values to 'motor_msgs' topicS
+        # Publish the encoded motor values to 'motor_msgs' topic
         self.motor_pub.publish(motor_msg)
 
 
