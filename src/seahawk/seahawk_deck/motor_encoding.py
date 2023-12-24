@@ -45,9 +45,9 @@ class MotorEncoding(Node):
         Initialize 'motor_encoding' node
         """
         super().__init__("motor_encoding")
-        self.subscription = self.create_subscription(Float32MultiArray, "drive/motors", self.__callback, 10)
-        self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
-        self.params = MotorEncoding.__generate_curve_fit_params()
+        self.subscription = self.create_subscription(Float32MultiArray, "kinematics", self.__callback, 10)
+        self.__motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
+        self.__params = MotorEncoding.__generate_curve_fit_params()
 
     @staticmethod
     def __newtons_to_pwm(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> int:
@@ -101,7 +101,6 @@ class MotorEncoding(Node):
             A 16 bit package of data to send following the pattern SSSSSSSSSSSTCCCC
         """
         # ***********Convert pwm to dshot***********
-        
         # If you enable 3D mode, the throttle ranges split in two:
         #   Direction 1) 48 is the slowest, 1047 is the fastest
         #   Direction 2) 1049 is the slowest, 2047 is the fastest
@@ -138,15 +137,15 @@ class MotorEncoding(Node):
             motor_msg.data[index] = MotorEncoding.__pwm_to_dshot(
                 MotorEncoding.__newtons_to_pwm(
                     newton,
-                    self.params[0],
-                    self.params[1],
-                    self.params[2],
-                    self.params[3],
-                    self.params[4],
-                    self.params[5]))
+                    self.__params[0],
+                    self.__params[1],
+                    self.__params[2],
+                    self.__params[3],
+                    self.__params[4],
+                    self.__params[5]))
 
         # Publish the encoded motor values to 'motor_msgs' topic
-        self.motor_pub.publish(motor_msg)
+        self.__motor_pub.publish(motor_msg)
 
 
 def main(args=None):
