@@ -41,7 +41,7 @@ class ThrustVerify(Node):
             Float32MultiArray, "drive/motors", self.motor_math, 10
         )
         self.vector_predict = self.create_publisher(
-            Float32MultiArray, "drive/predict", 10
+            Twist, "drive/predict", 10
         )
         self.motor_config = [
             [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
@@ -108,8 +108,14 @@ class ThrustVerify(Node):
             + self.motor_config[5][7] * motor_msg.data[7]
         )
 
-        predicted_vectors = Float32MultiArray()
-        predicted_vectors.data = [x, y, z, rx, ry, rz]
+        predicted_vectors = Twist()
+
+        predicted_vectors.linear.x = x
+        predicted_vectors.linear.y = y
+        predicted_vectors.linear.z = z
+        predicted_vectors.angular.x = rx
+        predicted_vectors.angular.y = ry
+        predicted_vectors.angular.z = rz
 
         self.vector_predict.publish(predicted_vectors)
 
