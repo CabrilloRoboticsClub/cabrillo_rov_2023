@@ -107,8 +107,6 @@ class Thrust(Node):
         motor_msg.data[6] = motor_efforts[6]
         motor_msg.data[7] = motor_efforts[7]
 
-        print(np.matmul(self.motor_config, motor_efforts))
-
         self.motor_pub.publish(motor_msg)
 
 
