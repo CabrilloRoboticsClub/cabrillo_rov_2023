@@ -31,9 +31,6 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
 
-import numpy as np
-
-
 class ThrustVerify(Node):
     """Caculates expected input, based on current motor status"""
 
