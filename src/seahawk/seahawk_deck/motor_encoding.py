@@ -94,7 +94,7 @@ class MotorEncoding(Node):
             (C) 4 bit Cyclic Redundancy Check (CRC) (calculated in this function)
 
         Args:
-            pwm: A thrust value in newtons to be sent to a motor
+            pwm: The PWM value to be sent to the motor
             telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not
 
         Returns:
@@ -125,7 +125,7 @@ class MotorEncoding(Node):
 
     def __callback(self, kine_msg: Float32MultiArray):
         """
-        Converts newtons in kine_msg to PWM values and republishes them.
+        Converts newtons in kine_msg to encoded motor values and republishes them
 
         Args:
             kine_msg: Message from the kinematics node
