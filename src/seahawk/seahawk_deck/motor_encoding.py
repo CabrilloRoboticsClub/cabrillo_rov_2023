@@ -35,7 +35,7 @@ from std_msgs.msg import Int16MultiArray
 from scipy.optimize import curve_fit
 
 
-class Motor_encoding(Node):
+class MotorEncoding(Node):
     """
     Class that converts newtons to pwm values then to DSHOT packets
     """
@@ -45,18 +45,18 @@ class Motor_encoding(Node):
         Initialize 'motor_encoding' node
         """
         super().__init__("motor_encoding")
-        self.subscription = self.create_subscription(Float32MultiArray, "drive/motors", self._callback, 10)
+        self.subscription = self.create_subscription(Float32MultiArray, "drive/motors", self.__callback, 10)
         self.motor_pub = self.create_publisher(Int16MultiArray, "motor_msgs", 10)
-        self.params = Motor_encoding._generate_curve_fit_params()
+        self.params = MotorEncoding.__generate_curve_fit_params()
 
     @staticmethod
-    def _newtons_to_pwm(x:float, a:float, b:float, c:float, d:float, e:float, f:float)->int:
+    def __newtons_to_pwm(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> int:
         """
-        Converts desired newtons into its corresponding PWM value.
+        Converts desired newtons into its corresponding PWM value
 
-        Parameters:
+        Args:
             x: The force in newtons desired
-            a-f: Arbitrary parameters to map newtons to pwm, see _generate_curve_fit_params()
+            a-f: Arbitrary parameters to map newtons to pwm, see __generate_curve_fit_params()
 
         Returns:
             PWM value corresponding to the desired thrust
@@ -64,7 +64,7 @@ class Motor_encoding(Node):
         return int((a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f)
     
     @staticmethod
-    def _generate_curve_fit_params()->list:
+    def __generate_curve_fit_params() -> list:
         """
         Generates Optimal Parameters for _newtowns_to_pwm() to have a best fit
 
@@ -79,12 +79,12 @@ class Motor_encoding(Node):
                 x.append(data[0])
                 y.append(data[1])
         
-        optimal_params, param_covariance = curve_fit(Motor_encoding._newtons_to_pwm, x, y)
+        optimal_params, param_covariance = curve_fit(MotorEncoding.__newtons_to_pwm, x, y)
         return optimal_params
     
     # TODO
     @staticmethod
-    def _pwm_to_dshot(pwm:int, telemetry:bool = False)->int:
+    def __pwm_to_dshot(pwm: int, telemetry: bool = False) -> int:
         """
         Generates a DSHOT packet given newtons and a telemetry request
 
@@ -93,7 +93,7 @@ class Motor_encoding(Node):
             (T) 1 bit telemetry request
             (C) 4 bit Cyclic Redundancy Check (CRC) (calculated in this function)
 
-        Parameters:
+        Args:
             pwm: A thrust value in newtons to be sent to a motor
             telemetry=False: Telemetry value (1 bit), True (1) if telemetry should be used, False (0) if not
 
@@ -112,6 +112,7 @@ class Motor_encoding(Node):
 
         # 1048 does NOT stop the motor, the following constant should be used instead
         # Note: One website says this command is not currently implemented, this needs to be tested TODO
+        DSHOT_CMD_MOTOR_STOP = 0
 
         # ************Encode dshot value************
         throttle = None
@@ -122,11 +123,11 @@ class Motor_encoding(Node):
         # Shift everything over by 4 bits then append crc
         return (data << 4) | crc
 
-    def _callback(self, kine_msg:Float32MultiArray)->None:
+    def __callback(self, kine_msg: Float32MultiArray):
         """
         Converts newtons in kine_msg to PWM values and republishes them.
 
-        Parameters:
+        Args:
             kine_msg: Message from the kinematics node
         """
         # Each DSHOT package is 16 bits
@@ -134,8 +135,8 @@ class Motor_encoding(Node):
     
         # For every newton value provided by kinematics, convert it to pwm then to a dshot package
         for index, newton in enumerate(kine_msg.data):
-            motor_msg.data[index] = Motor_encoding._pwm_to_dshot(
-                Motor_encoding._newtons_to_pwm(
+            motor_msg.data[index] = MotorEncoding.__pwm_to_dshot(
+                MotorEncoding.__newtons_to_pwm(
                     newton,
                     self.params[0],
                     self.params[1],
@@ -150,7 +151,7 @@ class Motor_encoding(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.spin(Motor_encoding())
+    rclpy.spin(MotorEncoding())
     rclpy.shutdown()
 
 
