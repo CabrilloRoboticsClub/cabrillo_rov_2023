@@ -46,12 +46,7 @@ class ThrustVerify(Node):
         self.vector_predict = self.create_publisher(
             Float32MultiArray, "drive/predict", 10
         )
-
-    def motor_math(self, msg):
-        # motor 0-7 within list index
-        motor_msg = msg
-
-        config = [
+        self.motor_config = [
             [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
             [     0,     0,    0,     0,    -0.7071,     0.7071,    -0.7071,    0.7071 ],  # Fy (N)
             [     1,     1,    1,     1,          0,          0,          0,         0 ],  # Fz (N)
@@ -60,56 +55,60 @@ class ThrustVerify(Node):
             [     0,     0,    0,     0,  -0.180311,   0.180311,   0.180311, -0.180311 ],  # Rz (N*m)
         ]
 
+    def motor_math(self, msg):
+        # motor 0-7 within list index
+        motor_msg = msg
+
         # Linear Thrust Vector -- Operable
         x = (
-              config[0][4] * motor_msg.data[4]
-            + config[0][5] * motor_msg.data[5]
-            + config[0][6] * motor_msg.data[6]
-            + config[0][7] * motor_msg.data[7]
+              self.motor_config[0][4] * motor_msg.data[4]
+            + self.motor_config[0][5] * motor_msg.data[5]
+            + self.motor_config[0][6] * motor_msg.data[6]
+            + self.motor_config[0][7] * motor_msg.data[7]
         )
         y = (
-              config[1][4] * motor_msg.data[4]
-            + config[1][5] * motor_msg.data[5]
-            + config[1][6] * motor_msg.data[6]
-            + config[1][7] * motor_msg.data[7]
+              self.motor_config[1][4] * motor_msg.data[4]
+            + self.motor_config[1][5] * motor_msg.data[5]
+            + self.motor_config[1][6] * motor_msg.data[6]
+            + self.motor_config[1][7] * motor_msg.data[7]
         )
         z = (
-              config[2][0] * motor_msg.data[0]
-            + config[2][1] * motor_msg.data[1]
-            + config[2][2] * motor_msg.data[2]
-            + config[2][3] * motor_msg.data[3]
+              self.motor_config[2][0] * motor_msg.data[0]
+            + self.motor_config[2][1] * motor_msg.data[1]
+            + self.motor_config[2][2] * motor_msg.data[2]
+            + self.motor_config[2][3] * motor_msg.data[3]
         )
 
         # Angular Thrust Vector -- Inoperable
         rx = (
-              config[3][0] * motor_msg.data[0]
-            + config[3][1] * motor_msg.data[1]
-            + config[3][2] * motor_msg.data[2]
-            + config[3][3] * motor_msg.data[3]
-            + config[3][4] * motor_msg.data[4]
-            + config[3][5] * motor_msg.data[5]
-            + config[3][6] * motor_msg.data[6]
-            + config[3][7] * motor_msg.data[7]
+              self.motor_config[3][0] * motor_msg.data[0]
+            + self.motor_config[3][1] * motor_msg.data[1]
+            + self.motor_config[3][2] * motor_msg.data[2]
+            + self.motor_config[3][3] * motor_msg.data[3]
+            + self.motor_config[3][4] * motor_msg.data[4]
+            + self.motor_config[3][5] * motor_msg.data[5]
+            + self.motor_config[3][6] * motor_msg.data[6]
+            + self.motor_config[3][7] * motor_msg.data[7]
         )
         ry = (
-              config[4][0] * motor_msg.data[0]
-            + config[4][1] * motor_msg.data[1]
-            + config[4][2] * motor_msg.data[2]
-            + config[4][3] * motor_msg.data[3]
-            + config[4][4] * motor_msg.data[4]
-            + config[4][5] * motor_msg.data[5]
-            + config[4][6] * motor_msg.data[6]
-            + config[4][7] * motor_msg.data[7]
+              self.motor_config[4][0] * motor_msg.data[0]
+            + self.motor_config[4][1] * motor_msg.data[1]
+            + self.motor_config[4][2] * motor_msg.data[2]
+            + self.motor_config[4][3] * motor_msg.data[3]
+            + self.motor_config[4][4] * motor_msg.data[4]
+            + self.motor_config[4][5] * motor_msg.data[5]
+            + self.motor_config[4][6] * motor_msg.data[6]
+            + self.motor_config[4][7] * motor_msg.data[7]
         )
         rz = (
-              config[5][0] * motor_msg.data[0]
-            + config[5][1] * motor_msg.data[1]
-            + config[5][2] * motor_msg.data[2]
-            + config[5][3] * motor_msg.data[3]
-            + config[5][4] * motor_msg.data[4]
-            + config[5][5] * motor_msg.data[5]
-            + config[5][6] * motor_msg.data[6]
-            + config[5][7] * motor_msg.data[7]
+              self.motor_config[5][0] * motor_msg.data[0]
+            + self.motor_config[5][1] * motor_msg.data[1]
+            + self.motor_config[5][2] * motor_msg.data[2]
+            + self.motor_config[5][3] * motor_msg.data[3]
+            + self.motor_config[5][4] * motor_msg.data[4]
+            + self.motor_config[5][5] * motor_msg.data[5]
+            + self.motor_config[5][6] * motor_msg.data[6]
+            + self.motor_config[5][7] * motor_msg.data[7]
         )
 
         predicted_vectors = Float32MultiArray()
