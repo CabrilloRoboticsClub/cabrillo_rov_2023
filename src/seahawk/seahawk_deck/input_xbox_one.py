@@ -1,4 +1,4 @@
-'''
+"""
 input_xbox_one.py
 
 Handle input from an Xbox One controller and output it on /drive/twist
@@ -21,18 +21,21 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
-'''
+"""
 import sys 
 
 import rclpy
 
 from rclpy.node import Node 
-from rcl_interfaces.srv import SetParameters
+# from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
-from std_msgs.msg import Int8MultiArray
-from std_msgs.msg import Float32
-from rclpy.parameter import Parameter
+# from std_msgs.msg import Int8MultiArray
+# from std_msgs.msg import Float32
+# from rclpy.parameter import Parameter
+
+ON = 1
+OFF = 0
 
 class Input(Node):
     """
@@ -40,145 +43,114 @@ class Input(Node):
     """
 
     def __init__(self):
-        """Initialize this node"""
-        super().__init__('input_xbox_one')
-        """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0)  # Sideways
-        self.declare_parameter('linear_z_scale', 1.0)  # Depth
-        self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
-        self.declare_parameter('angular_y_scale', 0.5) # Pitch
-        self.declare_parameter('angular_z_scale', 0.5) # Yaw
-        self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
-        self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
-        self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
-        self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
-        self.claw_grab = False
-        self.fish_release = False
-        self.bambi_mode = False
-        self.last_a_state = 0
-        self.last_b_state = 0
-        self.last_x_state = 0
-
-    def _callback(self, joy_msg):
-        """Called every time the joystick publishes a message."""
-        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
-
-        # Compute desired motion in <x, y, z, r, p, y>
-
-        # CONTROLLER KEYMAPPINGS
-        controller = {
-            'left_stick': {
-                'x':        -joy_msg.axes[0],
-                'y':        joy_msg.axes[1],
-                'press':    joy_msg.buttons[9],
-            },
-            'right_stick': {
-                'x':        -joy_msg.axes[3],
-                'y':        joy_msg.axes[4],
-                'press':    joy_msg.buttons[10],
-            },
-            'left_trigger': joy_msg.axes[2],
-            'right_trigger':joy_msg.axes[5],
-            'dpad': {
-                'up':       int(max(joy_msg.axes[7], 0)), # +
-                'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'left':     int(max(joy_msg.axes[6], 0)), # +
-                'right':    int(-min(joy_msg.axes[6], 0)), # -
-            },
-            'a':            joy_msg.buttons[0], # claw 
-            'b':            joy_msg.buttons[1],
-            'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
-            'y':            joy_msg.buttons[3], # reset bambi and z trim
-            'left_bumper':  joy_msg.buttons[4], # trim -
-            'right_bumper': joy_msg.buttons[5], # trim +
-            'window':       joy_msg.buttons[6],
-            'menu':         joy_msg.buttons[7],
-            'xbox':         joy_msg.buttons[8],
+        """
+        Initialize 'input_xbox_one node'
+        """
+        super().__init__("input_xbox_one")
+        self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
+        self.twist_pub = self.create_publisher(Twist, "controller_twist", 10)
+        
+        self.__prev_button_state = {
+            "left_stick_press" :    OFF,
+            "right_stick_press" :   OFF,
+            "a":                    OFF,
+            "b":                    OFF,
+            "x":                    OFF,
+            "y":                    OFF,
+            "left_bumper":          OFF,
+            "right_bumper":         OFF,
+            "window":               OFF,
+            "menu":                 OFF,
+            "xbox":                 OFF,
         }
 
-        # BINDINGS
+        self.__layout = {
+            "linear_y":         "left_stick_x",     # Y (sideways)
+            "linear_x":         "left_stick_y",     # X (forwards)
+            # unimplemented:    "left_stick_press",
+            "angular_z":        "right_stick_x",    # Y (yaw)
+            "angular_y":        "right_stick_y",    # P (pitch)
+            # unimplemented:    "right_stick_press",
+            # unimplemented:    "left_trigger",
+            # unimplemented:    "right_trigger",
+            # unimplemented:    "dpad_up",
+            # unimplemented:    "dpad_down",
+            # unimplemented:    "dpad_left",
+            # unimplemented:    "dpad_right",
+            # unimplemented:    "a",
+            "bambi_mode":       "b",
+            # unimplemented:    "x",
+            # unimplemented:    "y",
+            # unimplemented:    "left_bumper",
+            # unimplemented:    "right_bumper",
+            # unimplemented:    "window",
+            # unimplemented:    "menu",
+            # unimplemented:    "xbox",
+        }
+
+    def __callback(self, joy_msg: Joy):
+        """
+        Takes in input from the joy message from the x box and republishes it as a twist specifying 
+        the direction (linear and angular x, y, z) and percent of max speed the pilot wants the robot to move
+
+        Args:
+            joy_msg: Message of type "Joy" from the joy topic
+        """
+        # Debug output of joy topic
+        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+
+        # Map the values sent from the joy message to useful names
+        controller = {
+            # Left stick
+            "left_stick_x":     -joy_msg.axes[0],
+            "left_stick_y":     joy_msg.axes[1],
+            "left_stick_press": joy_msg.buttons[9],
+            # Right stick
+            "right_stick_x":    -joy_msg.axes[3],
+            "right_stick_y":    joy_msg.axes[4],
+            "right_stick_press":joy_msg.buttons[10],
+            # Triggers
+            "left_trigger":     joy_msg.axes[2],
+            "right_trigger":    joy_msg.axes[5],
+            # Dpad
+            "dpad_up":          int(max(joy_msg.axes[7], 0)),
+            "dpad_down":        int(-min(joy_msg.axes[7], 0)),
+            "dpad_left":        int(max(joy_msg.axes[6], 0)),
+            "dpad_right":       int(-min(joy_msg.axes[6], 0)),
+            # Buttons
+            "a":                joy_msg.buttons[0],
+            "b":                joy_msg.buttons[1],
+            "x":                joy_msg.buttons[2],
+            "y":                joy_msg.buttons[3],
+            "left_bumper":      joy_msg.buttons[4],
+            "right_bumper":     joy_msg.buttons[5],
+            "window":           joy_msg.buttons[6],
+            "menu":             joy_msg.buttons[7],
+            "xbox":             joy_msg.buttons[8],
+        }
+        
+        # ********************* Bambi mode *********************
+        # Bambi mode cuts all twist values in half for more precise movements
+        # Bambi mode is 'sticky', meaning a button is pressed to turn it on, and pressed again to turn it off
+        bambi_div = 2 if self.__prev_button_state[self.__layout["bambi"]] == OFF and controller[self.__layout["linear_x"]] == ON else 1
+        self.__prev_button_state[self.__layout["bambi"]] = controller[self.__layout["bambi"]]
+
+        # **************** Create twist message ****************
         twist_msg = Twist()
-        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = -controller['left_stick']['x']# Y (sideways)
-        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
-        twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
-        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = -controller['right_stick']['x'] # Y (yaw)
-
-        # Claw
-        claw_msg = Int8MultiArray()
-        claw_msg.data = [0,0,0]
-        
-        # Makes a button for the claw "sticky"
-        if self.last_a_state == 0 and controller['a'] == 1:
-            self.claw_grab = not self.claw_grab
-        if self.claw_grab:
-            claw_msg.data[0] = 1
-        else:
-            claw_msg.data[0] = 0
-        self.last_a_state = controller['a']
-
-        if self.last_b_state == 0 and controller['b'] == 1:
-            self.fish_release = not self.fish_release
-        if self.fish_release:
-            claw_msg.data[1] = 1
-        else:
-            claw_msg.data[1] = 0
-        self.last_b_state = controller['b']
-        self.claw_pub.publish(claw_msg)
-
-        # Makes x button for bambi mode activation "sticky" 
-        if self.last_x_state == 0 and controller['x'] == 1:
-            self.bambi_mode = not self.bambi_mode
-        self.last_x_state = controller['x']
-
-        cam_servo_msg = Float32()
-
-        if controller['dpad']['left']:
-            cam_servo_msg.data = 0.0
-        elif controller['dpad']['up']:
-            cam_servo_msg.data = 1.0
-        elif controller['dpad']['down']:
-            cam_servo_msg.data = -1.0
-        
-        if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
-            self.cam_servo_pub.publish(cam_servo_msg)
-
-        # Stores thrust values in local variables
-        linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value
-        linear_y_scale = self.get_parameter('linear_y_scale').get_parameter_value().double_value
-        linear_z_scale = self.get_parameter('linear_z_scale').get_parameter_value().double_value
-        angular_x_scale = self.get_parameter('angular_x_scale').get_parameter_value().double_value
-        angular_y_scale = self.get_parameter('angular_y_scale').get_parameter_value().double_value
-        angular_z_scale = self.get_parameter('angular_z_scale').get_parameter_value().double_value
-
-        # BAMBI MODE
-        # If button x is pressed, bambi mode is activated. x must be pressed again to deactivate
-        # Bambi mode cuts all motor thrust in half
-        if self.bambi_mode:
-            linear_x_scale /= 2
-            linear_y_scale /= 2
-            linear_z_scale /= 2
-            angular_x_scale /= 2
-            angular_y_scale /= 2
-            angular_z_scale /= 2
-
-        # AXIS SCALE
-        twist_msg.linear.x  *= linear_x_scale
-        twist_msg.linear.y  *= linear_y_scale
-        twist_msg.linear.z  *= linear_z_scale
-        twist_msg.angular.x *= angular_x_scale
-        twist_msg.angular.y *= angular_y_scale
-        twist_msg.angular.z *= angular_z_scale
-
+        twist_msg.linear.x  = controller[self.__layout["linear_x"]]     / bambi_div     # Z (forwards)
+        twist_msg.linear.y  = -controller[self.__layout["linear_y"]]    / bambi_div     # Y (sideways)
+        # twist_msg.linear.z  = (controller["left_trigger"] - controller["right_trigger"]) / 2 # Z (depth) What????
+        twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
+        twist_msg.angular.y = controller[self.__layout["angular_y"]]    / bambi_div     # P (pitch) 
+        twist_msg.angular.z = -controller[self.__layout["angular_z"]]   / bambi_div     # Y (yaw)
+     
         self.twist_pub.publish(twist_msg)
 
 def main(args=None):
     rclpy.init(args=args)
     rclpy.spin(Input())
-    rclpy.shutdown()    
+    rclpy.shutdown()
+   
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)
