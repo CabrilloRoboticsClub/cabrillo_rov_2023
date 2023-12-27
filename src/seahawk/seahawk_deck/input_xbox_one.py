@@ -37,55 +37,31 @@ from sensor_msgs.msg import Joy
 ON = 1
 OFF = 0
 
-class Input(Node):
+class InputXboxOne(Node):
     """
     Class that implements the joystick input.
     """
 
     def __init__(self):
         """
-        Initialize 'input_xbox_one node'
+        Initialize 'input_xbox_one' node
         """
         super().__init__("input_xbox_one")
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.twist_pub = self.create_publisher(Twist, "controller_twist", 10)
         
         self.__prev_button_state = {
-            "left_stick_press" :    OFF,
-            "right_stick_press" :   OFF,
-            "a":                    OFF,
-            "b":                    OFF,
-            "x":                    OFF,
-            "y":                    OFF,
-            "left_bumper":          OFF,
-            "right_bumper":         OFF,
-            "window":               OFF,
-            "menu":                 OFF,
-            "xbox":                 OFF,
-        }
-
-        self.__layout = {
-            "linear_y":         "left_stick_x",     # Y (sideways)
-            "linear_x":         "left_stick_y",     # X (forwards)
-            # unimplemented:    "left_stick_press",
-            "angular_z":        "right_stick_x",    # Y (yaw)
-            "angular_y":        "right_stick_y",    # P (pitch)
-            # unimplemented:    "right_stick_press",
-            # unimplemented:    "left_trigger",
-            # unimplemented:    "right_trigger",
-            # unimplemented:    "dpad_up",
-            # unimplemented:    "dpad_down",
-            # unimplemented:    "dpad_left",
-            # unimplemented:    "dpad_right",
-            # unimplemented:    "a",
-            "bambi_mode":       "b",
-            # unimplemented:    "x",
-            # unimplemented:    "y",
-            # unimplemented:    "left_bumper",
-            # unimplemented:    "right_bumper",
-            # unimplemented:    "window",
-            # unimplemented:    "menu",
-            # unimplemented:    "xbox",
+            # "" :                OFF,        # left_stick_press
+            # "" :                OFF,        # right_stick_press
+            # "":                 OFF,        # a
+            "bambi_mode":       OFF,        # b
+            # "":                 OFF,        # x
+            # "":                 OFF,        # y
+            # "":                 OFF,        # left_bumper
+            # "":                 OFF,        # right_bumper
+            # "":                 OFF,        # window
+            # "":                 OFF,        # menu
+            # "":                 OFF,        # xbox
         }
 
     def __callback(self, joy_msg: Joy):
@@ -94,7 +70,7 @@ class Input(Node):
         the direction (linear and angular x, y, z) and percent of max speed the pilot wants the robot to move
 
         Args:
-            joy_msg: Message of type "Joy" from the joy topic
+            joy_msg: Message of type 'Joy' from the joy topic
         """
         # Debug output of joy topic
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
@@ -102,53 +78,53 @@ class Input(Node):
         # Map the values sent from the joy message to useful names
         controller = {
             # Left stick
-            "left_stick_x":     -joy_msg.axes[0],
-            "left_stick_y":     joy_msg.axes[1],
-            "left_stick_press": joy_msg.buttons[9],
+            "linear_y":         -joy_msg.axes[0],               # left_stick_x
+            "linear_x":         joy_msg.axes[1],                # left_stick_y
+            "":                 joy_msg.buttons[9],             # left_stick_press
             # Right stick
-            "right_stick_x":    -joy_msg.axes[3],
-            "right_stick_y":    joy_msg.axes[4],
-            "right_stick_press":joy_msg.buttons[10],
+            "angular_z":        -joy_msg.axes[3],               # right_stick_x
+            "angular_y":        joy_msg.axes[4],                # right_stick_y
+            "":                 joy_msg.buttons[10],            # right_stick_press
             # Triggers
-            "left_trigger":     joy_msg.axes[2],
-            "right_trigger":    joy_msg.axes[5],
+            # "":                 joy_msg.axes[2],                # left_trigger
+            # "":                 joy_msg.axes[5],                # right_trigger
             # Dpad
-            "dpad_up":          int(max(joy_msg.axes[7], 0)),
-            "dpad_down":        int(-min(joy_msg.axes[7], 0)),
-            "dpad_left":        int(max(joy_msg.axes[6], 0)),
-            "dpad_right":       int(-min(joy_msg.axes[6], 0)),
+            # "":                 int(max(joy_msg.axes[7], 0)),   # dpad_up
+            # "":                 int(-min(joy_msg.axes[7], 0)),  # dpad_down
+            # "":                 int(max(joy_msg.axes[6], 0)),   # dpad_left     
+            # "":                 int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "a":                joy_msg.buttons[0],
-            "b":                joy_msg.buttons[1],
-            "x":                joy_msg.buttons[2],
-            "y":                joy_msg.buttons[3],
-            "left_bumper":      joy_msg.buttons[4],
-            "right_bumper":     joy_msg.buttons[5],
-            "window":           joy_msg.buttons[6],
-            "menu":             joy_msg.buttons[7],
-            "xbox":             joy_msg.buttons[8],
+            # "":                 joy_msg.buttons[0], # a
+            "bambi_mode":       joy_msg.buttons[1], # b
+            # "":                 joy_msg.buttons[2], # x
+            # "":                 joy_msg.buttons[3], # y
+            # "":                 joy_msg.buttons[4], # left_bumper
+            # "":                 joy_msg.buttons[5], # right_bumper
+            # "":                 joy_msg.buttons[6], # window
+            # "":                 joy_msg.buttons[7], # menu
+            # "":                 joy_msg.buttons[8], # xbox
         }
         
         # ********************* Bambi mode *********************
         # Bambi mode cuts all twist values in half for more precise movements
         # Bambi mode is 'sticky', meaning a button is pressed to turn it on, and pressed again to turn it off
-        bambi_div = 2 if self.__prev_button_state[self.__layout["bambi"]] == OFF and controller[self.__layout["linear_x"]] == ON else 1
-        self.__prev_button_state[self.__layout["bambi"]] = controller[self.__layout["bambi"]]
+        bambi_div = 2 if self.__prev_button_state["bambi_mode"] == OFF and controller["bambi_mode"] == ON else 1
+        self.__prev_button_state["bambi_mode"] = controller["bambi_mode"]
 
         # **************** Create twist message ****************
         twist_msg = Twist()
-        twist_msg.linear.x  = controller[self.__layout["linear_x"]]     / bambi_div     # Z (forwards)
-        twist_msg.linear.y  = -controller[self.__layout["linear_y"]]    / bambi_div     # Y (sideways)
+        twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
+        twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
         # twist_msg.linear.z  = (controller["left_trigger"] - controller["right_trigger"]) / 2 # Z (depth) What????
         twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
-        twist_msg.angular.y = controller[self.__layout["angular_y"]]    / bambi_div     # P (pitch) 
-        twist_msg.angular.z = -controller[self.__layout["angular_z"]]   / bambi_div     # Y (yaw)
+        twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
+        twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
      
         self.twist_pub.publish(twist_msg)
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.spin(Input())
+    rclpy.spin(InputXboxOne())
     rclpy.shutdown()
    
 
