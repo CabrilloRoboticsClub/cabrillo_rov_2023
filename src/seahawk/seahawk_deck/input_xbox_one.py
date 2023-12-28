@@ -50,11 +50,11 @@ class InputXboxOne(Node):
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.twist_pub = self.create_publisher(Twist, "controller_twist", 10)
         
-        self.__prev_button_state = {
+        self.__button_state = {
             # "" :                OFF,        # left_stick_press
             # "" :                OFF,        # right_stick_press
-            # "":                 OFF,        # a
-            "bambi_mode":       OFF,        # b
+            "claw":             {"prev_button_state": OFF, "feature_state": OFF},       # a
+            "bambi_mode":       {"prev_button_state": OFF, "feature_state": OFF}        # b
             # "":                 OFF,        # x
             # "":                 OFF,        # y
             # "":                 OFF,        # left_bumper
@@ -72,29 +72,30 @@ class InputXboxOne(Node):
         Args:
             joy_msg: Message of type 'Joy' from the joy topic
         """
+        
         # Debug output of joy topic
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Map the values sent from the joy message to useful names
         controller = {
             # Left stick
-            "linear_y":         -joy_msg.axes[0],               # left_stick_x
-            "linear_x":         joy_msg.axes[1],                # left_stick_y
-            "":                 joy_msg.buttons[9],             # left_stick_press
+            "linear_y":         joy_msg.axes[0],               # left_stick_x
+            "linear_x":         joy_msg.axes[1],               # left_stick_y
+            # "":                 joy_msg.buttons[9],             # left_stick_press
             # Right stick
-            "angular_z":        -joy_msg.axes[3],               # right_stick_x
-            "angular_y":        joy_msg.axes[4],                # right_stick_y
-            "":                 joy_msg.buttons[10],            # right_stick_press
+            "angular_z":        joy_msg.axes[3],               # right_stick_x
+            "angular_y":        joy_msg.axes[4],               # right_stick_y
+            # "":                 joy_msg.buttons[10],            # right_stick_press
             # Triggers
-            # "":                 joy_msg.axes[2],                # left_trigger
-            # "":                 joy_msg.axes[5],                # right_trigger
+            "neg_linear_z":     joy_msg.axes[2],                # left_trigger
+            "pos_linear_z":     joy_msg.axes[5],                # right_trigger
             # Dpad
             # "":                 int(max(joy_msg.axes[7], 0)),   # dpad_up
             # "":                 int(-min(joy_msg.axes[7], 0)),  # dpad_down
             # "":                 int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":                 int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            # "":                 joy_msg.buttons[0], # a
+            "claw":             joy_msg.buttons[0], # a
             "bambi_mode":       joy_msg.buttons[1], # b
             # "":                 joy_msg.buttons[2], # x
             # "":                 joy_msg.buttons[3], # y
@@ -104,18 +105,31 @@ class InputXboxOne(Node):
             # "":                 joy_msg.buttons[7], # menu
             # "":                 joy_msg.buttons[8], # xbox
         }
-        
-        # ********************* Bambi mode *********************
-        # Bambi mode cuts all twist values in half for more precise movements
-        # Bambi mode is 'sticky', meaning a button is pressed to turn it on, and pressed again to turn it off
-        bambi_div = 2 if self.__prev_button_state["bambi_mode"] == OFF and controller["bambi_mode"] == ON else 1
-        self.__prev_button_state["bambi_mode"] = controller["bambi_mode"]
 
-        # **************** Create twist message ****************
+
+        def sticky_button(button: str):
+            """
+            Makes a button sticky meaning that meaning a button is pressed to turn it on, 
+            and pressed again to turn it off
+
+            Args:
+                button: The name of the buttom
+
+            Returns:
+                True if the feature the button controlls should be turned on, False if off
+            """
+            if controller[button] == ON and self.__button_state[button]["prev_button_state"] == OFF:
+                self.__button_state[button]["feature_state"] = not self.__button_state[button]["feature_state"]
+            return self.__button_state[button]["feature_state"]
+
+
+        # Bambi mode cuts all twist values in half for more precise movements
+        bambi_div = 2 if sticky_button("bambi_mode") else 1
+
+        # Create twist message
         twist_msg = Twist()
         twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
         twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
-        # twist_msg.linear.z  = (controller["left_trigger"] - controller["right_trigger"]) / 2 # Z (depth) What????
         twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
