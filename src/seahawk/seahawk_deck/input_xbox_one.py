@@ -30,6 +30,7 @@ from rclpy.node import Node
 # from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
+from std_msgs.msg import Bool
 # from std_msgs.msg import Int8MultiArray
 # from std_msgs.msg import Float32
 # from rclpy.parameter import Parameter
@@ -49,6 +50,7 @@ class InputXboxOne(Node):
         super().__init__("input_xbox_one")
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.twist_pub = self.create_publisher(Twist, "controller_twist", 10)
+        self.claw_pub = self.create_publisher(Bool, "claw", 10)
         
         self.__button_state = {
             # "" :                OFF,        # left_stick_press
@@ -107,7 +109,7 @@ class InputXboxOne(Node):
         }
 
 
-        def sticky_button(button: str):
+        def sticky_button(button: str) -> bool:
             """
             Makes a button sticky meaning that meaning a button is pressed to turn it on, 
             and pressed again to turn it off
@@ -120,7 +122,7 @@ class InputXboxOne(Node):
             """
             if controller[button] == ON and self.__button_state[button]["prev_button_state"] == OFF:
                 self.__button_state[button]["feature_state"] = not self.__button_state[button]["feature_state"]
-            return self.__button_state[button]["feature_state"]
+            return bool(self.__button_state[button]["feature_state"])
 
 
         # Bambi mode cuts all twist values in half for more precise movements
@@ -135,7 +137,15 @@ class InputXboxOne(Node):
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
      
+        # Publsih twist message
         self.twist_pub.publish(twist_msg)
+
+        # Create claw message
+        claw_msg = Bool()
+        claw_msg.data = sticky_button("claw")
+
+        # Publish claw message
+        self.claw_pub.publish(claw_msg)
 
 def main(args=None):
     rclpy.init(args=args)
