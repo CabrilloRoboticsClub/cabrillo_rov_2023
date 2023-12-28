@@ -1,7 +1,7 @@
 """
 input_xbox_one.py
 
-Handle input from an Xbox One controller and output it on /drive/twist
+Handle input from an Xbox One controller
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -25,7 +25,6 @@ cabrillorobotics@gmail.com
 import sys 
 
 import rclpy
-
 from rclpy.node import Node 
 # from rcl_interfaces.srv import SetParameters
 from geometry_msgs.msg import Twist 
@@ -40,7 +39,7 @@ OFF = 0
 
 class InputXboxOne(Node):
     """
-    Class that implements the joystick input.
+    Class that implements the joystick input
     """
 
     def __init__(self):
@@ -49,8 +48,8 @@ class InputXboxOne(Node):
         """
         super().__init__("input_xbox_one")
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
-        self.twist_pub = self.create_publisher(Twist, "controller_twist", 10)
-        self.claw_pub = self.create_publisher(Bool, "claw", 10)
+        self.__twist_pub = self.create_publisher(Twist, "controller_twist", 10)
+        self.__claw_pub = self.create_publisher(Bool, "claw", 10)
         
         self.__button_state = {
             # "" :                OFF,        # left_stick_press
@@ -65,6 +64,37 @@ class InputXboxOne(Node):
             # "":                 OFF,        # menu
             # "":                 OFF,        # xbox
         }
+    
+    @staticmethod
+    def __throttle_curve(input: float, curve: int=0):
+        """
+        Applies a throttle curve mapping to the 'input'. A throttle curve allows the user to
+        modify the relationship between the stick position and the actual throttle value sent
+        to the motors
+
+        The throttle curve is selected by passing a number [0, 3] to the 'curve' param
+            0 (default): No throttle curve
+            1: 
+            2: 
+            3: 
+
+        Args:
+            input: The value to remap
+            curve: The type of curve to remap to
+
+        Returns:
+            'input' remapped to fit the specified throttle curve
+        """
+        match curve:
+            case 1:
+                pass
+            case 2:
+                pass
+            case 3:
+                pass
+            case _:
+                return input
+    
 
     def __callback(self, joy_msg: Joy):
         """
@@ -138,14 +168,14 @@ class InputXboxOne(Node):
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
      
         # Publsih twist message
-        self.twist_pub.publish(twist_msg)
+        self.__twist_pub.publish(twist_msg)
 
         # Create claw message
         claw_msg = Bool()
         claw_msg.data = sticky_button("claw")
 
         # Publish claw message
-        self.claw_pub.publish(claw_msg)
+        self.__claw_pub.publish(claw_msg)
 
 def main(args=None):
     rclpy.init(args=args)
