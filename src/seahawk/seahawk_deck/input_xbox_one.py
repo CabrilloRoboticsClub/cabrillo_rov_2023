@@ -130,6 +130,7 @@ class InputXboxOne(Node):
         twist_msg = Twist()
         twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
         twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
+        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
