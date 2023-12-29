@@ -30,6 +30,7 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
+from scipy.optimize import curve_fit
 
 import numpy as np
 
@@ -55,7 +56,42 @@ class Thrust(Node):
 
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
+        self.__params = Thrust.__generate_curve_fit_params()
         
+    @staticmethod
+    def __thrust_to_current(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> float:
+        """
+        Estimates current draw based on given thrust
+
+        Args:
+            x: Thrust being produced in newtons.
+            a-f: Arbitrary parameters to map thrust to current, see __generate_curve_fit_params()
+
+        Returns:
+            Current (estimated) to be drawn in amps.
+        """
+        return (a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + (f)
+
+    @staticmethod
+    def __generate_curve_fit_params() -> list:
+        """
+        Generates Optimal Parameters for __thrust_to_current() to have a best fit
+
+        Returns:
+            List of optimal parameters
+        """
+        x = list()
+        y = list()
+
+        with open("thrust_to_current.tsv", "r") as file:
+            for data_point in file:
+                data = data_point.split("\t")
+                x.append(data[0])
+                y.append(data[1])
+
+        optimal_params, param_covariance = curve_fit(Thrust.__thrust_to_current, x, y)
+        return optimal_params
+
 
     def _callback(self, twist_msg):
         """Called every time the twist publishes a message."""
