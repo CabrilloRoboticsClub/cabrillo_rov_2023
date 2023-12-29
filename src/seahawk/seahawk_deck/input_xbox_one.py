@@ -22,23 +22,17 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 """
+# For reading argv
 import sys 
 
+# Ros client libary imports
 import rclpy
 from rclpy.node import Node 
-# from rcl_interfaces.srv import SetParameters
+
+# ROS messages imports
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
-
-from scipy.interpolate import CubicSpline
-# from std_msgs.msg import Int8MultiArray
-# from std_msgs.msg import Float32
-# from rclpy.parameter import Parameter
-
-
-ON = 1
-OFF = 0
 
 
 class StickyButton():
@@ -51,8 +45,8 @@ class StickyButton():
         """
         Initialize 'StickyButton' object
         """
-        self.__feature_state = OFF
-        self.__track_state = 0b0000
+        self.__feature_state = False    # Is the feature this button controlls on (True) or off (False)
+        self.__track_state = 0b0000     # Tracks the last four states of the button using bits
     
     def check_state(self, cur_button_state: bool) -> bool:
         """
@@ -69,16 +63,16 @@ class StickyButton():
         self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
 
         # Account for bounce by making sure the last four recorded states
-        # appear to represent a button press
+        # appear to represent a button press. If so, update the feature state
         if self.__track_state == 0b0011:
             self.__feature_state = not self.__feature_state
-        return bool(self.__feature_state)
+        return self.__feature_state
 
     def reset(self):
         """
         Resets button state to origional configuration
         """
-        self.__feature_state = OFF
+        self.__feature_state = False
         self.__track_state = 0b0000
 
 
