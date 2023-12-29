@@ -51,7 +51,6 @@ class StickyButton():
         """
         Initialize 'StickyButton' object
         """
-        self.__prev_button_state = OFF
         self.__feature_state = OFF
     
     def check_state(self, cur_button_state: bool) -> bool:
@@ -64,7 +63,7 @@ class StickyButton():
         Returns:
             True if the button is toggled on, False if off
         """
-        if cur_button_state == ON and self.__prev_button_state == OFF:
+        if cur_button_state == ON:
             self.__feature_state = not self.__feature_state
         return bool(self.__feature_state)
 
@@ -79,6 +78,7 @@ class InputXboxOne(Node):
         Initialize 'input_xbox_one' node
         """
         super().__init__("input_xbox_one")
+
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "controller_twist", 10)
         self.__claw_pub = self.create_publisher(Bool, "claw", 10)
@@ -184,6 +184,8 @@ class InputXboxOne(Node):
         # Bambi mode cuts all twist values in half for more precise movements
         bambi_div = 2 if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]) else 1
 
+        self.get_logger().info(f"{bambi_div}")
+
         # Create twist message
         twist_msg = Twist()
         twist_msg.linear.x  = controller["linear_x"]     / bambi_div      # Z (forwards)
@@ -208,7 +210,7 @@ def main(args=None):
     rclpy.init(args=args)
     rclpy.spin(InputXboxOne())
     rclpy.shutdown()
-   
+
 
 if __name__ == "__main__":
     main(sys.argv)
