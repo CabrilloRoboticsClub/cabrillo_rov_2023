@@ -40,10 +40,7 @@ class Thrust(Node):
 
     def __init__(self):
         """Initialize this node"""
-        super().__init__('thrust')
-
-        root3 = 1/math.sqrt(3)
-        
+        super().__init__('thrust')        
 
         self.motor_config = [
             [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
@@ -53,7 +50,7 @@ class Thrust(Node):
             [ -0.19, -0.19, 0.19,  0.19, -0.0268698, -0.0268698,  0.0268698, 0.0268698 ],  # Ry (N*m)
             [     0,     0,    0,     0,  -0.180311,   0.180311,   0.180311, -0.180311 ],  # Rz (N*m)
         ]
-        
+
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
