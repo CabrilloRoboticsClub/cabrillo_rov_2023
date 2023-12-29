@@ -46,14 +46,15 @@ class Thrust(Node):
         
 
         self.motor_config = [
-            [root3, root3, root3, root3, -root3, -root3, -root3, -root3], 
-            [-root3, root3, -root3, root3, -root3, root3, -root3, root3], 
-            [root3, root3, -root3, -root3, root3, root3, -root3, -root3],
-            [root3, -root3, -root3, root3, root3, -root3, -root3, root3],
-            [-2*root3, -2*root3, 2*root3, 2*root3, 2*root3, 2*root3, -2*root3, -2*root3],
-            [-1/root3, 1/root3, -1/root3, 1/root3, 1/root3, -1/root3, 1/root3, -1/root3]
+            [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
+            [     0,     0,    0,     0,    -0.7071,     0.7071,    -0.7071,    0.7071 ],  # Fy (N)
+            [     1,     1,    1,     1,          0,          0,          0,         0 ],  # Fz (N)
+            [  0.12, -0.12, 0.12, -0.12, -0.0268698,  0.0268698, -0.0268698, 0.0268698 ],  # Rx (N*m)
+            [ -0.19, -0.19, 0.19,  0.19, -0.0268698, -0.0268698,  0.0268698, 0.0268698 ],  # Ry (N*m)
+            [     0,     0,    0,     0,  -0.180311,   0.180311,   0.180311, -0.180311 ],  # Rz (N*m)
         ]
-        self.inverse_config = np.linalg.pinv(motor_config, rcond=1e-15, hermitian=False)
+        
+        self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
