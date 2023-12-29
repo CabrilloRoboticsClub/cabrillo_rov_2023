@@ -64,8 +64,12 @@ class StickyButton():
         Returns:
             True if the button is toggled on, False if off
         """
+        # Append the current button state to the tracker then remove the leftmost bit
+        # such that self.__track_state records the most recent four states of the button
         self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
 
+        # Account for bounce by making sure the last four recorded states
+        # appear to represent a button press
         if self.__track_state == 0b0011:
             self.__feature_state = not self.__feature_state
         return bool(self.__feature_state)
@@ -182,8 +186,8 @@ class InputXboxOne(Node):
             "bambi_mode":                   joy_msg.buttons[1], # b
             # "":                           joy_msg.buttons[2], # x
             # "":                           joy_msg.buttons[3], # y
-            "roll_counter_clockwise":       joy_msg.buttons[4], # left_bumper
-            "roll_clockwise":               joy_msg.buttons[5], # right_bumper
+            "pos_angular_x":                joy_msg.buttons[4], # left_bumper
+            "neg_angular_x":                joy_msg.buttons[5], # right_bumper
             # "":                           joy_msg.buttons[6], # window
             # "":                           joy_msg.buttons[7], # menu
             "reset":                        joy_msg.buttons[8], # xbox
@@ -192,14 +196,16 @@ class InputXboxOne(Node):
         # Bambi mode cuts all twist values in half for more precise movements
         bambi_div = 2 if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]) else 1
 
-        self.get_logger().info(f"{bambi_div}")
-
         # Create twist message
         twist_msg = Twist()
         twist_msg.linear.x  = controller["linear_x"]     / bambi_div      # Z (forwards)
         twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
         twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
-        twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
+
+        # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
+        roll_dir = -1 if controller["neg_angular_x"] else 1
+        twist_msg.angular.x = (roll_dir * 0.5 / bambi_div) if controller["pos_angular_x"] or controller["neg_angular_x"] else 0.0 # R (roll)
+    
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
      
