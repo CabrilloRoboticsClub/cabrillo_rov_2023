@@ -52,10 +52,11 @@ class StickyButton():
         Initialize 'StickyButton' object
         """
         self.__feature_state = OFF
+        self.__track_state = 0b0000
     
     def check_state(self, cur_button_state: bool) -> bool:
         """
-        Checks if a button is toggled on or off and updates internal state
+        Checks if a button is toggled on or off and accounts for debouncing
 
         Args:
             cur_button_state: Current state of the button provided by the controller
@@ -63,10 +64,11 @@ class StickyButton():
         Returns:
             True if the button is toggled on, False if off
         """
-        if cur_button_state == ON:
+        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
+
+        if self.__track_state == 0b0011:
             self.__feature_state = not self.__feature_state
         return bool(self.__feature_state)
-
 
 class InputXboxOne(Node):
     """
