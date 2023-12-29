@@ -107,49 +107,6 @@ class InputXboxOne(Node):
             # "":                 StickyButton(),        # window
             # "":                 StickyButton(),        # menu
         }
-    
-        # self.__cur_throttle_curve = 0
-        # self.__throttle_y = []
-        # self.__throttle_x = [0.0, 0.25, 0.50, 0.75, 1.0]
-    
-    # TODO: Fix all this throttle stuff, maybe move it nto its own class?
-    def __throttle_curve(self, input: float, curve: int=0):
-        """
-        Applies a throttle curve to the 'input'. A throttle curve allows the user to
-        modify the relationship between the stick position and the actual throttle value sent
-        to the motors
-
-        The throttle curve is selected by passing a number [0, 2] to the 'curve' param
-            0 (default): No throttle curve
-            1: [0.0, 0.4, 0.7, 0.8, 1.0]
-            2: [0.0, 0.1, 0.2, 0.5, 1.0]
-    
-        Args:
-            input: The value to remap
-            curve: The type of curve to remap to
-
-        Returns:
-            'input' remapped to fit the specified throttle curve
-        """
-        # if curve == self.__cur_throttle_curve:
-        #     pass
-        # else:
-        match curve:
-            case 1:
-                y = [0.0, 0.4, 0.7, 0.8, 1.0]
-            case 2:
-                y = [0.0, 0.1, 0.2, 0.5, 1.0]
-            case _:
-                return input
-
-        x = [0.0, 0.25, 0.50, 0.75, 1.0]
-
-        # Determine if we need to multiply by a negative to indicate the direction
-        direction = -1 if input < 0 else 1
-
-        # CubicSpline creates a cubic spline interpolation given a list of x and y values
-        # It returns an interpolated function
-        return direction * CubicSpline(x, y)(abs(input))
 
     def __callback(self, joy_msg: Joy):
         """
@@ -198,7 +155,7 @@ class InputXboxOne(Node):
 
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"]     / bambi_div      # Z (forwards)
+        twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
         twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
         twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
 
