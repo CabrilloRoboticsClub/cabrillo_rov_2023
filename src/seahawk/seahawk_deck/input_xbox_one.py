@@ -88,18 +88,18 @@ class InputXboxOne(Node):
         super().__init__("input_xbox_one")
 
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
-        self.__twist_pub = self.create_publisher(Twist, "controller_twist", 10)
-        self.__claw_pub = self.create_publisher(Bool, "claw", 10)
+        self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
+        self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
         
         self.__buttons = {
-            # "" :                StickyButton(),        # left_stick_press
-            # "" :                StickyButton(),        # right_stick_press
-            "claw":             StickyButton(),       # a
-            "bambi_mode":       StickyButton(),       # b
-            # "":                 StickyButton(),        # x
-            # "":                 StickyButton(),        # y
-            # "":                 StickyButton(),        # window
-            # "":                 StickyButton(),        # menu
+            # "" :              StickyButton(),         # left_stick_press
+            # "" :              StickyButton(),         # right_stick_press
+            "claw":             StickyButton(),         # a
+            "bambi_mode":       StickyButton(),         # b
+            # "":               StickyButton(),         # x
+            # "":               StickyButton(),         # y
+            # "":               StickyButton(),         # window
+            # "":               StickyButton(),         # menu
         }
 
     def __callback(self, joy_msg: Joy):
