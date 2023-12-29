@@ -70,6 +70,14 @@ class StickyButton():
             self.__feature_state = not self.__feature_state
         return bool(self.__feature_state)
 
+    def reset(self):
+        """
+        Resets button state to origional configuration
+        """
+        self.__feature_state = OFF
+        self.__track_state = 0b0000
+
+
 class InputXboxOne(Node):
     """
     Class that implements the joystick input
@@ -92,17 +100,15 @@ class InputXboxOne(Node):
             "bambi_mode":       StickyButton(),       # b
             # "":                 StickyButton(),        # x
             # "":                 StickyButton(),        # y
-            # "":                 StickyButton(),        # left_bumper
-            # "":                 StickyButton(),        # right_bumper
             # "":                 StickyButton(),        # window
             # "":                 StickyButton(),        # menu
-            # "":                 StickyButton(),        # xbox
         }
     
         # self.__cur_throttle_curve = 0
         # self.__throttle_y = []
         # self.__throttle_x = [0.0, 0.25, 0.50, 0.75, 1.0]
     
+    # TODO: Fix all this throttle stuff, maybe move it nto its own class?
     def __throttle_curve(self, input: float, curve: int=0):
         """
         Applies a throttle curve to the 'input'. A throttle curve allows the user to
@@ -158,11 +164,11 @@ class InputXboxOne(Node):
             # Left stick
             "linear_y":         joy_msg.axes[0],                # left_stick_x
             "linear_x":         joy_msg.axes[1],                # left_stick_y
-            # "":                 joy_msg.buttons[9],             # left_stick_press
+            # "":               joy_msg.buttons[9],             # left_stick_press
             # Right stick
             "angular_z":        joy_msg.axes[3],                # right_stick_x
             "angular_y":        joy_msg.axes[4],                # right_stick_y
-            # "":                 joy_msg.buttons[10],            # right_stick_press
+            # "":               joy_msg.buttons[10],            # right_stick_press
             # Triggers
             "neg_linear_z":     joy_msg.axes[2],                # left_trigger
             "pos_linear_z":     joy_msg.axes[5],                # right_trigger
@@ -172,15 +178,15 @@ class InputXboxOne(Node):
             # "":                 int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":                 int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "claw":             joy_msg.buttons[0], # a
-            "bambi_mode":       joy_msg.buttons[1], # b
-            # "":                 joy_msg.buttons[2], # x
-            # "":                 joy_msg.buttons[3], # y
-            # "":                 joy_msg.buttons[4], # left_bumper
-            # "":                 joy_msg.buttons[5], # right_bumper
-            # "":                 joy_msg.buttons[6], # window
-            # "":                 joy_msg.buttons[7], # menu
-            # "":                 joy_msg.buttons[8], # xbox
+            "claw":                         joy_msg.buttons[0], # a
+            "bambi_mode":                   joy_msg.buttons[1], # b
+            # "":                           joy_msg.buttons[2], # x
+            # "":                           joy_msg.buttons[3], # y
+            "roll_counter_clockwise":       joy_msg.buttons[4], # left_bumper
+            "roll_clockwise":               joy_msg.buttons[5], # right_bumper
+            # "":                           joy_msg.buttons[6], # window
+            # "":                           joy_msg.buttons[7], # menu
+            "reset":                        joy_msg.buttons[8], # xbox
         }
 
         # Bambi mode cuts all twist values in half for more precise movements
@@ -206,6 +212,10 @@ class InputXboxOne(Node):
 
         # Publish claw message
         self.__claw_pub.publish(claw_msg)
+
+        # If the x-box button is pressed, all settings get reset to default configurations
+        if controller["reset"]:
+            self.__buttons["bambi_mode"].reset()
 
 
 def main(args=None):
