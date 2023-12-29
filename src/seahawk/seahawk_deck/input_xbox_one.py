@@ -45,7 +45,7 @@ class StickyButton():
         """
         Initialize 'StickyButton' object
         """
-        self.__feature_state = False    # Is the feature this button controlls on (True) or off (False)
+        self.__feature_state = False    # Is the feature this button controls on (True) or off (False)
         self.__track_state = 0b0000     # Tracks the last four states of the button using bits
     
     def check_state(self, cur_button_state: bool) -> bool:
@@ -70,7 +70,7 @@ class StickyButton():
 
     def reset(self):
         """
-        Resets button state to origional configuration
+        Resets button state to original configuration
         """
         self.__feature_state = False
         self.__track_state = 0b0000
@@ -92,14 +92,14 @@ class InputXboxOne(Node):
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
         
         self.__buttons = {
-            # "" :              StickyButton(),         # left_stick_press
-            # "" :              StickyButton(),         # right_stick_press
-            "claw":             StickyButton(),         # a
-            "bambi_mode":       StickyButton(),         # b
-            # "":               StickyButton(),         # x
-            # "":               StickyButton(),         # y
-            # "":               StickyButton(),         # window
-            # "":               StickyButton(),         # menu
+            # "" :              StickyButton(),     # left_stick_press
+            # "" :              StickyButton(),     # right_stick_press
+            "claw":             StickyButton(),     # a
+            "bambi_mode":       StickyButton()      # b
+            # "":               StickyButton(),     # x
+            # "":               StickyButton(),     # y
+            # "":               StickyButton(),     # window
+            # "":               StickyButton(),     # menu
         }
 
     def __callback(self, joy_msg: Joy):
@@ -128,20 +128,20 @@ class InputXboxOne(Node):
             "neg_linear_z":     joy_msg.axes[2],                # left_trigger
             "pos_linear_z":     joy_msg.axes[5],                # right_trigger
             # Dpad
-            # "":                 int(max(joy_msg.axes[7], 0)),   # dpad_up
-            # "":                 int(-min(joy_msg.axes[7], 0)),  # dpad_down
-            # "":                 int(max(joy_msg.axes[6], 0)),   # dpad_left     
-            # "":                 int(-min(joy_msg.axes[6], 0)),  # dpad_right
+            # "":               int(max(joy_msg.axes[7], 0)),   # dpad_up
+            # "":               int(-min(joy_msg.axes[7], 0)),  # dpad_down
+            # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
+            # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "claw":                         joy_msg.buttons[0], # a
-            "bambi_mode":                   joy_msg.buttons[1], # b
-            # "":                           joy_msg.buttons[2], # x
-            # "":                           joy_msg.buttons[3], # y
-            "pos_angular_x":                joy_msg.buttons[4], # left_bumper
-            "neg_angular_x":                joy_msg.buttons[5], # right_bumper
-            # "":                           joy_msg.buttons[6], # window
-            # "":                           joy_msg.buttons[7], # menu
-            "reset":                        joy_msg.buttons[8], # xbox
+            "claw":             joy_msg.buttons[0], # a
+            "bambi_mode":       joy_msg.buttons[1], # b
+            # "":               joy_msg.buttons[2], # x
+            # "":               joy_msg.buttons[3], # y
+            "pos_angular_x":    joy_msg.buttons[4], # left_bumper
+            "neg_angular_x":    joy_msg.buttons[5], # right_bumper
+            # "":               joy_msg.buttons[6], # window
+            # "":               joy_msg.buttons[7], # menu
+            "reset":            joy_msg.buttons[8], # xbox
         }
 
         # Bambi mode cuts all twist values in half for more precise movements
