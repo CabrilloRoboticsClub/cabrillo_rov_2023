@@ -30,12 +30,44 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
+
+from scipy.interpolate import CubicSpline
 # from std_msgs.msg import Int8MultiArray
 # from std_msgs.msg import Float32
 # from rclpy.parameter import Parameter
 
+
 ON = 1
 OFF = 0
+
+
+class StickyButton():
+    """
+    Class that implements sticky buttons, meaning a button is pressed to turn it on, 
+    and pressed again to turn it off
+    """
+
+    def __init__(self):
+        """
+        Initialize 'StickyButton' object
+        """
+        self.__prev_button_state = OFF
+        self.__feature_state = OFF
+    
+    def check_state(self, cur_button_state: bool) -> bool:
+        """
+        Checks if a button is toggled on or off and updates internal state
+
+        Args:
+            cur_button_state: Current state of the button provided by the controller
+
+        Returns:
+            True if the button is toggled on, False if off
+        """
+        if cur_button_state == ON and self.__prev_button_state == OFF:
+            self.__feature_state = not self.__feature_state
+        return bool(self.__feature_state)
+
 
 class InputXboxOne(Node):
     """
@@ -51,33 +83,35 @@ class InputXboxOne(Node):
         self.__twist_pub = self.create_publisher(Twist, "controller_twist", 10)
         self.__claw_pub = self.create_publisher(Bool, "claw", 10)
         
-        self.__button_state = {
-            # "" :                OFF,        # left_stick_press
-            # "" :                OFF,        # right_stick_press
-            "claw":             {"prev_button_state": OFF, "feature_state": OFF},       # a
-            "bambi_mode":       {"prev_button_state": OFF, "feature_state": OFF}        # b
-            # "":                 OFF,        # x
-            # "":                 OFF,        # y
-            # "":                 OFF,        # left_bumper
-            # "":                 OFF,        # right_bumper
-            # "":                 OFF,        # window
-            # "":                 OFF,        # menu
-            # "":                 OFF,        # xbox
+        self.__buttons = {
+            # "" :                StickyButton(),        # left_stick_press
+            # "" :                StickyButton(),        # right_stick_press
+            "claw":             StickyButton(),       # a
+            "bambi_mode":       StickyButton(),       # b
+            # "":                 StickyButton(),        # x
+            # "":                 StickyButton(),        # y
+            # "":                 StickyButton(),        # left_bumper
+            # "":                 StickyButton(),        # right_bumper
+            # "":                 StickyButton(),        # window
+            # "":                 StickyButton(),        # menu
+            # "":                 StickyButton(),        # xbox
         }
     
-    @staticmethod
-    def __throttle_curve(input: float, curve: int=0):
+        # self.__cur_throttle_curve = 0
+        # self.__throttle_y = []
+        # self.__throttle_x = [0.0, 0.25, 0.50, 0.75, 1.0]
+    
+    def __throttle_curve(self, input: float, curve: int=0):
         """
-        Applies a throttle curve mapping to the 'input'. A throttle curve allows the user to
+        Applies a throttle curve to the 'input'. A throttle curve allows the user to
         modify the relationship between the stick position and the actual throttle value sent
         to the motors
 
-        The throttle curve is selected by passing a number [0, 3] to the 'curve' param
+        The throttle curve is selected by passing a number [0, 2] to the 'curve' param
             0 (default): No throttle curve
-            1: 
-            2: 
-            3: 
-
+            1: [0.0, 0.4, 0.7, 0.8, 1.0]
+            2: [0.0, 0.1, 0.2, 0.5, 1.0]
+    
         Args:
             input: The value to remap
             curve: The type of curve to remap to
@@ -85,16 +119,25 @@ class InputXboxOne(Node):
         Returns:
             'input' remapped to fit the specified throttle curve
         """
+        # if curve == self.__cur_throttle_curve:
+        #     pass
+        # else:
         match curve:
             case 1:
-                pass
+                y = [0.0, 0.4, 0.7, 0.8, 1.0]
             case 2:
-                pass
-            case 3:
-                pass
+                y = [0.0, 0.1, 0.2, 0.5, 1.0]
             case _:
                 return input
-    
+
+        x = [0.0, 0.25, 0.50, 0.75, 1.0]
+
+        # Determine if we need to multiply by a negative to indicate the direction
+        direction = -1 if input < 0 else 1
+
+        # CubicSpline creates a cubic spline interpolation given a list of x and y values
+        # It returns an interpolated function
+        return direction * CubicSpline(x, y)(abs(input))
 
     def __callback(self, joy_msg: Joy):
         """
@@ -104,19 +147,19 @@ class InputXboxOne(Node):
         Args:
             joy_msg: Message of type 'Joy' from the joy topic
         """
-        
+
         # Debug output of joy topic
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
 
         # Map the values sent from the joy message to useful names
         controller = {
             # Left stick
-            "linear_y":         joy_msg.axes[0],               # left_stick_x
-            "linear_x":         joy_msg.axes[1],               # left_stick_y
+            "linear_y":         joy_msg.axes[0],                # left_stick_x
+            "linear_x":         joy_msg.axes[1],                # left_stick_y
             # "":                 joy_msg.buttons[9],             # left_stick_press
             # Right stick
-            "angular_z":        joy_msg.axes[3],               # right_stick_x
-            "angular_y":        joy_msg.axes[4],               # right_stick_y
+            "angular_z":        joy_msg.axes[3],                # right_stick_x
+            "angular_y":        joy_msg.axes[4],                # right_stick_y
             # "":                 joy_msg.buttons[10],            # right_stick_press
             # Triggers
             "neg_linear_z":     joy_msg.axes[2],                # left_trigger
@@ -138,44 +181,28 @@ class InputXboxOne(Node):
             # "":                 joy_msg.buttons[8], # xbox
         }
 
-
-        def sticky_button(button: str) -> bool:
-            """
-            Makes a button sticky meaning that meaning a button is pressed to turn it on, 
-            and pressed again to turn it off
-
-            Args:
-                button: The name of the buttom
-
-            Returns:
-                True if the feature the button controlls should be turned on, False if off
-            """
-            if controller[button] == ON and self.__button_state[button]["prev_button_state"] == OFF:
-                self.__button_state[button]["feature_state"] = not self.__button_state[button]["feature_state"]
-            return bool(self.__button_state[button]["feature_state"])
-
-
         # Bambi mode cuts all twist values in half for more precise movements
-        bambi_div = 2 if sticky_button("bambi_mode") else 1
+        bambi_div = 2 if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]) else 1
 
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
+        twist_msg.linear.x  = controller["linear_x"]     / bambi_div      # Z (forwards)
         twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
         twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
         twist_msg.angular.x = 0.0 # R (roll) (we don"t need roll)
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
      
-        # Publsih twist message
+        # Publish twist message
         self.__twist_pub.publish(twist_msg)
 
         # Create claw message
         claw_msg = Bool()
-        claw_msg.data = sticky_button("claw")
+        claw_msg.data = self.__buttons["claw"].check_state(controller["claw"])
 
         # Publish claw message
         self.__claw_pub.publish(claw_msg)
+
 
 def main(args=None):
     rclpy.init(args=args)
