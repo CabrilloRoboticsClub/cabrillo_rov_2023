@@ -10,34 +10,17 @@ top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-
 
 v4l2_regex = r"mmal.*\n\s*(/dev/video\d)"
 v4l2_devices = os.popen("v4l2-ctl --list-devices").read()
-front_camera_path = re.search(v4l2_regex, v4l2_devices).group(1)
-
-subprocess.run(f'v4l2-ctl --set-ctrl h264_i_frame_period=90 -d {front_camera_path}', shell=True)
-subprocess.run(f'v4l2-ctl --set-ctrl repeat_sequence_header=1 -d {front_camera_path}', shell=True)
+front_camera_match = re.search(v4l2_regex, v4l2_devices)
+match front_camera_match:
+    case None:
+        front_camera_path = top_camera_path
+    case _:
+        front_camera_path = front_camera_match.group(1)
+        subprocess.run(f'v4l2-ctl --set-ctrl h264_i_frame_period=90 -d {front_camera_path}', shell=True)
+        subprocess.run(f'v4l2-ctl --set-ctrl repeat_sequence_header=1 -d {front_camera_path}', shell=True)
 
 def generate_launch_description():
     nodes = [
-        Node(
-            package='h264_image_transport',
-            executable='h264_cam_node',
-            name='front_camera',
-            output='screen',
-            respawn=True,
-            respawn_delay=0,
-            parameters=[{
-                'input_fn': front_camera_path,
-                'fps': 30,
-                'size': '1280x960',
-                'frame_id': 'front_camera',
-                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
-                'qos_overrides./parameter_events.publisher.history': 'keep_last',
-                'qos_overrides./parameters_events.publisher.durability': 'volatile',
-                'qos_overrides./parameter_events.publisher.depth': 1,
-            }],
-            remappings=[
-                ('image_raw/h264', 'camera/front/h264'),
-            ],
-        ),
         Node(
             package='seahawk',
             executable='seahawk_rov',
@@ -70,6 +53,32 @@ def generate_launch_description():
             ]
         )
     ]
+    if pathlib.Path(front_camera_path).exists():
+        nodes.append(
+        Node(
+            package='h264_image_transport',
+            executable='h264_cam_node',
+            name='front_camera',
+            output='screen',
+            respawn=True,
+            respawn_delay=0,
+            parameters=[{
+                'input_fn': front_camera_path,
+                'fps': 30,
+                'size': '1280x960',
+                'frame_id': 'front_camera',
+                'qos_overrides./parameter_events.publisher.reliability': 'best_effort',
+                'qos_overrides./parameter_events.publisher.history': 'keep_last',
+                'qos_overrides./parameters_events.publisher.durability': 'volatile',
+                'qos_overrides./parameter_events.publisher.depth': 1,
+            }],
+            remappings=[
+                ('image_raw/h264', 'camera/front/h264'),
+            ],
+        ))
+    else:
+        print("Front camera not found!")
+
     if pathlib.Path(claw_camera_path).exists():
         nodes.append(
             Node(
