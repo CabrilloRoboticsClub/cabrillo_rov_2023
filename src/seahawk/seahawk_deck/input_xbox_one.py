@@ -58,9 +58,9 @@ class StickyButton():
         Returns:
             True if the button is toggled on, False if off
         """
-        # Append the current button state to the tracker then remove the leftmost bit
+        # Append the current button state to the tracker then removes all but rightmost byte
         # such that self.__track_state records the most recent four states of the button
-        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
+        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0b1111
 
         # Account for bounce by making sure the last four recorded states
         # appear to represent a button press. If so, update the feature state
