@@ -25,7 +25,7 @@ cabrillorobotics@gmail.com
 # For reading argv
 import sys 
 
-# Ros client libary imports
+# ROS client libary imports
 import rclpy
 from rclpy.node import Node 
 
