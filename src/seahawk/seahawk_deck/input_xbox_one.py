@@ -154,8 +154,7 @@ class InputXboxOne(Node):
         twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
 
         # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
-        roll_dir = -1 if controller["neg_angular_x"] else 1
-        twist_msg.angular.x = (roll_dir * 0.5 / bambi_div) if controller["pos_angular_x"] or controller["neg_angular_x"] else 0.0 # R (roll)
+        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5 / bambi_div
     
         twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
         twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
