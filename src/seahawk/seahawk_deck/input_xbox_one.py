@@ -144,20 +144,27 @@ class InputXboxOne(Node):
             "reset":            joy_msg.buttons[8], # xbox
         }
 
-        # Bambi mode cuts all twist values in half for more precise movements
-        bambi_div = 2 if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]) else 1
 
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"]     / bambi_div     # Z (forwards)
-        twist_msg.linear.y  = -controller["linear_y"]    / bambi_div     # Y (sideways)
-        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) / bambi_div # Z (depth)
+        twist_msg.linear.x  = controller["linear_x"] # Z (forwards)
+        twist_msg.linear.y  = -controller["linear_y"] # Y (sideways)
+        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) # Z (depth)
 
         # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
-        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5 / bambi_div
+        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5
     
-        twist_msg.angular.y = controller["angular_y"]    / bambi_div     # P (pitch) 
-        twist_msg.angular.z = -controller["angular_z"]   / bambi_div     # Y (yaw)
+        twist_msg.angular.y = controller["angular_y"] # P (pitch)
+        twist_msg.angular.z = -controller["angular_z"] # Y (yaw)
+
+        # Bambi mode cuts all twist values in half for more precise movements
+        if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
+            twist_msg.linear.x /= 2
+            twist_msg.linear.y /= 2
+            twist_msg.linear.z /= 2
+            twist_msg.angular.x /= 2
+            twist_msg.angular.y /= 2
+            twist_msg.angular.z /= 2
      
         # Publish twist message
         self.__twist_pub.publish(twist_msg)
