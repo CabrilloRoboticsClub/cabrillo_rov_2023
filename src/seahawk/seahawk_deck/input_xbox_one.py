@@ -63,7 +63,8 @@ class StickyButton():
         self.__track_state = (self.__track_state << 1 | cur_button_state) & 0b1111
 
         # Account for bounce by making sure the last four recorded states
-        # appear to represent a button press. If so, update the feature state
+        # appear to represent a button press. A debounced button press is defined as two recorded
+        # consecutive off states followed by two on states. If the button is pressed, update the feature state
         if self.__track_state == 0b0011:
             self.__feature_state = not self.__feature_state
         return self.__feature_state
