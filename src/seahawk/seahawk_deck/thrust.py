@@ -150,17 +150,7 @@ class Thrust(Node):
         ]
 
         # Multiply twist with inverse of motor config to get motor effort values
-        motor_efforts = np.matmul(self.inverse_config, twist_array)
-
-        motor_msg.data[0] = motor_efforts[0]
-        motor_msg.data[1] = motor_efforts[1]
-        motor_msg.data[2] = motor_efforts[2]
-        motor_msg.data[3] = motor_efforts[3]
-        motor_msg.data[4] = motor_efforts[4]
-        motor_msg.data[5] = motor_efforts[5]
-        motor_msg.data[6] = motor_efforts[6]
-        motor_msg.data[7] = motor_efforts[7]
-
+        motor_msg.data = list(np.matmul(self.inverse_config, twist_array))
         self.motor_pub.publish(motor_msg)
 
 
