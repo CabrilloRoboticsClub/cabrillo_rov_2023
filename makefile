@@ -3,7 +3,7 @@
 
 all:
 	if [ "$$(uname -m)" = "aarch64" ]; then touch src/seahawk_description/COLCON_IGNORE; fi
-	colcon build --symlink
+	colcon build --symlink-install
 
 devbox-install:
 	# Need sudo here for when password authentication is on

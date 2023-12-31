@@ -2,24 +2,27 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>seahawk</name>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <description>ROS2 packages for Seahawk</description>
   <maintainer email="cabrillorobotics@gmail.com">Cabrillo Robotics Club</maintainer>
   <license>AGPL V3</license>
   
-  <build_depend>python3-setuptools</build_depend>
+  <!-- <depend>rclcpp</depend> -->
+  <depend>rclpy</depend>
 
-  <exec_depend>rclpy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>sensor_msgs_py</exec_depend>
-  <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>visualization_msgs</exec_depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  
   <exec_depend>rcl_interfaces</exec_depend>
   <exec_depend>python3</exec_depend>
   <exec_depend>python-rpi.gpio-pip</exec_depend>
   <exec_depend>python3-adafruit-blinka-pip</exec_depend>
 
-  <exec_depend>python3</exec_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
@@ -27,8 +30,9 @@
   <test_depend>python3-pytest</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
 
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

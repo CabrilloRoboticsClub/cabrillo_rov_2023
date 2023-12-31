@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 input_xbox_one.py
 
