@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-'''
+"""
 input_keyboard.py
 
 Take input from the keyboard and republish it to topic
@@ -22,62 +21,103 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
-'''
-# ROS client library imports
+"""
+# For argv
+import sys
+
+# ROS client library
 import rclpy
 from rclpy.node import Node 
 
 # ROS messages
 from std_msgs.msg import String
+
+# Threading
 import threading
 
 # For keyboard stuff
 import sys, tty, os, termios
 
 
-def get_key(settings):
-    tty.setraw(sys.stdin.fileno())
-    # sys.stdin.read() returns a string on Linux
-    key = sys.stdin.read(1)
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-    return key
+class InputKeyboard(Node):
+    """
+    Class that actively reads keyboard input
+    """
+
+    def __init__(self, settings):
+        """
+        Initialize `input_keyboard` node
+        """
+        super().__init__("input_keyboard")
+    
+        # Create publisher to topic `key_press`
+        self.__key_pub = self.create_publisher(String, "key_press", 10)
+
+        # Get current user terminal settings and save them for later
+        self.__settings = settings
+    
+    def __get_key(self) -> str:
+        """
+        Extracts a single key stroke from the user
+
+        Returns:
+            String of the name of the key which was pressed
+        """
+        # Enable raw mode. In raw mode characters are directly read from and written 
+        # to the device without any translation or interpretation by the operating system
+        tty.setraw(sys.stdin.fileno())
+
+        # Read at most one byte (the length of one character) from stdin and decode it
+        key = os.read(sys.stdin.fileno(), 1).decode()
+
+        # Make terminal not break
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.__settings)
+
+        return key
+
+    def pub_callback(self):
+        """
+        Gets a key from the user publishes it to 'key_press' topic
+
+        Throws 'KeyboardInterrupt' if user enters ctrl-c
+        """
+        key = self.__get_key()
+
+        # If ctrl-c raise `KeyboardInterrupt`
+        if key == "\x03":
+            raise KeyboardInterrupt("Terminated the process with ctrl-c")
+        
+        # Create and publish message
+        msg = String()
+        msg.data = key
+        self.__key_pub.publish(msg)
 
 
 def main(args=None):
+    rclpy.init(args=args)
+
     # Get current user terminal settings and save them for later
     orig_settings = termios.tcgetattr(sys.stdin)
 
-    # Initialize node `input_keyboard`
-    rclpy.init()
-    node = rclpy.create_node("input_keyboard")
+    # Instance of InputKeyboard()
+    node = InputKeyboard(orig_settings)
 
-    # Create publisher to topic `key_press`
-    pub = node.create_publisher(String, "key_press", 10)
-
-    # Begin threading for some fuckin reason
+    # Threading allows the process to look for input and run the node at the same time
+    # Create and start a thread for spinning the node
     spinner = threading.Thread(target=rclpy.spin, args=(node,))
     spinner.start()
 
-    # Initialize message as a String ROS message type
-    msg = String()
-
     try:
         while True:
-            # Get the key entered by the user
-            key = get_key(orig_settings)
-
-            # If ctrl-c break
-            if key == "\x03":
-                break
-
-            # Create and publish message
-            msg.data = str(key)
-            pub.publish(msg)
-            print(msg.data)
-    except Exception as error_msg:
-        node.get_logger().info(error_msg)
-
+            # While the user has not entered ctrl-c, wait for keystrokes and publish them
+            node.pub_callback()
+    except KeyboardInterrupt as error_msg:
+        print(error_msg)
+    
+    # Kill node
     rclpy.shutdown()
+
+    # Delays a program's flow of execution until spinner is finished its process
     spinner.join()
     
     # Reset to original terminal settings
@@ -85,6 +125,7 @@ def main(args=None):
 
     # Make terminal sane again upon program exit
     os.system("stty sane")
+
 
 if __name__ == "__main__":
     main(sys.argv)
