@@ -29,47 +29,57 @@ from rclpy.node import Node
 
 # ROS messages
 from std_msgs.msg import String
+import threading
 
 # For keyboard stuff
-import sys, tty ,os,termios
+import sys, tty, os, termios
 
 
-class InputKeyboard(Node):
-    """
-    Class that listens for keyboard presses and republishes them
-    """
-
-    def __init__(self):
-        """
-        Initialize `input_keyboard` node
-        """
-        super().__init__("input_keyboard")
-        self.__keyboard_pub = self.create_publisher(String, "key_press", 10)
-
-        # Get current user terminal settings and save them for later
-        self.__settings = termios.tcgetattr(sys.stdin)
-
-        # Enable cbreak mode. In cbreak mode characters typed by the user are immediately available
-        # to the program. This way we can extract keys without the user needing to press enter
-        tty.setcbreak(sys.stdin.fileno())
-
-    def get_and_pub_key(self):
-        try:
-            while True:
-                msg = String()
-                # Read at most one byte (the length of one character) from stdin and decode it
-                msg.data = os.read(sys.stdin.fileno(), 1).decode()
-                print(msg.data)
-                self.__keyboard_pub.publish(msg)
-        except (KeyboardInterrupt, SystemExit):
-            # Reset to original terminal settings
-            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.__settings)
-
-            # Make terminal sane again upon program exit
-            os.system("stty sane")
+def get_key(settings):
+    tty.setraw(sys.stdin.fileno())
+    # sys.stdin.read() returns a string on Linux
+    key = sys.stdin.read(1)
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+    return key
 
 
 def main(args=None):
-    rclpy.init(args=args)
-    rclpy.spin(InputKeyboard())
-    rclpy.shutdown()
+    # Get current user terminal settings and save them for later
+    orig_settings = termios.tcgetattr(sys.stdin)
+
+    # Initialize node `input_keyboard`
+    rclpy.init()
+    node = rclpy.create_node("input_keyboard")
+
+    # Create publisher to topic `key_press`
+    pub = node.create_publisher(String, "key_press", 10)
+
+    # Begin threading for some fuckin reason
+    spinner = threading.Thread(target=rclpy.spin, args=(node,))
+    spinner.start()
+
+    # Initialize message as a String ROS message type
+    msg = String()
+
+    try:
+        while True:
+            # Get the key entered by the user
+            key = get_key(orig_settings)
+
+            # Create and publish message
+            msg.data = str(key)
+            pub.publish(msg)
+            print(msg.data)
+    except Exception as error_msg:
+        node.get_logger().info(error_msg)
+    finally:
+        rclpy.shutdown()
+        spinner.join()
+        # Reset to original terminal settings
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
+
+        # Make terminal sane again upon program exit
+        os.system("stty sane")
+
+if __name__ == "__main__":
+    main(sys.argv)
