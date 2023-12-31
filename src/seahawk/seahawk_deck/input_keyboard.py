@@ -25,25 +25,20 @@ cabrillorobotics@gmail.com
 '''
 import sys,tty,os,termios
 
-def getkey():
-    # Get current user terminal settings and save them for later
-    old_settings = termios.tcgetattr(sys.stdin)
+ # Get current user terminal settings and save them for later
+old_settings = termios.tcgetattr(sys.stdin)
 
-    # Enable cbreak mode. In cbreak mode characters typed by the user are immediately available
-    # to the program. This way we can extract keys without the user needing to press enter
-    tty.setcbreak(sys.stdin.fileno())
-
-    try:
-        # Read at most one byte (the length of one character) from stdin and decode it
-        return os.read(sys.stdin.fileno(), 1).decode()
-    finally:
-        # Reset to original terminal settings
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+# Enable cbreak mode. In cbreak mode characters typed by the user are immediately available
+# to the program. This way we can extract keys without the user needing to press enter
+tty.setcbreak(sys.stdin.fileno())
 
 try:
     while True:
-        k = getkey()
+        # Read at most one byte (the length of one character) from stdin and decode it
+        k = os.read(sys.stdin.fileno(), 1).decode()
         print(k)
 except (KeyboardInterrupt, SystemExit):
+    # Reset to original terminal settings
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # Make terminal sane again upon program exit
     os.system('stty sane')
