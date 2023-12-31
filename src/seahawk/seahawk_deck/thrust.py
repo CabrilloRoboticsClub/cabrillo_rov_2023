@@ -48,6 +48,9 @@ class Thrust(Node):
         self.MAX_FWD_THRUST = 36.3826715 # N
         self.MAX_REV_THRUST = -28.6354180 # N
 
+        self.TOTAL_CURRENT_LIMIT = 70 # A
+        self.ESC_CURRENT_LIMIT = 40 # A
+
         self.motor_positions = [
             [0.19, 0.12, 0.047],
             [0.19, -0.12, 0.047],
@@ -81,6 +84,67 @@ class Thrust(Node):
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.__params = Thrust.__generate_curve_fit_params()
+
+    def get_polynomial_coef(self, mv: list, limit: float) -> list:
+        """
+        Args:
+            mv: The motor values in newtons that when produced will result in our desired twist
+            limit: The current limit we would like to stay under in amperes (TOTAL_CURRENT_LIMIT or ESC_CURRENT_LIMIT)
+
+        Returns:
+            A list of the coefficients of a 5th degree polynomial function, where the input of said
+            function is the scaling factor and the output is the current (A) draw
+        """
+        return [self.__params[0] * sum(map(lambda x: x**5, mv)),
+                self.__params[1] * sum(map(lambda x: x**4, mv)),
+                self.__params[2] * sum(map(lambda x: x**3, mv)),
+                self.__params[3] * sum(map(lambda x: x**2, mv)),
+                self.__params[4] * sum(mv),
+                self.__params[5] * len(mv) - limit]
+
+    def get_current_scalar_value(self, mv: list, limit: float) -> float:
+        """
+        Given a motor value list and a current limit, return the best scaling factor
+
+        Args:
+            mv: The motor values in newtons that when produced will result in our desired twist
+            limit: The current limit we would like to stay under in amperes (TOTAL_CURRENT_LIMIT or ESC_CURRENT_LIMIT)
+
+        Returns:
+            A valid scaling factor
+        """
+        # Get coefficients for function given the motor values given and the current (Amp) limits
+        coef_list = self.get_polynomial_coef(mv, limit)
+        # Find roots
+        potential_scaling_factors = np.roots(coef_list).tolist()
+        # Ignore nonreal and negative scaling factors
+        real_positive = map(lambda x: x.real, filter(lambda x: x.imag == 0 and x.real >= 0, potential_scaling_factors))
+        # Return valid roots
+        return min(real_positive)
+
+    def get_minimum_current_scalar(self, mv: list) -> float:
+        """
+        Returns a scalar which shows the maximum amount of thrust the robot can produce for the
+        given direction without exceeding total current (A) limits, or the current (A) limit of
+        either ESC
+
+        Args:
+            mv: The motor values in newtons that when produced will result in our desired twist
+
+        Returns:
+            The largest scalar we can scale those motor values by without exceeding the total current
+            (A) limit and the current limit of each ESC
+        """
+        # All motors
+        total_scalar = self.get_current_scalar_value(mv, self.TOTAL_CURRENT_LIMIT)
+        # First four motors / motors on esc 1
+        esc1_scalar = self.get_current_scalar_value(mv[:4], self.ESC_CURRENT_LIMIT)
+        # Second four motors / motors on esc 2
+        esc2_scalar = self.get_current_scalar_value(mv[4:], self.ESC_CURRENT_LIMIT)
+
+        return min(total_scalar, esc1_scalar, esc2_scalar)
+
+
 
     def update_center_of_mass(self, params: list[Parameter]) -> SetParametersResult:
         """
@@ -216,8 +280,9 @@ class Thrust(Node):
         # Multiply twist with inverse of motor config to get motor effort values
         motor_msg.data = list(np.matmul(self.inverse_config, twist_array))
 
-        scalar = self.get_thrust_limit_scalar(motor_msg.data) * max(twist_array)
-        motor_msg.data = list(map(lambda x: x * scalar, motor_msg.data))
+        # Choose the smallest of the two scalars so
+        scalar = min(self.get_thrust_limit_scalar(motor_msg.data), self.get_minimum_current_scalar(motor_msg.data))
+        motor_msg.data = list(map(lambda x: x * scalar * max(twist_array), motor_msg.data))
 
         self.motor_pub.publish(motor_msg)
 
