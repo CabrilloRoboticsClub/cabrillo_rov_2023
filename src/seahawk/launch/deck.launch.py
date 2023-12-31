@@ -83,6 +83,12 @@ def generate_launch_description():
             output='screen'
         ),
         Node(
+            package='seahawk',
+            executable='input_keyboard',
+            name='input_keyboard',
+            output='screen'
+        ),
+        Node(
             package='joy',
             executable='joy_node',
             name='joy_node',

@@ -23,22 +23,53 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 '''
-import sys,tty,os,termios
+# ROS client library imports
+import rclpy
+from rclpy.node import Node 
 
- # Get current user terminal settings and save them for later
-old_settings = termios.tcgetattr(sys.stdin)
+# ROS messages
+from std_msgs.msg import String
 
-# Enable cbreak mode. In cbreak mode characters typed by the user are immediately available
-# to the program. This way we can extract keys without the user needing to press enter
-tty.setcbreak(sys.stdin.fileno())
+# For keyboard stuff
+import sys, tty ,os,termios
 
-try:
-    while True:
-        # Read at most one byte (the length of one character) from stdin and decode it
-        k = os.read(sys.stdin.fileno(), 1).decode()
-        print(k)
-except (KeyboardInterrupt, SystemExit):
-    # Reset to original terminal settings
-    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-    # Make terminal sane again upon program exit
-    os.system('stty sane')
+
+class InputKeyboard(Node):
+    """
+    Class that listens for keyboard presses and republishes them
+    """
+
+    def __init__(self):
+        """
+        Initialize `input_keyboard` node
+        """
+        super().__init__("input_keyboard")
+        self.__keyboard_pub = self.create_publisher(String, "key_press", 10)
+
+        # Get current user terminal settings and save them for later
+        self.__settings = termios.tcgetattr(sys.stdin)
+
+        # Enable cbreak mode. In cbreak mode characters typed by the user are immediately available
+        # to the program. This way we can extract keys without the user needing to press enter
+        tty.setcbreak(sys.stdin.fileno())
+
+    def get_and_pub_key(self):
+        try:
+            while True:
+                msg = String()
+                # Read at most one byte (the length of one character) from stdin and decode it
+                msg.data = os.read(sys.stdin.fileno(), 1).decode()
+                print(msg.data)
+                self.__keyboard_pub.publish(msg)
+        except (KeyboardInterrupt, SystemExit):
+            # Reset to original terminal settings
+            termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.__settings)
+
+            # Make terminal sane again upon program exit
+            os.system("stty sane")
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    rclpy.spin(InputKeyboard())
+    rclpy.shutdown()

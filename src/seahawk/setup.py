@@ -26,6 +26,7 @@ setup(
         'console_scripts': [
             "thrust=seahawk_deck.thrust:main",
             "input_xbox_one=seahawk_deck.input_xbox_one:main",
+            "input_keyboard=seahawk_deck.input_keyboard:main",
             "rviz_markers=seahawk_deck.rviz_markers:main",
             'seahawk_rov = seahawk_rov:main'
         ],
