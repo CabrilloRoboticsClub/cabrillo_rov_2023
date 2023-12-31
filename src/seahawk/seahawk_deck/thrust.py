@@ -41,7 +41,10 @@ class Thrust(Node):
 
     def __init__(self):
         """Initialize this node"""
-        super().__init__('thrust')        
+        super().__init__('thrust')
+
+        self.MAX_FWD_THRUST = 36.3826715 # N
+        self.MAX_REV_THRUST = -28.6354180 # N
 
         self.motor_config = [
             [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
@@ -57,7 +60,7 @@ class Thrust(Node):
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.__params = Thrust.__generate_curve_fit_params()
-        
+
     @staticmethod
     def __thrust_to_current(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> float:
         """
@@ -83,7 +86,7 @@ class Thrust(Node):
         x = list()
         y = list()
 
-        with open("thrust_to_current.tsv", "r") as file:
+        with open("src/seahawk/seahawk_deck/thrust_to_current.tsv", "r") as file:
             for data_point in file:
                 data = data_point.split("\t")
                 x.append(data[0])
@@ -92,6 +95,19 @@ class Thrust(Node):
         optimal_params, param_covariance = curve_fit(Thrust.__thrust_to_current, x, y)
         return optimal_params
 
+    def get_thrust_limit_scalar(self, motor_values: list) -> float:
+        """
+        Generate scaling factor based on thrust limitations
+
+        Args:
+            motor_values: The motor values in newtons that when produced will result in our desired twist
+
+        Returns:
+            Largest scalar the motor values can be scaled by without exceeding thrust limits
+        """
+        # Scalar is infinite if 0, since there is no limit to how large it can be scaled
+        scalar_lambda = lambda x: (self.MAX_FWD_THRUST / x) if x > 0 else ((self.MAX_REV_THRUST / x) if x < 0 else float('inf'))
+        return min(map(scalar_lambda, motor_values))
 
     def _callback(self, twist_msg):
         """Called every time the twist publishes a message."""
