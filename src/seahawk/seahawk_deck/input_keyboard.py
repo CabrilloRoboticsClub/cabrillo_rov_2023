@@ -66,20 +66,25 @@ def main(args=None):
             # Get the key entered by the user
             key = get_key(orig_settings)
 
+            # If ctrl-c break
+            if key == "\x03":
+                break
+
             # Create and publish message
             msg.data = str(key)
             pub.publish(msg)
             print(msg.data)
     except Exception as error_msg:
         node.get_logger().info(error_msg)
-    finally:
-        rclpy.shutdown()
-        spinner.join()
-        # Reset to original terminal settings
-        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
 
-        # Make terminal sane again upon program exit
-        os.system("stty sane")
+    rclpy.shutdown()
+    spinner.join()
+    
+    # Reset to original terminal settings
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig_settings)
+
+    # Make terminal sane again upon program exit
+    os.system("stty sane")
 
 if __name__ == "__main__":
     main(sys.argv)
