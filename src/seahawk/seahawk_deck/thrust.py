@@ -30,8 +30,10 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
-from scipy.optimize import curve_fit
+from rclpy.parameter import Parameter
+from rcl_interfaces.msg import SetParametersResult
 
+from scipy.optimize import curve_fit
 import numpy as np
 
 class Thrust(Node):
@@ -46,20 +48,82 @@ class Thrust(Node):
         self.MAX_FWD_THRUST = 36.3826715 # N
         self.MAX_REV_THRUST = -28.6354180 # N
 
-        self.motor_config = [
-            [     0,     0,    0,     0,     0.7071,     0.7071,    -0.7071,   -0.7071 ],  # Fx (N)
-            [     0,     0,    0,     0,    -0.7071,     0.7071,    -0.7071,    0.7071 ],  # Fy (N)
-            [     1,     1,    1,     1,          0,          0,          0,         0 ],  # Fz (N)
-            [  0.12, -0.12, 0.12, -0.12, -0.0268698,  0.0268698, -0.0268698, 0.0268698 ],  # Rx (N*m)
-            [ -0.19, -0.19, 0.19,  0.19, -0.0268698, -0.0268698,  0.0268698, 0.0268698 ],  # Ry (N*m)
-            [     0,     0,    0,     0,  -0.180311,   0.180311,   0.180311, -0.180311 ],  # Rz (N*m)
+        self.motor_positions = [
+            [0.19, 0.12, 0.047],
+            [0.19, -0.12, 0.047],
+            [-0.19, 0.12, 0.047],
+            [-0.19, -0.12, 0.047],
+            [0.105, 0.15, -0.038],
+            [0.105, -0.15, -0.038],
+            [-0.105, 0.15, -0.038],
+            [-0.105, -0.15, -0.038]
         ]
 
+        self.motor_thrusts = [
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            [0.0, 0.0, 1.0],
+            [0.7071, -0.7071, 0],
+            [0.7071, 0.7071, 0],
+            [-0.7071, -0.7071, 0],
+            [-0.7071, 0.7071, 0]
+        ]
+
+        self.declare_parameter('center_of_mass_offset', [0.0, 0.0, 0.0])
+        self.center_of_mass_offset = self.get_parameter('center_of_mass_offset').value
+
+        self.add_on_set_parameters_callback(self.update_center_of_mass)
+
+        self.motor_config = self.generate_motor_config()
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         self.subscription = self.create_subscription(Twist, 'drive/twist', self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
         self.__params = Thrust.__generate_curve_fit_params()
+
+    def update_center_of_mass(self, params: list[Parameter]) -> SetParametersResult:
+        """
+        Callback for parameter update. Updates the Center of Mass offset and the motor and inverse
+        config afterwards.
+
+        Args:
+            params: List of updated parameters (handles by ROS2)
+
+        Returns:
+            SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
+        """
+        try:
+            self.center_of_mass_offset = params[0]._value.tolist()
+        except:
+            return SetParametersResult(successful=False)
+
+        self.motor_config = self.generate_motor_config()
+        self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
+
+        return SetParametersResult(successful=True)
+
+    def generate_motor_config(self):
+        """
+        Generate the motor configuration matrix based on motor positions and thrust. Allows for
+        a shifting center of mass, so the motor configuration can be regenerated dynamically to
+        account for center of mass shifts when lifting objects.
+
+        Returns:
+            Motor configuration matrix based on motor orientation, position, and location of center of mass
+        """
+        motor_shift_lambda = lambda motor: np.subtract(motor, self.center_of_mass_offset).tolist()
+        shifted_positons = list(map(motor_shift_lambda, self.motor_positions))
+        torques = np.cross(shifted_positons, self.motor_thrusts)
+
+        return [
+            list(map(lambda thrust: thrust[0], self.motor_thrusts)), # Fx (N)
+            list(map(lambda thrust: thrust[1], self.motor_thrusts)), # Fy (N)
+            list(map(lambda thrust: thrust[2], self.motor_thrusts)), # Fz (N)
+            list(map(lambda torque: torque[0], torques)),            # Rx (N*m)
+            list(map(lambda torque: torque[1], torques)),            # Ry (N*m)
+            list(map(lambda torque: torque[2], torques))             # Rz (N*m)
+        ]
 
     @staticmethod
     def __thrust_to_current(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> float:
