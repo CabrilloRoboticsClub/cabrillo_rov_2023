@@ -22,9 +22,6 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 """
-# For argv
-import sys
-
 # ROS client library
 import rclpy
 from rclpy.node import Node 
