@@ -48,7 +48,7 @@ class InputKeyboard(Node):
         super().__init__("input_keyboard")
     
         # Create publisher to topic `key_press`
-        self.__key_pub = self.create_publisher(String, "key_press", 10)
+        self.__key_pub = self.create_publisher(String, "key_stroke", 10)
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
