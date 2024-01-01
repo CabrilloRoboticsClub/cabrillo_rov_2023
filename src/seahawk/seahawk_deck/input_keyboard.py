@@ -43,19 +43,19 @@ class InputKeyboard(Node):
 
     def __init__(self, settings):
         """
-        Initialize `input_keyboard` node
+        Initialize 'input_keyboard' node
         """
         super().__init__("input_keyboard")
     
-        # Create publisher to topic `key_press`
-        self.__key_pub = self.create_publisher(String, "key_stroke", 10)
+        # Create publisher to topic 'key_press'
+        self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
     
     def __get_key(self) -> str:
         """
-        Extracts a single key stroke from the user
+        Extracts a single keystroke from the user
 
         Returns:
             String of the name of the key which was pressed
@@ -80,7 +80,7 @@ class InputKeyboard(Node):
         """
         key = self.__get_key()
 
-        # If ctrl-c raise `KeyboardInterrupt`
+        # If 'ctrl-c' raise 'KeyboardInterrupt'
         if key == "\x03":
             raise KeyboardInterrupt("Terminated the process with ctrl-c")
         
@@ -106,7 +106,7 @@ def main(args=None):
 
     try:
         while True:
-            # While the user has not entered ctrl-c, wait for keystrokes and publish them
+            # While the user has not entered 'ctrl-c', wait for keystrokes and publish them
             node.pub_callback()
     except KeyboardInterrupt as error_msg:
         print(error_msg)
