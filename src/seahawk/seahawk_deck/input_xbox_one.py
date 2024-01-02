@@ -91,6 +91,11 @@ class InputXboxOne(Node):
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
+
+        # Create and store parameter which determines which throttle curve
+        # the pilot wants to use. Defaults to 0
+        self.declare_parameter("throttle_curve_choice", 0)
+        self.throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
         
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
