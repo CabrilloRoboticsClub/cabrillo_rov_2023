@@ -1,7 +1,7 @@
 """
 input_keyboard.py
 
-Take input from the keyboard and republish it to topic
+Take input from the keyboard and republish it to topic 'keystroke'
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -74,7 +74,7 @@ class InputKeyboard(Node):
 
     def pub_callback(self):
         """
-        Gets a key from the user publishes it to 'key_press' topic
+        Gets a key from the user publishes it to 'keystroke' topic
 
         Throws 'KeyboardInterrupt' if user enters ctrl-c
         """
