@@ -1,7 +1,7 @@
-'''
+"""
 input_xbox_one.py
 
-Handle input from an Xbox One controller and output it on /drive/twist
+Handle input from an Xbox One controller
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -21,164 +21,172 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
-'''
+"""
+# For reading argv
 import sys 
 
+# ROS client libary imports
 import rclpy
-
 from rclpy.node import Node 
-from rcl_interfaces.srv import SetParameters
+
+# ROS messages imports
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
-from std_msgs.msg import Int8MultiArray
-from std_msgs.msg import Float32
-from rclpy.parameter import Parameter
+from std_msgs.msg import Bool
 
-class Input(Node):
+
+class StickyButton():
     """
-    Class that implements the joystick input.
+    Class that implements sticky buttons, meaning a button is pressed to turn it on, 
+    and pressed again to turn it off
     """
 
     def __init__(self):
-        """Initialize this node"""
-        super().__init__('input_xbox_one')
-        """IMPORTANT: The following parameters can only use doubles as their values. Use 0.0 instead of 0 and 1.0 instead of 1."""
-        self.declare_parameter('linear_x_scale', 1.0)  # Forward/Backward
-        self.declare_parameter('linear_y_scale', 1.0)  # Sideways
-        self.declare_parameter('linear_z_scale', 1.0)  # Depth
-        self.declare_parameter('angular_x_scale', 0.0) # Roll (not using roll at the moment)
-        self.declare_parameter('angular_y_scale', 0.5) # Pitch
-        self.declare_parameter('angular_z_scale', 0.5) # Yaw
-        self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
-        self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
-        self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
-        self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
-        self.claw_grab = False
-        self.fish_release = False
-        self.bambi_mode = False
-        self.last_a_state = 0
-        self.last_b_state = 0
-        self.last_x_state = 0
+        """
+        Initialize 'StickyButton' object
+        """
+        self.__feature_state = False    # Is the feature this button controls on (True) or off (False)
+        self.__track_state = 0b0000     # Tracks the last four states of the button using bits
+    
+    def check_state(self, cur_button_state: bool) -> bool:
+        """
+        Checks if a button is toggled on or off and accounts for debouncing
 
-    def _callback(self, joy_msg):
-        """Called every time the joystick publishes a message."""
-        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+        Args:
+            cur_button_state: Current state of the button provided by the controller
 
-        # Compute desired motion in <x, y, z, r, p, y>
+        Returns:
+            True if the button is toggled on, False if off
+        """
+        # Append the current button state to the tracker then removes all but rightmost byte
+        # such that self.__track_state records the most recent four states of the button
+        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0b1111
 
-        # CONTROLLER KEYMAPPINGS
-        controller = {
-            'left_stick': {
-                'x':        -joy_msg.axes[0],
-                'y':        joy_msg.axes[1],
-                'press':    joy_msg.buttons[9],
-            },
-            'right_stick': {
-                'x':        -joy_msg.axes[3],
-                'y':        joy_msg.axes[4],
-                'press':    joy_msg.buttons[10],
-            },
-            'left_trigger': joy_msg.axes[2],
-            'right_trigger':joy_msg.axes[5],
-            'dpad': {
-                'up':       int(max(joy_msg.axes[7], 0)), # +
-                'down':     int(-min(joy_msg.axes[7], 0)), # -
-                'left':     int(max(joy_msg.axes[6], 0)), # +
-                'right':    int(-min(joy_msg.axes[6], 0)), # -
-            },
-            'a':            joy_msg.buttons[0], # claw 
-            'b':            joy_msg.buttons[1],
-            'x':            joy_msg.buttons[2], # bambi (scale everything by half to reduce speed)
-            'y':            joy_msg.buttons[3], # reset bambi and z trim
-            'left_bumper':  joy_msg.buttons[4], # trim -
-            'right_bumper': joy_msg.buttons[5], # trim +
-            'window':       joy_msg.buttons[6],
-            'menu':         joy_msg.buttons[7],
-            'xbox':         joy_msg.buttons[8],
+        # Account for bounce by making sure the last four recorded states
+        # appear to represent a button press. A debounced button press is defined as two recorded
+        # consecutive off states followed by two on states. If the button is pressed, update the feature state
+        if self.__track_state == 0b0011:
+            self.__feature_state = not self.__feature_state
+        return self.__feature_state
+
+    def reset(self):
+        """
+        Resets button state to original configuration
+        """
+        self.__feature_state = False
+        self.__track_state = 0b0000
+
+
+class InputXboxOne(Node):
+    """
+    Class that implements the joystick input
+    """
+
+    def __init__(self):
+        """
+        Initialize 'input_xbox_one' node
+        """
+        super().__init__("input_xbox_one")
+
+        self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
+        self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
+        self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
+        
+        self.__buttons = {
+            # "" :              StickyButton(),     # left_stick_press
+            # "" :              StickyButton(),     # right_stick_press
+            "claw":             StickyButton(),     # a
+            "bambi_mode":       StickyButton()      # b
+            # "":               StickyButton(),     # x
+            # "":               StickyButton(),     # y
+            # "":               StickyButton(),     # window
+            # "":               StickyButton(),     # menu
         }
 
-        # BINDINGS
+    def __callback(self, joy_msg: Joy):
+        """
+        Takes in input from the joy message from the x box and republishes it as a twist specifying 
+        the direction (linear and angular x, y, z) and percent of max speed the pilot wants the robot to move
+
+        Args:
+            joy_msg: Message of type 'Joy' from the joy topic
+        """
+
+        # Debug output of joy topic
+        self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+
+        # Map the values sent from the joy message to useful names
+        controller = {
+            # Left stick
+            "linear_y":         joy_msg.axes[0],                # left_stick_x
+            "linear_x":         joy_msg.axes[1],                # left_stick_y
+            # "":               joy_msg.buttons[9],             # left_stick_press
+            # Right stick
+            "angular_z":        joy_msg.axes[3],                # right_stick_x
+            "angular_y":        joy_msg.axes[4],                # right_stick_y
+            # "":               joy_msg.buttons[10],            # right_stick_press
+            # Triggers
+            "neg_linear_z":     joy_msg.axes[2],                # left_trigger
+            "pos_linear_z":     joy_msg.axes[5],                # right_trigger
+            # Dpad
+            # "":               int(max(joy_msg.axes[7], 0)),   # dpad_up
+            # "":               int(-min(joy_msg.axes[7], 0)),  # dpad_down
+            # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
+            # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
+            # Buttons
+            "claw":             joy_msg.buttons[0], # a
+            "bambi_mode":       joy_msg.buttons[1], # b
+            # "":               joy_msg.buttons[2], # x
+            # "":               joy_msg.buttons[3], # y
+            "pos_angular_x":    joy_msg.buttons[4], # left_bumper
+            "neg_angular_x":    joy_msg.buttons[5], # right_bumper
+            # "":               joy_msg.buttons[6], # window
+            # "":               joy_msg.buttons[7], # menu
+            "reset":            joy_msg.buttons[8], # xbox
+        }
+
+
+        # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller['left_stick']['y'] # X (forwards)
-        twist_msg.linear.y  = -controller['left_stick']['x']# Y (sideways)
-        twist_msg.linear.z  = (controller['left_trigger'] - controller['right_trigger']) / 2 # Z (depth)
-        twist_msg.angular.x = 0.0 # R (roll) (we don't need roll)
-        twist_msg.angular.y = controller['right_stick']['y'] # P (pitch) 
-        twist_msg.angular.z = -controller['right_stick']['x'] # Y (yaw)
+        twist_msg.linear.x  = controller["linear_x"] # Z (forwards)
+        twist_msg.linear.y  = -controller["linear_y"] # Y (sideways)
+        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) # Z (depth)
 
-        # Claw
-        claw_msg = Int8MultiArray()
-        claw_msg.data = [0,0,0]
-        
-        # Makes a button for the claw "sticky"
-        if self.last_a_state == 0 and controller['a'] == 1:
-            self.claw_grab = not self.claw_grab
-        if self.claw_grab:
-            claw_msg.data[0] = 1
-        else:
-            claw_msg.data[0] = 0
-        self.last_a_state = controller['a']
+        # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
+        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5
+    
+        twist_msg.angular.y = controller["angular_y"] # P (pitch)
+        twist_msg.angular.z = -controller["angular_z"] # Y (yaw)
 
-        if self.last_b_state == 0 and controller['b'] == 1:
-            self.fish_release = not self.fish_release
-        if self.fish_release:
-            claw_msg.data[1] = 1
-        else:
-            claw_msg.data[1] = 0
-        self.last_b_state = controller['b']
-        self.claw_pub.publish(claw_msg)
+        # Bambi mode cuts all twist values in half for more precise movements
+        if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
+            twist_msg.linear.x /= 2
+            twist_msg.linear.y /= 2
+            twist_msg.linear.z /= 2
+            twist_msg.angular.x /= 2
+            twist_msg.angular.y /= 2
+            twist_msg.angular.z /= 2
+     
+        # Publish twist message
+        self.__twist_pub.publish(twist_msg)
 
-        # Makes x button for bambi mode activation "sticky" 
-        if self.last_x_state == 0 and controller['x'] == 1:
-            self.bambi_mode = not self.bambi_mode
-        self.last_x_state = controller['x']
+        # Create claw message
+        claw_msg = Bool()
+        claw_msg.data = self.__buttons["claw"].check_state(controller["claw"])
 
-        cam_servo_msg = Float32()
+        # Publish claw message
+        self.__claw_pub.publish(claw_msg)
 
-        if controller['dpad']['left']:
-            cam_servo_msg.data = 0.0
-        elif controller['dpad']['up']:
-            cam_servo_msg.data = 1.0
-        elif controller['dpad']['down']:
-            cam_servo_msg.data = -1.0
-        
-        if controller['dpad']['left'] or controller['dpad']['up'] or controller['dpad']['down']:
-            self.cam_servo_pub.publish(cam_servo_msg)
+        # If the x-box button is pressed, all settings get reset to default configurations
+        if controller["reset"]:
+            self.__buttons["bambi_mode"].reset()
 
-        # Stores thrust values in local variables
-        linear_x_scale = self.get_parameter('linear_x_scale').get_parameter_value().double_value
-        linear_y_scale = self.get_parameter('linear_y_scale').get_parameter_value().double_value
-        linear_z_scale = self.get_parameter('linear_z_scale').get_parameter_value().double_value
-        angular_x_scale = self.get_parameter('angular_x_scale').get_parameter_value().double_value
-        angular_y_scale = self.get_parameter('angular_y_scale').get_parameter_value().double_value
-        angular_z_scale = self.get_parameter('angular_z_scale').get_parameter_value().double_value
-
-        # BAMBI MODE
-        # If button x is pressed, bambi mode is activated. x must be pressed again to deactivate
-        # Bambi mode cuts all motor thrust in half
-        if self.bambi_mode:
-            linear_x_scale /= 2
-            linear_y_scale /= 2
-            linear_z_scale /= 2
-            angular_x_scale /= 2
-            angular_y_scale /= 2
-            angular_z_scale /= 2
-
-        # AXIS SCALE
-        twist_msg.linear.x  *= linear_x_scale
-        twist_msg.linear.y  *= linear_y_scale
-        twist_msg.linear.z  *= linear_z_scale
-        twist_msg.angular.x *= angular_x_scale
-        twist_msg.angular.y *= angular_y_scale
-        twist_msg.angular.z *= angular_z_scale
-
-        self.twist_pub.publish(twist_msg)
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.spin(Input())
-    rclpy.shutdown()    
+    rclpy.spin(InputXboxOne())
+    rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)
