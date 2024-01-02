@@ -25,7 +25,7 @@ cabrillorobotics@gmail.com
 # For reading argv
 import sys 
 
-# ROS client libary imports
+# ROS client library imports
 import rclpy
 from rclpy.node import Node 
 
@@ -160,9 +160,9 @@ class InputXboxOne(Node):
 
         # Bambi mode cuts all twist values in half for more precise movements
         if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
-            twist_msg.linear.x /= 2
-            twist_msg.linear.y /= 2
-            twist_msg.linear.z /= 2
+            twist_msg.linear.x  /= 2
+            twist_msg.linear.y  /= 2
+            twist_msg.linear.z  /= 2
             twist_msg.angular.x /= 2
             twist_msg.angular.y /= 2
             twist_msg.angular.z /= 2
