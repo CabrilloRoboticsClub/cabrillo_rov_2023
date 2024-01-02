@@ -35,6 +35,9 @@ import threading
 # For keyboard stuff
 import sys, tty, os, termios
 
+from rcl_interfaces.srv import SetParameters, GetParameters, ListParameters
+from rclpy.parameter import Parameter
+from rcl_interfaces.msg import ParameterValue, ParameterType
 
 class InputKeyboard(Node):
     """
@@ -50,44 +53,66 @@ class InputKeyboard(Node):
         # Create publisher to topic 'key_press'
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
+        # Set up service to remotely update 'throttle_curve_choice' parameter on 'input_xbox_one' node
+        self.__cli_throttle_curve_choice = self.create_client(SetParameters, "/input_xbox_one/throttle_curve_choice")
+        while not self.__cli_throttle_curve_choice.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info("throttle_curve_choice service not available, waiting again...")
+        self.req = SetParameters.Request()
+
         # Get current user terminal settings and save them for later
         self.__settings = settings
+        
+        # Store the current key
+        self.__cur_key
     
     def __get_key(self) -> str:
         """
-        Extracts a single keystroke from the user
-
-        Returns:
-            String of the name of the key which was pressed
+        Extracts a single keystroke from the user and sets private attribute __cur_key
         """
         # Enable raw mode. In raw mode characters are directly read from and written 
         # to the device without any translation or interpretation by the operating system
         tty.setraw(sys.stdin.fileno())
 
         # Read at most one byte (the length of one character) from stdin and decode it
-        key = os.read(sys.stdin.fileno(), 1).decode()
+        self.__cur_key = os.read(sys.stdin.fileno(), 1).decode()
 
         # Make terminal not break
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.__settings)
 
-        return key
-
-    def pub_callback(self):
+    def callback(self):
         """
-        Gets a key from the user publishes it to 'keystroke' topic
+        Gets a key from the user publishes it to 'keystroke' topic and update any parameters
 
         Throws 'KeyboardInterrupt' if user enters ctrl-c
         """
-        key = self.__get_key()
+        self.__get_key()
 
         # If 'ctrl-c' raise 'KeyboardInterrupt'
-        if key == "\x03":
+        if self.__cur_key == "\x03":
             raise KeyboardInterrupt("Terminated the process with ctrl-c")
         
+        self.__pub_callback()
+        self.__param_callback()
+
+    def __pub_callback(self):
+        """
+        Publishes the current key to 'keystroke' topic
+
+        Throws 'KeyboardInterrupt' if user enters ctrl-c
+        """
         # Create and publish message
         msg = String()
-        msg.data = key
+        msg.data = self.__cur_key
         self.__key_pub.publish(msg)
+    
+    def __param_callback(self):
+        """
+        Updates parameters for 'throttle_curve_choice'
+        """
+        if self.__cur_key in ["0", "1", "2"]:
+            new_param_value = ParameterValue(type=ParameterType.PARAMETER_STRING, string_value=self.__cur_key)
+            self.req.parameters = [Parameter(name="throttle_curve_choice", value=new_param_value)]
+            self.future = self.__cli_throttle_curve_choice.call_async(self.req)
 
 
 def main(args=None):
@@ -107,7 +132,8 @@ def main(args=None):
     try:
         while True:
             # While the user has not entered 'ctrl-c', wait for keystrokes and publish them
-            node.pub_callback()
+            # to `keystroke`. If the user enters a key mapped to a parameter, update that parameter
+            node.callback()
     except KeyboardInterrupt as error_msg:
         print(error_msg)
     
