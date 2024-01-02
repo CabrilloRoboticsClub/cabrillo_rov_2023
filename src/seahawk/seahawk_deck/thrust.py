@@ -95,10 +95,10 @@ class Thrust(Node):
             A list of the coefficients of a 5th degree polynomial function, where the input of said
             function is the scaling factor and the output is the current (A) draw
         """
-        return [self.__params[0] * sum(map(lambda x: x**5, mv)),
-                self.__params[1] * sum(map(lambda x: x**4, mv)),
-                self.__params[2] * sum(map(lambda x: x**3, mv)),
-                self.__params[3] * sum(map(lambda x: x**2, mv)),
+        return [self.__params[0] * sum([thrust**5 for thrust in mv]),
+                self.__params[1] * sum([thrust**4 for thrust in mv]),
+                self.__params[2] * sum([thrust**3 for thrust in mv]),
+                self.__params[3] * sum([thrust**2 for thrust in mv]),
                 self.__params[4] * sum(mv),
                 self.__params[5] * len(mv) - limit]
 
@@ -118,7 +118,7 @@ class Thrust(Node):
         # Find roots
         potential_scaling_factors = np.roots(coef_list).tolist()
         # Ignore nonreal and negative scaling factors
-        real_positive = map(lambda x: x.real, filter(lambda x: x.imag == 0 and x.real >= 0, potential_scaling_factors))
+        real_positive = [scalar.real for scalar in potential_scaling_factors if scalar.imag == 0 and scalar.real >= 0]
         # Return valid roots
         return min(real_positive)
 
@@ -176,17 +176,17 @@ class Thrust(Node):
         Returns:
             Motor configuration matrix based on motor orientation, position, and location of center of mass
         """
-        motor_shift_lambda = lambda motor: np.subtract(motor, self.center_of_mass_offset).tolist()
-        shifted_positons = list(map(motor_shift_lambda, self.motor_positions))
+        shifted_positons = [(np.subtract(motor, self.center_of_mass_offset).tolist())
+                            for motor in self.motor_positions]
         torques = np.cross(shifted_positons, self.motor_thrusts)
 
         return [
-            list(map(lambda thrust: thrust[0], self.motor_thrusts)), # Fx (N)
-            list(map(lambda thrust: thrust[1], self.motor_thrusts)), # Fy (N)
-            list(map(lambda thrust: thrust[2], self.motor_thrusts)), # Fz (N)
-            list(map(lambda torque: torque[0], torques)),            # Rx (N*m)
-            list(map(lambda torque: torque[1], torques)),            # Ry (N*m)
-            list(map(lambda torque: torque[2], torques))             # Rz (N*m)
+            [thrust[0] for thrust in self.motor_thrusts], # Fx (N)
+            [thrust[1] for thrust in self.motor_thrusts], # Fy (N)
+            [thrust[2] for thrust in self.motor_thrusts], # Fz (N)
+            [torque[0] for torque in torques],            # Rx (N*m)
+            [torque[1] for torque in torques],            # Ry (N*m)
+            [torque[2] for torque in torques]             # Rz (N*m)
         ]
 
     @staticmethod
@@ -234,8 +234,10 @@ class Thrust(Node):
             Largest scalar the motor values can be scaled by without exceeding thrust limits
         """
         # Scalar is infinite if 0, since there is no limit to how large it can be scaled
-        scalar_lambda = lambda x: (self.MAX_FWD_THRUST / x) if x > 0 else ((self.MAX_REV_THRUST / x) if x < 0 else float('inf'))
-        return min(map(scalar_lambda, motor_values))
+        return min([(self.MAX_FWD_THRUST / thrust) if thrust > 0
+                    else ((self.MAX_REV_THRUST / thrust) if thrust < 0
+                        else float('inf'))
+                    for thrust in motor_values])
 
     def _callback(self, twist_msg):
         """Called every time the twist publishes a message."""
@@ -266,23 +268,17 @@ class Thrust(Node):
             twist_msg.angular.z
         ]
 
-        motor_msg.data = [
-            0.0,  # Motor 0 thrust
-            0.0,  # Motor 1 thrust
-            0.0,  # Motor 2 thrust
-            0.0,  # Motor 3 thrust
-            0.0,  # Motor 4 thrust
-            0.0,  # Motor 5 thrust
-            0.0,  # Motor 6 thrust
-            0.0,  # Motor 7 thrust
-        ]
-
         # Multiply twist with inverse of motor config to get motor effort values
-        motor_msg.data = list(np.matmul(self.inverse_config, twist_array))
+        motor_msg.data = np.matmul(self.inverse_config, twist_array).tolist()
 
-        # Choose the smallest of the two scalars so
-        scalar = min(self.get_thrust_limit_scalar(motor_msg.data), self.get_minimum_current_scalar(motor_msg.data))
-        motor_msg.data = list(map(lambda x: x * scalar * max(twist_array), motor_msg.data))
+        thurst_scalar = self.get_thrust_limit_scalar(motor_msg.data)
+        current_scalar = self.get_minimum_current_scalar(motor_msg.data)
+        # Scalar will be the smaller of the two, largest value in twist array
+        # will be percentage of that maximum
+        scalar = min(thurst_scalar, current_scalar) * max(twist_array)
+
+        # scale motor values
+        motor_msg.data = [thrust * scalar for thrust in motor_msg.data]
 
         self.motor_pub.publish(motor_msg)
 
