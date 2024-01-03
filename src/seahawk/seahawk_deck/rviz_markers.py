@@ -21,14 +21,14 @@ class MarkerMaker(Node):
     TOP_P = 47*math.pi/36
 
     MOTORS = [
-        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,5*math.pi/4)),  
-        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,7*math.pi/4)),
-        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,7*math.pi/4)),
-        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,5*math.pi/4)),
-        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,math.pi/4)),
-        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,3*math.pi/4)),
-        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,3*math.pi/4)),
         (( MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,math.pi/4)),
+        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,7*math.pi/4)),
+        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,3*math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,5*math.pi/4)),
+        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,3*math.pi/4)),
+        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,5*math.pi/4)),     
+        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,7*math.pi/4)),
     ]
 
     def __init__(self):
