@@ -98,7 +98,7 @@ class MarkerMaker(Node):
         """
         self.get_logger().info(f"Motor Message: {motor_msg.data}")
         for i, motor in enumerate(motor_msg.data):
-            self.arrows[i].scale.x = -motor
+            self.arrows[i].scale.x = -motor / 4
             self.labels[i].text = f"{i}:{round(motor,2)}"
             if motor < -1 or motor > 1:
                 self.arrows[i].color.r = 1.0
