@@ -244,6 +244,22 @@ class Thrust(Node):
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
         motor_msg = Float32MultiArray()
+
+        # Convert Twist to single vector for multiplication
+        twist_array = [
+            twist_msg.linear.x,
+            twist_msg.linear.y,
+            twist_msg.linear.z,
+            twist_msg.angular.x,
+            twist_msg.angular.y,
+            twist_msg.angular.z
+        ]
+
+        if sum(twist_array) == 0:
+            motor_msg.data = [0.0 for x in range(8)] # No thrust needed
+            self.motor_pub.publish(motor_msg)
+            return
+
         # +1 = Full thrust, Forwards
         #  0 = Off
         # -1 = Full thrust, Backwards
@@ -257,16 +273,6 @@ class Thrust(Node):
         # ^FRONT^
         #  7   1
         #  5   3
-
-        # Convert Twist to single vector for multiplication
-        twist_array = [
-            twist_msg.linear.x,
-            twist_msg.linear.y,
-            twist_msg.linear.z,
-            twist_msg.angular.x,
-            twist_msg.angular.y,
-            twist_msg.angular.z
-        ]
 
         # Multiply twist with inverse of motor config to get motor effort values
         motor_msg.data = np.matmul(self.inverse_config, twist_array).tolist()
