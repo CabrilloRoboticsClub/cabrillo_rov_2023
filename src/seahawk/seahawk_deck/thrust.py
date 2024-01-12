@@ -95,12 +95,13 @@ class Thrust(Node):
             A list of the coefficients of a 5th degree polynomial function, where the input of said
             function is the scaling factor and the output is the current (A) draw
         """
-        return [self.__params[0] * sum([thrust**5 for thrust in mv]),
-                self.__params[1] * sum([thrust**4 for thrust in mv]),
-                self.__params[2] * sum([thrust**3 for thrust in mv]),
-                self.__params[3] * sum([thrust**2 for thrust in mv]),
-                self.__params[4] * sum(mv),
-                self.__params[5] * len(mv) - limit]
+        return [self.__params[0] * sum([thrust**6 for thrust in mv]),
+                self.__params[1] * sum([thrust**5 for thrust in mv]),
+                self.__params[2] * sum([thrust**4 for thrust in mv]),
+                self.__params[3] * sum([thrust**3 for thrust in mv]),
+                self.__params[4] * sum([thrust**2 for thrust in mv]),
+                self.__params[5] * sum(mv),
+                self.__params[6] * len(mv) - limit]
 
     def get_current_scalar_value(self, mv: list, limit: float) -> float:
         """
@@ -190,7 +191,7 @@ class Thrust(Node):
         ]
 
     @staticmethod
-    def __thrust_to_current(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> float:
+    def __thrust_to_current(x: float, a: float, b: float, c: float, d: float, e: float, f: float, g: float) -> float:
         """
         Estimates current draw based on given thrust
 
@@ -201,7 +202,7 @@ class Thrust(Node):
         Returns:
             Current (estimated) to be drawn in amps.
         """
-        return (a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + (f)
+        return (a * x**6) + (b * x**5) + (c * x**4) + (d * x**3) + (e * x**2) + (f * x) + (g)
 
     @staticmethod
     def __generate_curve_fit_params() -> list:
@@ -255,8 +256,8 @@ class Thrust(Node):
             twist_msg.angular.z
         ]
 
-        if sum(twist_array) == 0:
-            motor_msg.data = [0.0 for x in range(8)] # No thrust needed
+        if twist_array == [0, 0, 0, 0, 0, 0]:
+            motor_msg.data = [0.0 for motor in range(8)] # No thrust needed
             self.motor_pub.publish(motor_msg)
             return
 
