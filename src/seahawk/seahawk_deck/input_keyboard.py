@@ -35,6 +35,7 @@ import threading
 # For keyboard stuff
 import sys, tty, os, termios
 
+# Handle requesting to set another node's parameters
 from .set_remote_params import SetRemoteParams
 
 class InputKeyboard(Node):

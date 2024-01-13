@@ -1,3 +1,29 @@
+"""
+set_remote_params.py
+
+Abstracts requesting to set another node's parameters via service to class
+'SetRemoteParams'. To import this class to a program on the deck use 
+'from .set_remote_params import SetRemoteParams'
+
+Copyright (C) 2022-2023 Cabrillo Robotics Club
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Cabrillo Robotics Club
+6500 Soquel Drive Aptos, CA 95003
+cabrillorobotics@gmail.com
+"""
 # ROS client library
 from rclpy.node import Node 
 
@@ -38,11 +64,11 @@ class SetRemoteParams():
 
     def update_params(self, param_name: str, param_value: Any):
         """
-        Appends a single new pararameter given its name and new value to the list of parameters to set
+        Appends a single new parameter given its name and new value to the list of parameters to set
 
         Args: 
             param_name: Name of the parameter
-            param_value: Value of the paremeter (note must of a be a valid parameter type)
+            param_value: Value of the parameter (note must of a be a valid parameter type)
         """
         self.__param_list.append(Parameter(name=param_name, value=param_value).to_parameter_msg())
 	
@@ -53,7 +79,7 @@ class SetRemoteParams():
         Returns:
             The result set by the task, None if no result was set
         """
-        self.__req.parameters = self.__param_list           # Create updated param list
-        self.__future = self.__cli.call_async(self.__req)   # Send param to service
-        self.__param_list.clear()                           # Reset list
-        return self.__future.result()                       # Return if the parameter is set correctly
+        self.__req.parameters = self.__param_list   # Create updated param list
+        future = self.__cli.call_async(self.__req)  # Send param to service
+        self.__param_list.clear()                   # Reset list
+        return future.result()                      # Return if the parameter is set correctly
