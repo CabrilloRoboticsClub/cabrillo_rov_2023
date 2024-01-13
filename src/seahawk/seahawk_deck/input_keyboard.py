@@ -35,10 +35,7 @@ import threading
 # For keyboard stuff
 import sys, tty, os, termios
 
-# Parameters
-from rcl_interfaces.srv import SetParameters
-from rclpy.parameter import Parameter
-
+from .set_remote_params import SetRemoteParams
 
 class InputKeyboard(Node):
     """
@@ -55,15 +52,11 @@ class InputKeyboard(Node):
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
         # Set up client to remotely set parameters on 'input_xbox_one' node using a service
-        self.__cli_input_xbox_one = self.create_client(SetParameters, "/input_xbox_one/set_parameters")
-        # Try to connect to the service (wait one second between attempts)
-        while not self.__cli_input_xbox_one.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info("/input_xbox_one/set_parameters service not available, waiting again...")
-        self.__req = SetParameters.Request()
+        self.__set_params_input_xbox_one = SetRemoteParams(self, "input_xbox_one")
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
-        
+
         # Store the current key
         self.__cur_key = ""
     
@@ -111,15 +104,12 @@ class InputKeyboard(Node):
         """
         Updates parameters for 'throttle_curve_choice'
         """
-        # If the user pressed '0', '1', or '2' send that information to the '/input_xbox_one/set_parameters'
+        # If the user pressed '0', '1', or '2' send that information to the __set_params_input_xbox_one
         if self.__cur_key in ["0", "1", "2"]:
-            # Create updated param list
-            self.__req.parameters = [Parameter(name="throttle_curve_choice", value=self.__cur_key).to_parameter_msg()]
-            # Send param to service
-            self.__future = self.__cli_input_xbox_one.call_async(self.__req)
-            # Return if the parameter is set correctly
-            return self.__future.result()
+            self.__set_params_input_xbox_one.update_params("throttle_curve_choice", self.__cur_key)
 
+        # Send all params to input_xbox_one node
+        self.__set_params_input_xbox_one.send_params()
 
 def main(args=None):
     rclpy.init(args=args)
