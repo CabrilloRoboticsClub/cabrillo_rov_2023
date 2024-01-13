@@ -1,5 +1,5 @@
 """
-input_xbox_one.py
+pilot_input.py
 
 Handle input from an Xbox One controller
 
@@ -81,16 +81,16 @@ class StickyButton():
         self.__track_state = 0b0000
 
 
-class InputXboxOne(Node):
+class PilotInput(Node):
     """
     Class that implements the joystick input
     """
 
     def __init__(self):
         """
-        Initialize 'input_xbox_one' node
+        Initialize 'pilot_input' node
         """
-        super().__init__("input_xbox_one")
+        super().__init__("pilot_input")
 
         # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
@@ -209,7 +209,7 @@ class InputXboxOne(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.spin(InputXboxOne())
+    rclpy.spin(PilotInput())
     rclpy.shutdown()
 
 

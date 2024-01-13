@@ -1,5 +1,5 @@
 """
-input_keyboard.py
+keyboard.py
 
 Take input from the keyboard and republish it to topic 'keystroke'
 
@@ -38,22 +38,22 @@ import sys, tty, os, termios
 # Handle requesting to set another node's parameters
 from .set_remote_params import SetRemoteParams
 
-class InputKeyboard(Node):
+class Keyboard(Node):
     """
     Class that actively reads keyboard input
     """
 
     def __init__(self, settings):
         """
-        Initialize 'input_keyboard' node
+        Initialize 'keyboard' node
         """
-        super().__init__("input_keyboard")
+        super().__init__("keyboard")
     
-        # Create publisher to topic 'key_press'
+        # Create publisher to topic 'keystroke'
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
-        # Set up client to remotely set parameters on 'input_xbox_one' node using a service
-        self.__set_params_input_xbox_one = SetRemoteParams(self, "input_xbox_one")
+        # Set up client to remotely set parameters on 'pilot_input' node using a service
+        self.__set_params_input_xbox_one = SetRemoteParams(self, "pilot_input")
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
@@ -119,7 +119,7 @@ def main(args=None):
     orig_settings = termios.tcgetattr(sys.stdin)
 
     # Instance of InputKeyboard()
-    node = InputKeyboard(orig_settings)
+    node = Keyboard(orig_settings)
 
     # Threading allows the process to look for input and run the node at the same time
     # Create and start a thread for spinning the node
