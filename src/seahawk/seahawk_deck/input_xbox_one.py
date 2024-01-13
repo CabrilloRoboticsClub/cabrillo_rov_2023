@@ -34,6 +34,10 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 
+# Parameter imports
+from rclpy.parameter import Parameter
+from rcl_interfaces.msg import SetParametersResult
+
 
 class StickyButton():
     """
@@ -93,9 +97,10 @@ class InputXboxOne(Node):
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
 
         # Create and store parameter which determines which throttle curve
-        # the pilot wants to use. Defaults to 0
-        self.declare_parameter("throttle_curve_choice", 0)
-        self.throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
+        # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
+        self.declare_parameter("throttle_curve_choice", "0")
+        self.__throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
+        self.add_on_set_parameters_callback(self.__update_throttle_curve)
         
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
@@ -107,6 +112,25 @@ class InputXboxOne(Node):
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
         }
+
+    def __update_throttle_curve(self, params: list[Parameter]) -> SetParametersResult:
+        """
+        Callback for 'throttle_curve_choice' parameter update. Updates the 
+        __throttle_curve_choice internal variable
+
+        Args:
+            params: List of updated parameters
+
+        Returns:
+            SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
+        """
+        try:
+            self.set_parameters(params[0].value)
+            print([param.value for param in params])
+        except:
+            return SetParametersResult(successful=False)
+        
+        return SetParametersResult(successful=True)
 
     def __callback(self, joy_msg: Joy):
         """
@@ -153,15 +177,15 @@ class InputXboxOne(Node):
 
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"] # Z (forwards)
-        twist_msg.linear.y  = -controller["linear_y"] # Y (sideways)
-        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) # Z (depth)
+        twist_msg.linear.x  = controller["linear_x"]    # X (forwards)
+        twist_msg.linear.y  = -controller["linear_y"]   # Y (sideways)
+        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2)       # Z (depth)
 
         # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
-        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5
-    
-        twist_msg.angular.y = controller["angular_y"] # P (pitch)
-        twist_msg.angular.z = -controller["angular_z"] # Y (yaw)
+        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5     # R (roll)
+
+        twist_msg.angular.y = controller["angular_y"]   # P (pitch)
+        twist_msg.angular.z = -controller["angular_z"]  # Y (yaw)
 
         # Bambi mode cuts all twist values in half for more precise movements
         if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
