@@ -34,10 +34,8 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 
-# Parameter imports
-from rclpy.parameter import Parameter
-from rcl_interfaces.msg import SetParametersResult
-
+# Handle setting parameters from another node's request
+from .set_remote_params import SrvRemoteParams
 
 class StickyButton():
     """
@@ -100,8 +98,9 @@ class PilotInput(Node):
         # Create and store parameter which determines which throttle curve
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
         self.declare_parameter("throttle_curve_choice", "0")
-        # Call parameter callback
-        self.add_on_set_parameters_callback(self.__update_params)
+
+        # Update parameters
+        SrvRemoteParams(self)
 
         # Button mapping
         self.__buttons = {
@@ -114,23 +113,6 @@ class PilotInput(Node):
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
         }
-
-    def __update_params(self, params: list[Parameter]) -> SetParametersResult:
-        """
-        Callback for parameter update. Updates all local parameters to have values set by the service
-
-        Args:
-            params: List of updated parameters
-
-        Returns:
-            SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
-        """
-        try:
-            # Try to set parameters to updated values
-            self.set_parameters(params)
-        except:
-            return SetParametersResult(successful=False)
-        return SetParametersResult(successful=True)
 
     def __callback(self, joy_msg: Joy):
         """

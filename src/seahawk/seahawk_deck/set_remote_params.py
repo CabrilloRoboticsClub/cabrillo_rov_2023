@@ -33,10 +33,11 @@ from typing import Any
 # Parameters
 from rcl_interfaces.srv import SetParameters
 from rclpy.parameter import Parameter
+from rcl_interfaces.msg import SetParametersResult
 
-class SetRemoteParams():
+class CliRemoteParams():
     """
-    Abstracts requesting to set another node's parameters via service to a class
+    Client node. Abstracts requesting to set another node's parameters via service to a class.
     """
     def __init__(self, this_node: Node, other_node_name: str):
         """
@@ -83,3 +84,36 @@ class SetRemoteParams():
         future = self.__cli.call_async(self.__req)  # Send param to service
         self.__param_list.clear()                   # Reset list
         return future.result()                      # Return if the parameter is set correctly
+    
+
+class SrvRemoteParams():
+    """
+    Service node. Abstracts requesting setting node's parameters from another node via service to a class.
+    """
+    def __init__(self, this_node: Node):
+        """
+        Set up request to setting thi node's parameters from another node
+    
+        Args:
+            this_node: Name of the node whose parameters should be set. Service node
+        """
+        self.__this_node = this_node
+        # Call parameter callback
+        self.__this_node.add_on_set_parameters_callback(self.__set_params)
+    
+    def __set_params(self, params: list[Parameter]) -> SetParametersResult:
+        """
+        Callback for parameter update. Updates all local parameters to have values set by the service
+
+        Args:
+            params: List of updated parameters
+
+        Returns:
+            SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
+        """
+        try:
+            # Try to set parameters to updated values
+            self.__this_node.set_parameters(params)
+        except:
+            return SetParametersResult(successful=False)
+        return SetParametersResult(successful=True)
