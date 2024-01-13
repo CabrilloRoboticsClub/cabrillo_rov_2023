@@ -92,6 +92,7 @@ class InputXboxOne(Node):
         """
         super().__init__("input_xbox_one")
 
+        # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
@@ -99,9 +100,10 @@ class InputXboxOne(Node):
         # Create and store parameter which determines which throttle curve
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
         self.declare_parameter("throttle_curve_choice", "0")
-        self.__throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
-        self.add_on_set_parameters_callback(self.__update_throttle_curve)
-        
+        # Call parameter callback
+        self.add_on_set_parameters_callback(self.__update_params)
+
+        # Button mapping
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
@@ -113,10 +115,9 @@ class InputXboxOne(Node):
             # "":               StickyButton(),     # menu
         }
 
-    def __update_throttle_curve(self, params: list[Parameter]) -> SetParametersResult:
+    def __update_params(self, params: list[Parameter]) -> SetParametersResult:
         """
-        Callback for 'throttle_curve_choice' parameter update. Updates the 
-        __throttle_curve_choice internal variable
+        Callback for parameter update. Updates all local parameters to have values set by the service
 
         Args:
             params: List of updated parameters
@@ -125,11 +126,10 @@ class InputXboxOne(Node):
             SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
         """
         try:
-            self.set_parameters(params[0].value)
-            print([param.value for param in params])
+            # Try to set parameters to updated values
+            self.set_parameters(params)
         except:
             return SetParametersResult(successful=False)
-        
         return SetParametersResult(successful=True)
 
     def __callback(self, joy_msg: Joy):
