@@ -1,22 +1,21 @@
 from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
-# from PyQt5.QtCore import pyqtSlot as pyQtSlot
+# from PyQt5 import QtGui as qtg
+# from PyQt5 import QtCore as qtc
 import sys
 
 # Size constants
-# MAX_WIDTH   = 1862
-# MAX_HEIGHT  = 1053
-MAX_WIDTH   = 500
-MAX_HEIGHT  = 500
+MAX_WIDTH   = 1862
+MAX_HEIGHT  = 1053
+# MAX_WIDTH   = 500
+# MAX_HEIGHT  = 500
 
 # Color constants
 COLOR_CONSTS = {
-    "MAIN_WIN_BKG"        : "rgb(15, 15, 15)",
+    "MAIN_WIN_BKG"        : "#0f0f0f ",
     "INACTIVE_TAB_BKG"    : "rgb(20, 20, 20)",
     "INACTIVE_TAB_BD"     : "rgb(30, 32, 37)",
     "ACTIVE_TAB_BKG"      : "rgb(24, 24, 24)",
-    "ACCENT_LIGHT"        : "rgb(87, 134, 252)",
+    "ACCENT_LIGHT"        : "#9171f8",
     "PRIMARY_TEXT"        : "rgb(255, 240, 245)",
     "SECONDARY_TEXT"      : "rgb(132,148,164)",
 }
@@ -58,7 +57,7 @@ class TabWidget(qtw.QWidget):
             self.__tabs.addTab(tab, name)
         
         # Apply css styling
-        with open("dash_css/tab_widget.txt") as style_sheet:
+        with open("dash_styling/tab_widget.txt") as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         
         # Add tabs to widget
