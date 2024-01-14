@@ -288,3 +288,4 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     ah = ArtificialHorizon()
     sys.exit(app.exec_())
+    
