@@ -11,13 +11,13 @@ MAX_HEIGHT  = 1053
 
 # Color constants
 COLOR_CONSTS = {
-    "MAIN_WIN_BKG"        : "#0f0f0f ",
-    "INACTIVE_TAB_BKG"    : "rgb(20, 20, 20)",
-    "INACTIVE_TAB_BD"     : "rgb(30, 32, 37)",
-    "ACTIVE_TAB_BKG"      : "rgb(24, 24, 24)",
+    "MAIN_WIN_BKG"        : "#0f0f0f",
+    "INACTIVE_TAB_BKG"    : "#141414",
+    "INACTIVE_TAB_BD"     : "#2d2938",
+    "ACTIVE_TAB_BKG"      : "#181818",
     "ACCENT_LIGHT"        : "#9171f8",
-    "PRIMARY_TEXT"        : "rgb(255, 240, 245)",
-    "SECONDARY_TEXT"      : "rgb(132,148,164)",
+    "PRIMARY_TEXT"        : "#fff0f5",
+    "SECONDARY_TEXT"      : "#8f8c95",
 }
 
 
