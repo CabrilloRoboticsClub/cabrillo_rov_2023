@@ -97,9 +97,17 @@ class TabWidget(qtw.QWidget):
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        throt_crv_widget = ThrtCrvWidget(tab_dict["Home"])
-        throt_crv_widget.move(0, 140)
-        throt_crv_widget.resize(180, 150)
+        thrt_crv_widget = ThrtCrvWidget(tab_dict["Home"])
+        thrt_crv_widget.move(0, 140)
+        thrt_crv_widget.resize(180, 150)
+
+        sensor_widget = SensorWidget(tab_dict["Home"], "Temperature", "dash_styling/sensor_widget.txt")
+        sensor_widget.move(0, 280)
+        sensor_widget.resize(180, 150)
+
+        sensor_widget = SensorWidget(tab_dict["Home"], "Depth", "dash_styling/sensor_widget.txt")
+        sensor_widget.move(0, 420)
+        sensor_widget.resize(180, 150)
 
         # What to do when a tab is clicked
         # self.__tabs.currentChanged.connect(self.__on_click)
@@ -189,6 +197,7 @@ class ThrtCrvWidget(qtw.QWidget):
     def __init__(self, parent: qtw.QWidget):
         """
         Initialize feature state widget
+        
         Args:
             parent: Widget to overlay 'FeatStateWidget' on
         """
@@ -205,7 +214,7 @@ class ThrtCrvWidget(qtw.QWidget):
         self.frame = qtw.QFrame()
         layout_outer.addWidget(self.frame)
 
-        # Set layout of labels on frame to grid
+        # Set layout of labels on frame
         layout_inner = qtw.QVBoxLayout(self.frame)
         self.frame.setLayout(layout_inner)
 
@@ -222,6 +231,7 @@ class ThrtCrvWidget(qtw.QWidget):
             }}
             """
         )
+
     def update_thrt_crv(self, thrt_crv: int):
         """
         Update graphical representation of the throttle curves
@@ -230,6 +240,60 @@ class ThrtCrvWidget(qtw.QWidget):
             Index of throttle curve to update (also the key you press to change it)
         """
         self.__label.setPixmap(self.__thrt_crv_imgs[thrt_crv])
+
+
+class SensorWidget(qtw.QWidget):
+    """
+    Creates a 'SensorWidget' which inherits from the 'qtw.QWidget' class. A 'SensorWidget'
+    displays the readings of sensors
+    """
+
+    def __init__(self, parent: qtw.QWidget, sensor_name: str, style_sheet_file: str):
+        """
+        Initialize sensor widget
+        
+        Args:
+            parent: Widget to overlay 'SensorWidget' on
+            style_sheet_file: Style sheet text file formatted as a CSS f-string
+        """
+        super().__init__(parent)
+
+        self.__sensor_name = qtw.QLabel()
+        self.__sensor_data = qtw.QLabel()
+
+        # Define layout of frame on parent
+        layout_outer = qtw.QVBoxLayout(self)
+        self.setLayout(layout_outer)
+
+        # Create frame widget
+        frame = qtw.QFrame()
+        layout_outer.addWidget(frame)
+
+        # Set layout of labels on frame to grid
+        layout_inner = qtw.QVBoxLayout(frame)
+        frame.setLayout(layout_inner)
+
+        # Set text on widget 
+        self.__sensor_name.setText(sensor_name)
+        self.__sensor_data.setText("n/a")
+
+        # Set an accessible name for each 
+        self.__sensor_name.setAccessibleName("name")
+        self.__sensor_data.setAccessibleName("data")
+        layout_inner.addWidget(self.__sensor_name)
+        layout_inner.addWidget(self.__sensor_data)
+       
+        with open(style_sheet_file) as style_sheet:
+            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        
+    def update_data(self, data):
+        """
+        Update data displayed by widget
+
+        Args:
+            data: New data to display
+        """
+        self.__sensor_data.setText(data)
 
 
 def main():
