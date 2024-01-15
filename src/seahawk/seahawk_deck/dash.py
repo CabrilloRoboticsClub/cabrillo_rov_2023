@@ -40,7 +40,7 @@ class MainWindow(qtw.QMainWindow):
         # Set up main window
         self.setWindowTitle("SeaHawk II Dashboard")
         self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
-        self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
+        # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
         
         # Create tabs
         tab_widget = TabWidget(self, ["Home", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
@@ -91,15 +91,22 @@ class TabWidget(qtw.QWidget):
         # Add tabs to widget
         layout.addWidget(tabs)
         
-        # Display feature state node
+        # Display feature state widget
         feat_state_widget = FeatStateWidget(tab_dict["Home"], ["Bambi Mode", "Claw", "CoM Shift"], "dash_styling/feat_state_widget.txt")
         feat_state_widget.resize(180, 150) # FIXME: This should probably not be a fixed value
+        # feat_state_widget.update_state("Claw")
+
+        # Display throttle curve widget
+        throt_crv_widget = ThrtCrvWidget(tab_dict["Home"])
+        throt_crv_widget.move(0, 140)
+        throt_crv_widget.resize(180, 150)
 
         # What to do when a tab is clicked
         # self.__tabs.currentChanged.connect(self.__on_click)
 
     # @qtc.pyqtSlot()
     # def __on_click(self):
+
 
 class FeatStateWidget(qtw.QWidget):
     """
@@ -122,13 +129,13 @@ class FeatStateWidget(qtw.QWidget):
         self.__off_img  = qtg.QPixmap("dash_styling/off_img.svg")
         
         # Track if feature is engaged
-        self.__feat_engaged = {name: False for name in feature_names}
+        self.__prev_state = {name: False for name in feature_names}
 
         # Create a dictionary of label objects
         self.__label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
 
         # Define layout of frame on parent
-        layout_outer = qtw.QGridLayout(self)
+        layout_outer = qtw.QVBoxLayout(self)
         self.setLayout(layout_outer)
 
         # Create frame widget
@@ -160,12 +167,69 @@ class FeatStateWidget(qtw.QWidget):
         Args:
             The name of the feature to update
         """
-        if self.__feat_engaged[feature]:
+        # If last recorded feature state was on, and the function was called because of an updated state,
+        # then the graphic is updated to the off state
+        if self.__prev_state[feature]: 
             self.__label_dict[feature]["state"].setPixmap(self.__off_img)
-            self.__feat_engaged[feature] = False
+            self.__prev_state[feature] = False
+        
+        # If last recorded feature state was off, and the function was called because of an updated state,
+        # then the graphic is updated to the on state
         else:
             self.__label_dict[feature]["state"].setPixmap(self.__on_img)
-            self.__feat_engaged[feature] = True
+            self.__prev_state[feature] = True
+
+
+class ThrtCrvWidget(qtw.QWidget):
+    """
+    Creates a 'ThrtCrvWidget' which inherits from the 'qtw.QWidget' class. A 'ThrtCrvWidget' provides 
+    a visual representation of the current chosen throttle curve
+    """
+
+    def __init__(self, parent: qtw.QWidget):
+        """
+        Initialize feature state widget
+        Args:
+            parent: Widget to overlay 'FeatStateWidget' on
+        """
+        super().__init__(parent)
+
+        NUM_CURVES = 3
+        self.__thrt_crv_imgs = {i : qtg.QPixmap(f"dash_styling/thrt_crv_img_{i}.svg") for i in range(NUM_CURVES)}
+
+        # Define layout of frame on parent
+        layout_outer = qtw.QVBoxLayout(self)
+        self.setLayout(layout_outer)
+
+        # Create frame widget
+        self.frame = qtw.QFrame()
+        layout_outer.addWidget(self.frame)
+
+        # Set layout of labels on frame to grid
+        layout_inner = qtw.QVBoxLayout(self.frame)
+        self.frame.setLayout(layout_inner)
+
+        self.__label = qtw.QLabel()
+        self.__label.setPixmap(self.__thrt_crv_imgs[0])
+
+        layout_inner.addWidget(self.__label)
+
+        self.setStyleSheet(
+            f"""
+            QFrame {{
+                background-color: {COLOR_CONSTS['SURFACE_DRK']};
+                border-radius: 8px;
+            }}
+            """
+        )
+    def update_thrt_crv(self, thrt_crv: int):
+        """
+        Update graphical representation of the throttle curves
+
+        Args:
+            Index of throttle curve to update (also the key you press to change it)
+        """
+        self.__label.setPixmap(self.__thrt_crv_imgs[thrt_crv])
 
 
 def main():
