@@ -1,0 +1,9 @@
+QLabel {{
+    padding: 5px;
+    color: {SECONDARY_TEXT};
+}}
+
+QFrame {{
+    background-color: {SURFACE_DRK};
+	border-radius: 8px;
+}}
