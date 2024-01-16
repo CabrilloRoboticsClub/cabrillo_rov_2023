@@ -36,7 +36,7 @@ import threading
 import sys, tty, os, termios
 
 # Handle requesting to set another node's parameters
-from .set_remote_params import CliRemoteParams
+from .set_remote_params import RemoteParamsClient
 
 class Keyboard(Node):
     """
@@ -53,7 +53,7 @@ class Keyboard(Node):
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
         # Set up client to remotely set parameters on 'pilot_input' node using a service
-        self.__set_params_pilot_input = CliRemoteParams(self, "pilot_input")
+        self.__set_params_pilot_input = RemoteParamsClient(self, "pilot_input")
 
         # Get current user terminal settings and save them for later
         self.__settings = settings

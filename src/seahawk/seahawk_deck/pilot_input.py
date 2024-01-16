@@ -99,8 +99,8 @@ class PilotInput(Node):
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
         self.declare_parameter("throttle_curve_choice", "0")
 
-        # Update parameters
-        SrvRemoteParams(self)
+        # # Update parameters
+        # SrvRemoteParams(self)
 
         # Button mapping
         self.__buttons = {
