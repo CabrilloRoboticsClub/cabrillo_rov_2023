@@ -1,5 +1,5 @@
 """
-keyboard.py
+input_keyboard.py
 
 Take input from the keyboard and republish it to topic 'keystroke'
 
@@ -43,9 +43,9 @@ class InputKeyboard(Node):
 
     def __init__(self, settings):
         """
-        Initialize 'keyboard' node
+        Initialize 'input_keyboard' node
         """
-        super().__init__("keyboard")
+        super().__init__("input_keyboard")
     
         # Create publisher to topic 'key_press'
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
