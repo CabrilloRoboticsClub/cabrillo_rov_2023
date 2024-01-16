@@ -35,9 +35,9 @@ from rcl_interfaces.srv import SetParameters
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import SetParametersResult
 
-class CliRemoteParams():
+class RemoteParamsClient():
     """
-    Client node. Abstracts requesting to set another node's parameters via service to a class.
+    Abstracts requesting to set another node's parameters via service to a class. 
     """
     def __init__(self, this_node: Node, other_node_name: str):
         """
@@ -84,16 +84,16 @@ class CliRemoteParams():
         future = self.__cli.call_async(self.__req)  # Send param to service
         self.__param_list.clear()                   # Reset list
         return future.result()                      # Return if the parameter is set correctly
-    
 
-class SrvRemoteParams():
+
+class RemoteParamsServiceWrapper():
     """
-    Service node. Abstracts requesting setting node's parameters from another node via service to a class.
+    Abstracts requesting setting node's parameters from another node via service to a class.
     """
     def __init__(self, this_node: Node):
         """
-        Set up request to setting thi node's parameters from another node
-    
+        Set up request to set this node's parameters from another node
+
         Args:
             this_node: Name of the node whose parameters should be set. Service node
         """
