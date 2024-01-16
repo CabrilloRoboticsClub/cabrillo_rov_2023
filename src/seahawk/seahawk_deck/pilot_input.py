@@ -34,9 +34,6 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 
-# Handle setting parameters from another node's request
-from .set_remote_params import SrvRemoteParams
-
 class StickyButton():
     """
     Class that implements sticky buttons, meaning a button is pressed to turn it on, 
@@ -98,9 +95,6 @@ class PilotInput(Node):
         # Create and store parameter which determines which throttle curve
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
         self.declare_parameter("throttle_curve_choice", "0")
-
-        # # Update parameters
-        # SrvRemoteParams(self)
 
         # Button mapping
         self.__buttons = {
