@@ -84,8 +84,8 @@ def generate_launch_description():
         ),
         Node(
             package='seahawk',
-            executable='input_keyboard',
-            name='input_keyboard',
+            executable='keyboard',
+            name='keyboard',
             output='screen'
         ),
         Node(
