@@ -35,10 +35,8 @@ import threading
 # For keyboard stuff
 import sys, tty, os, termios
 
-# Handle requesting to set another node's parameters
-from .set_remote_params import RemoteParamsClient
 
-class Keyboard(Node):
+class InputKeyboard(Node):
     """
     Class that actively reads keyboard input
     """
@@ -49,66 +47,47 @@ class Keyboard(Node):
         """
         super().__init__("keyboard")
     
-        # Create publisher to topic 'keystroke'
+        # Create publisher to topic 'key_press'
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
-
-        # Set up client to remotely set parameters on 'pilot_input' node using a service
-        self.__set_params_pilot_input = RemoteParamsClient(self, "pilot_input")
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
-
-        # Store the current key
-        self.__cur_key = ""
     
-    def __get_key(self):
+    def __get_key(self) -> str:
         """
-        Extracts a single keystroke from the user and sets private attribute __cur_key
+        Extracts a single keystroke from the user
+
+        Returns:
+            String of the name of the key which was pressed
         """
         # Enable raw mode. In raw mode characters are directly read from and written 
         # to the device without any translation or interpretation by the operating system
         tty.setraw(sys.stdin.fileno())
 
         # Read at most one byte (the length of one character) from stdin and decode it
-        self.__cur_key = os.read(sys.stdin.fileno(), 1).decode()
+        key = os.read(sys.stdin.fileno(), 1).decode()
 
         # Make terminal not break
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.__settings)
 
-    def callback(self):
+        return key
+
+    def pub_callback(self):
         """
-        Gets a key from the user publishes it to 'keystroke' topic and update any parameters
+        Gets a key from the user publishes it to 'keystroke' topic
 
         Throws 'KeyboardInterrupt' if user enters ctrl-c
         """
-        self.__get_key()
+        key = self.__get_key()
 
         # If 'ctrl-c' raise 'KeyboardInterrupt'
-        if self.__cur_key == "\x03":
+        if key == "\x03":
             raise KeyboardInterrupt("Terminated the process with ctrl-c")
         
-        self.__pub_callback()
-        self.__param_callback()
-
-    def __pub_callback(self):
-        """
-        Publishes the current key to 'keystroke' topic
-        """
         # Create and publish message
         msg = String()
-        msg.data = self.__cur_key
+        msg.data = key
         self.__key_pub.publish(msg)
-    
-    def __param_callback(self):
-        """
-        Updates parameters for 'throttle_curve_choice'
-        """
-        # If the user pressed '0', '1', or '2' send that information to the __set_params_pilot_input
-        if self.__cur_key in ["0", "1", "2"]:
-            self.__set_params_pilot_input.update_params("throttle_curve_choice", self.__cur_key)
-
-        # Send all params to pilot_input node
-        self.__set_params_pilot_input.send_params()
 
 
 def main(args=None):
@@ -118,7 +97,7 @@ def main(args=None):
     orig_settings = termios.tcgetattr(sys.stdin)
 
     # Instance of InputKeyboard()
-    node = Keyboard(orig_settings)
+    node = InputKeyboard(orig_settings)
 
     # Threading allows the process to look for input and run the node at the same time
     # Create and start a thread for spinning the node
@@ -128,8 +107,7 @@ def main(args=None):
     try:
         while True:
             # While the user has not entered 'ctrl-c', wait for keystrokes and publish them
-            # to `keystroke`. If the user enters a key mapped to a parameter, update that parameter
-            node.callback()
+            node.pub_callback()
     except KeyboardInterrupt as error_msg:
         print(error_msg)
     
