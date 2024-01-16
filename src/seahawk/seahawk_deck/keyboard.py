@@ -53,7 +53,7 @@ class Keyboard(Node):
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
 
         # Set up client to remotely set parameters on 'pilot_input' node using a service
-        self.__set_params_input_xbox_one = CliRemoteParams(self, "pilot_input")
+        self.__set_params_pilot_input = CliRemoteParams(self, "pilot_input")
 
         # Get current user terminal settings and save them for later
         self.__settings = settings
@@ -61,7 +61,7 @@ class Keyboard(Node):
         # Store the current key
         self.__cur_key = ""
     
-    def __get_key(self) -> str:
+    def __get_key(self):
         """
         Extracts a single keystroke from the user and sets private attribute __cur_key
         """
@@ -93,8 +93,6 @@ class Keyboard(Node):
     def __pub_callback(self):
         """
         Publishes the current key to 'keystroke' topic
-
-        Throws 'KeyboardInterrupt' if user enters ctrl-c
         """
         # Create and publish message
         msg = String()
@@ -105,12 +103,13 @@ class Keyboard(Node):
         """
         Updates parameters for 'throttle_curve_choice'
         """
-        # If the user pressed '0', '1', or '2' send that information to the __set_params_input_xbox_one
+        # If the user pressed '0', '1', or '2' send that information to the __set_params_pilot_input
         if self.__cur_key in ["0", "1", "2"]:
-            self.__set_params_input_xbox_one.update_params("throttle_curve_choice", self.__cur_key)
+            self.__set_params_pilot_input.update_params("throttle_curve_choice", self.__cur_key)
 
-        # Send all params to input_xbox_one node
-        self.__set_params_input_xbox_one.send_params()
+        # Send all params to pilot_input node
+        self.__set_params_pilot_input.send_params()
+
 
 def main(args=None):
     rclpy.init(args=args)
