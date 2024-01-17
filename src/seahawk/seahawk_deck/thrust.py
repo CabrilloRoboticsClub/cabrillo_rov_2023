@@ -262,20 +262,6 @@ class Thrust(Node):
             self.motor_pub.publish(motor_msg)
             return
 
-        # +1 = Full thrust, Forwards
-        #  0 = Off
-        # -1 = Full thrust, Backwards
-        # Even are on bottom
-        # 45° angle(π/4)
-        # ^FRONT^
-        # 6/. .\0
-        # 4\^ ^/2
-        # Odd are on top; thrust forward is up
-        # 35° angle(7π/36)
-        # ^FRONT^
-        #  7   1
-        #  5   3
-
         # Multiply twist with inverse of motor config to get motor effort values
         motor_msg.data = np.matmul(self.inverse_config, twist_array).tolist()
 
