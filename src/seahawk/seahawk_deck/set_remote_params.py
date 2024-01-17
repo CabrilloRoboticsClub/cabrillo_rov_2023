@@ -1,7 +1,7 @@
 """
 set_remote_params.py
 
-Abstracts requesting to set another node's parameters via service to class
+Abstracts requesting to set another node's parameters via a service call to class
 'SetRemoteParams'. To import this class to a program on the deck use 
 'from .set_remote_params import SetRemoteParams'
 
@@ -34,17 +34,18 @@ from typing import Any
 from rcl_interfaces.srv import SetParameters
 from rclpy.parameter import Parameter
 
-class RemoteParamsClient():
+class SetRemoteParams():
     """
-    Abstracts requesting to set another node's parameters via service to a class. 
+    Abstracts requesting to set another node's parameters via a service call to a class. 
     """
+
     def __init__(self, this_node: Node, other_node_name: str):
         """
-        Set up request to set another node's parameters via service named '/other_node_name/set_parameters'
+        Set up request to set another node's parameters via a service named '/other_node_name/set_parameters'
     
         Args:
             this_node: Node which makes the request to set another node's parameters. Client node
-            other_node_name: Name of the node whose parameters should be set. Service node
+            other_node_name: Name of the node whose parameters should be set. Parameter node
         """
         # Create service name. Services to set parameters must be named as '/other_node_name/set_parameters'
         srv_name = "/" + other_node_name + "/set_parameters"
@@ -72,12 +73,12 @@ class RemoteParamsClient():
         """
         self.__param_list.append(Parameter(name=param_name, value=param_value).to_parameter_msg())
 	
-    def send_params(self) -> (Any | None):
+    def send_params(self) -> bool:
         """
         Sends updated parameter list to the service
 
         Returns:
-            The result set by the task, None if no result was set
+            True if the parameters were correctly set, otherwise False
         """
         self.__req.parameters = self.__param_list   # Create updated param list
         future = self.__cli.call_async(self.__req)  # Send param to service
