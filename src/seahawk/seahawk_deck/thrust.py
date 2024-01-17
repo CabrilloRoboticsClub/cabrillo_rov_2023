@@ -160,13 +160,11 @@ class Thrust(Node):
             SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
         """
         try:
-            self.center_of_mass_offset = params[0]._value.tolist()
+            self.center_of_mass_offset = self.get_parameter("center_of_mass_offset").value
+            self.motor_config = self.generate_motor_config()
+            self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
         except:
             return SetParametersResult(successful=False)
-
-        self.motor_config = self.generate_motor_config()
-        self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
-
         return SetParametersResult(successful=True)
 
     def generate_motor_config(self):
