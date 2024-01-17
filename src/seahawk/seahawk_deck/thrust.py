@@ -82,7 +82,7 @@ class Thrust(Node):
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         self.subscription = self.create_subscription(Twist, "desired_twist", self._callback, 10)
-        self.motor_pub = self.create_publisher(Float32MultiArray, "drive/motors", 10)
+        self.motor_pub = self.create_publisher(Float32MultiArray, "motor_values", 10)
         self.__params = Thrust.__generate_curve_fit_params()
 
     def get_polynomial_coef(self, mv: list, limit: float) -> list:
