@@ -89,6 +89,7 @@ class Thrust(Node):
         """
         Generates a list of the coefficients for a polynomial, the input of which is the
         motor scaling factor and the roots of the function are the maximum scaling factor.
+
         Args:
             mv: The motor values in newtons that when produced will result in our desired twist
             limit: The current limit we would like to stay under in amperes (TOTAL_CURRENT_LIMIT or ESC_CURRENT_LIMIT)
@@ -146,8 +147,6 @@ class Thrust(Node):
         esc2_scalar = self.get_current_scalar_value(mv[4:], self.ESC_CURRENT_LIMIT)
 
         return min(total_scalar, esc1_scalar, esc2_scalar)
-
-
 
     def update_center_of_mass(self, params: list[Parameter]) -> SetParametersResult:
         """
