@@ -1,4 +1,4 @@
-'''
+"""
 thrust.py
 
 Calculate correct output of motors and output it on /drive/motors
@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
-'''
+"""
 import sys 
 
 import rclpy
@@ -43,7 +43,7 @@ class Thrust(Node):
 
     def __init__(self):
         """Initialize this node"""
-        super().__init__('thrust')
+        super().__init__("thrust")
 
         self.MAX_FWD_THRUST = 36.3826715 # N
         self.MAX_REV_THRUST = -28.6354180 # N
@@ -73,16 +73,16 @@ class Thrust(Node):
             [-0.7071, 0.7071, 0]   # Motor 7
         ]
 
-        self.declare_parameter('center_of_mass_offset', [0.0, 0.0, 0.0])
-        self.center_of_mass_offset = self.get_parameter('center_of_mass_offset').value
+        self.declare_parameter("center_of_mass_offset", [0.0, 0.0, 0.0])
+        self.center_of_mass_offset = self.get_parameter("center_of_mass_offset").value
 
         self.add_on_set_parameters_callback(self.update_center_of_mass)
 
         self.motor_config = self.generate_motor_config()
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
-        self.subscription = self.create_subscription(Twist, 'desired_twist', self._callback, 10)
-        self.motor_pub = self.create_publisher(Float32MultiArray, 'drive/motors', 10)
+        self.subscription = self.create_subscription(Twist, "desired_twist", self._callback, 10)
+        self.motor_pub = self.create_publisher(Float32MultiArray, "drive/motors", 10)
         self.__params = Thrust.__generate_curve_fit_params()
 
     def get_polynomial_coef(self, mv: list, limit: float) -> list:
@@ -237,7 +237,7 @@ class Thrust(Node):
         # Scalar is infinite if 0, since there is no limit to how large it can be scaled
         return min([(self.MAX_FWD_THRUST / thrust) if thrust > 0
                     else ((self.MAX_REV_THRUST / thrust) if thrust < 0
-                        else float('inf'))
+                        else float("inf"))
                     for thrust in motor_values])
 
     def _callback(self, twist_msg):
@@ -296,5 +296,5 @@ def main(args=None):
     rclpy.shutdown()    
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)
