@@ -24,16 +24,22 @@ cabrillorobotics@gmail.com
 """
 # For reading argv
 import sys 
+# for reading in command line arguments in python
 
 # Ros client libary imports
 import rclpy
 from rclpy.node import Node 
+# essential improts for creating ROS node functionality
 
 # ROS messages imports
 from geometry_msgs.msg import Twist 
+# imports messages of type Twist from the geometry_msgs module
 from sensor_msgs.msg import Joy
+# imports joystick messages of type Joy from sensor_msgs module
 from std_msgs.msg import Bool
+# imports Bool type messages from std_msgs module
 
+# Q: What is a module?
 
 class StickyButton():
     """
@@ -75,21 +81,40 @@ class StickyButton():
         self.__feature_state = False
         self.__track_state = 0b0000
 
+# Q: So are we creating a node inside of a node here?
 
-class InputXboxOne(Node):
+class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node from ROS2 library
     """
     Class that implements the joystick input
     """
 
-    def __init__(self):
+    def __init__(self):  # default construcutor for current instance of InputXboxOne
+    # Q: why do we put 'def' before functions? is it like typename <T> from C++?
         """
         Initialize 'input_xbox_one' node
         """
         super().__init__("input_xbox_one")
+        # initializes the input_xbox_one node by sending name of node to super class Node
+        # Q: Why do we do this? Isnt class InputXboxOne(Node); enough?
 
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
+        # creates sub for current instance of class with self.create_subscription
+        # 'Joy' represents the message type and "joy" is topic from which joystick messages are published
+        # self.__callback is causing this to refresh whenever theres a new joystick message
+        # 10 is a QoS setting for the sub
+        # PURPOSE: this is designed to recieve joystick data from xbox_one controller
+
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
+        # sets up a publisher message for the current instance of the class
+        # publishes Twist type messages to the desired_twist topic 
+        # 10 is the QoS setting for the pub
+        # PURPOSE: Not sure...
+
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
+        # sets up a publisher message for the current instance of the class
+        # publishes Bool type messages to the claw_state topic 
+        # 10 is the QoS setting for the pub
+        # PURPOSE: this published information about whether or not the claw is open or closed
         
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
@@ -101,6 +126,10 @@ class InputXboxOne(Node):
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
         }
+        # a dictionary of key value pairs for mapping out relevant buttons on the controller
+        # each key is a string representing a button and its value is an instance of StickyButton class
+        # PURPOSE: keep track of whether or not a button is pressed or not
+        # Q: how does the StickyButton class work?
 
     def __callback(self, joy_msg: Joy):
         """
@@ -175,11 +204,12 @@ class InputXboxOne(Node):
             self.__buttons["bambi_mode"].reset()
 
 
-def main(args=None):
-    rclpy.init(args=args)
-    rclpy.spin(InputXboxOne())
-    rclpy.shutdown()
+def main(args=None):  # args = None means there are no command line arguments
+    rclpy.init(args=args)  # ROS initializer for nodes
+    rclpy.spin(InputXboxOne())  # keep InputXboxOne node running for as long as needed
+    rclpy.shutdown()  # shut down the node when not needed
 
 
 if __name__ == "__main__":
     main(sys.argv)
+# Q: what is this? ^
