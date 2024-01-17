@@ -265,11 +265,11 @@ class Thrust(Node):
         # Multiply twist with inverse of motor config to get motor effort values
         motor_msg.data = np.matmul(self.inverse_config, twist_array).tolist()
 
-        thurst_scalar = self.get_thrust_limit_scalar(motor_msg.data)
+        thrust_scalar = self.get_thrust_limit_scalar(motor_msg.data)
         current_scalar = self.get_minimum_current_scalar(motor_msg.data)
         # Scalar will be the smaller of the two, largest value in twist array
         # will be percentage of that maximum
-        scalar = min(thurst_scalar, current_scalar) * max(twist_array)
+        scalar = min(thrust_scalar, current_scalar) * max([abs(val) for val in twist_array])
 
         # scale motor values
         motor_msg.data = [thrust * scalar for thrust in motor_msg.data]
