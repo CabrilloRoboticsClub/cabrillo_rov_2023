@@ -1,7 +1,7 @@
 """
 pilot_input.py
 
-Handle input from an Xbox One controller
+Handle all pilot input
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
