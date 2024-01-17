@@ -87,6 +87,8 @@ class Thrust(Node):
 
     def get_polynomial_coef(self, mv: list, limit: float) -> list:
         """
+        Generates a list of the coefficients for a polynomial, the input of which is the
+        motor scaling factor and the roots of the function are the maximum scaling factor.
         Args:
             mv: The motor values in newtons that when produced will result in our desired twist
             limit: The current limit we would like to stay under in amperes (TOTAL_CURRENT_LIMIT or ESC_CURRENT_LIMIT)
