@@ -39,22 +39,46 @@ from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
 # imports Bool type messages from std_msgs module
 
+# ****** Q & A ******
+#
+#
+# Q: why do we put 'def' before functions? is it like typename <T> from C++?
+# A: 'def' is simply a way to define a function in python. dont need to include return type unless
+# its for making the code more easily readible as python handles types for you. i dont like...
+#
+#
+# Q: why do so many functions and variables start with '__'?
+# A: 
+
 # Q: What is a module?
 
-class StickyButton():
+class StickyButton():  # begin creation of StickyButton class. Not a super or sub class.
     """
     Class that implements sticky buttons, meaning a button is pressed to turn it on, 
     and pressed again to turn it off
     """
 
-    def __init__(self):
+    def __init__(self):  # default constructor for StickyButton class
+        # Q: what does it mean to put (self) in function parameter?
+
         """
         Initialize 'StickyButton' object
         """
-        self.__feature_state = False    # Is the feature this button controls on (True) or off (False)
-        self.__track_state = 0b0000     # Tracks the last four states of the button using bits
+
+        self.__feature_state = False
+        # creates a boolean variable called __feature_state that determines if button is pressed (True) or not (False)
+        # 'self.' implies that this is an instance variable of the current instance of this class
+
+        self.__track_state = 0b0000
+        # creates an integer variable called __track_state that reps a binary number
+        # likely signifies the state of the button using binary bit information
+        # Q: How does it do this specifically??
     
     def check_state(self, cur_button_state: bool) -> bool:
+        # check_state function that checks is a button is on or off on the controller
+        # 'cur_button_state: bool' is a type hint that indicates cur_button_state is of type 'bool'
+        # '-> bool' indicates the return type of the function to make reading the code easier
+
         """
         Checks if a button is toggled on or off and accounts for debouncing
 
@@ -64,12 +88,17 @@ class StickyButton():
         Returns:
             True if the button is toggled on, False if off
         """
+
+        # Q: where is the cur_button_state data coming from?
+
         # Append the current button state to the tracker then remove the leftmost bit
         # such that self.__track_state records the most recent four states of the button
         self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
+        # Q: someones gonna need to explain this to me...
 
         # Account for bounce by making sure the last four recorded states
         # appear to represent a button press. If so, update the feature state
+        # Q: what is bounce?
         if self.__track_state == 0b0011:
             self.__feature_state = not self.__feature_state
         return self.__feature_state
@@ -89,7 +118,6 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
     """
 
     def __init__(self):  # default construcutor for current instance of InputXboxOne
-    # Q: why do we put 'def' before functions? is it like typename <T> from C++?
         """
         Initialize 'input_xbox_one' node
         """
@@ -132,6 +160,10 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
         # Q: how does the StickyButton class work?
 
     def __callback(self, joy_msg: Joy):
+        # declares a function that takes its current instance and a message of type Joy from the joy_msg topic
+        # this function basically gathers joystick input data
+        # the 'joy_msg: Joy' basically means the variable is named 'joy_msg' with type 'Joy'
+
         """
         Takes in input from the joy message from the x box and republishes it as a twist specifying 
         the direction (linear and angular x, y, z) and percent of max speed the pilot wants the robot to move
@@ -141,7 +173,13 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
         """
 
         # Debug output of joy topic
+        # Q: what does 'debug' mean in this case?
+        # Q: where does the function get_logger() & debug() come from? Is it a function part of the 'Node' super class?
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+        # 'f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}"' is a f-string for string formatting
+        # Q: where does the '.axes' and '.buttons' come from? are they variables that are part of something
+        # that has to do with the joy_msg topic?
+        # Q: what are '.axes' and '.buttons'?
 
         # Map the values sent from the joy message to useful names
         controller = {
@@ -172,6 +210,10 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
             # "":               joy_msg.buttons[7], # menu
             "reset":            joy_msg.buttons[8], # xbox
         }
+        # this is another dictionary with key value pairs.
+        # in this case, the key is the button on the controller, and the value is
+        # a value in an array that holds data about something axes and buttons...?
+
 
         # Bambi mode cuts all twist values in half for more precise movements
         bambi_div = 2 if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]) else 1
