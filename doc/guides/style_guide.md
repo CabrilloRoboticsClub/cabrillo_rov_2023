@@ -139,16 +139,16 @@ Constants are variables which once set, do not change. Python does not enforce c
 #### Example:
 ```py
 COLOR_CONSTS = {
-    "MAIN_WIN_BKG"      : "#0c0c0f",
-    "INACTIVE_TAB_BKG"  : "#141416",
-    "INACTIVE_TAB_BD"   : "#2d2938",
-    "ACTIVE_TAB_BKG"    : "#111113",
-    "SURFACE_DRK"       : "#18181b",
-    "SURFACE_BRIGHT"    : "#34343c",
-    "ACCENT_LIGHT"      : "#9172f8",
-    "ACCENT_DRK"        : "#5c4ba3",
-    "PRIMARY_TEXT"      : "#fff0f5",
-    "SECONDARY_TEXT"    : "#8f8c95",
+    "MAIN_WIN_BKG":         "#0c0c0f",
+    "INACTIVE_TAB_BKG":     "#141416",
+    "INACTIVE_TAB_BD":      "#2d2938",
+    "ACTIVE_TAB_BKG":       "#111113",
+    "SURFACE_DRK":          "#18181b",
+    "SURFACE_BRIGHT":       "#34343c",
+    "ACCENT_LIGHT":         "#9172f8",
+    "ACCENT_DRK":           "#5c4ba3",
+    "PRIMARY_TEXT":         "#fff0f5",
+    "SECONDARY_TEXT":       "#8f8c95"
 }
 ```
 
@@ -163,3 +163,83 @@ When creating a class for a ROS2 node, technically all member variables and func
 ```py
 self.claw_pub = self.create_publisher(Bool, "claw_state", 10)
 ```
+
+## 3 Whitespace
+### 3.1 Spaces per indentation
+Use 4 spaces per indentation level. See [Basic Editing: Indentation](https://code.visualstudio.com/docs/editor/codebasics#_indentation) for configuring indentation with VS Code.
+
+### 3.2 Blank lines 
+- Classes and functions should have a padding of two blank lines after their definition.
+- Within a class, methods should be separated by one blank line.
+- Lines with distinctly different function should be separated with a blank line
+
+
+### 3.3 Continuation lines
+Continuation lines are single statements, broken up onto multiple lines. Lines may be broken without disrupting syntax when the content is enclosed within `()`, `{}`, or `[]`. Note: is recommended to enclose a statement which needs to be broken with parentheses than using the continuation operator.
+> Do not use a backslash for [explicit line continuation](https://docs.python.org/3/reference/lexical_analysis.html#explicit-line-joining).
+>
+> Instead, make use of Python’s [implicit line joining](https://docs.python.org/3/reference/lexical_analysis.html#implicit-line-joining) inside parentheses, brackets and braces. If necessary, you can add an extra pair of parentheses around an expression.
+#### Example:
+```py
+return min([(self.MAX_FWD_THRUST / thrust) if thrust > 0
+    else ((self.MAX_REV_THRUST / thrust) if thrust < 0
+    else float("inf"))
+    for thrust in motor_values])
+```
+Continuation lines should be indented another four spaces from normal indentation. Assignments of literal `set()`, `dict()` or `list()` should be broken with one element per line (see example)
+#### Example:
+```py
+self.buttons = {
+    "claw":         StickyButton(),     # a
+    "bambi_mode":   StickyButton()      # b
+}
+```
+
+### 3.4 Spacing of operators
+There should should one space before and after operators.
+#### Example of good operator spacing 
+```py
+self.track_state = (self.track_state << 1 | cur_button_state) & 0b1111
+```
+
+#### Example of poor operator spacing
+```py
+self.track_state=(self.track_state<<1    | cur_button_state)&  0b1111
+```
+
+### 3.5 Spacing within collection literals
+*See Section 3.3 for breaking literals onto multiple lines*
+
+In a dictionary, put no whitespace between each key and colon, and one space before the value. If the dictionary is separated on multiple lines, add enough tabs such that values align. 
+```py
+self.buttons = {
+    "claw":         StickyButton(),     # a
+    "bambi_mode":   StickyButton()      # b
+}
+```
+For sets, tuples, and lists put no whitespace between the element and following comma, and one space between the comma and following element.
+#### Example:
+```py
+self.motor_positions = [    # [X, Y, Z] positions for each motors
+    [0.19, 0.12, 0.047],    # Motor 0
+    [0.19, -0.12, 0.047],   # Motor 1
+    [-0.19, 0.12, 0.047],   # Motor 2
+    [-0.19, -0.12, 0.047],  # Motor 3
+    [0.105, 0.15, -0.038],  # Motor 4
+    [0.105, -0.15, -0.038], # Motor 5
+    [-0.105, 0.15, -0.038], # Motor 6
+    [-0.105, -0.15, -0.038] # Motor 7
+]
+```
+
+### Type hints spacing 
+For type annotations, there should be no whitespace between the variable name and colon, and one space before the type information. 
+#### Example:
+```py
+def __init__(self, parent: MainWindow, tab_names: list[str], style_sheet_file: str):
+```
+
+# References:
+1. [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
+2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+3. [Effective Python, The Book: Second Edition](https://effectivepython.com/)
