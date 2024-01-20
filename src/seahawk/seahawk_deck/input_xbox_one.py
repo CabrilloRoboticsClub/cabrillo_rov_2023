@@ -22,8 +22,9 @@ Cabrillo Robotics Club
 6500 Soquel Drive Aptos, CA 95003
 cabrillorobotics@gmail.com
 """
+
 # For reading argv
-import sys 
+import sys
 # for reading in command line arguments in python
 
 # Ros client libary imports
@@ -69,10 +70,14 @@ class StickyButton():  # begin creation of StickyButton class. Not a super or su
         # creates a boolean variable called __feature_state that determines if button is pressed (True) or not (False)
         # 'self.' implies that this is an instance variable of the current instance of this class
 
+        # button bouncing is when the button bounces rly quick after being pressed, showing incorrect data.
+
         self.__track_state = 0b0000
         # creates an integer variable called __track_state that reps a binary number
         # likely signifies the state of the button using binary bit information
         # Q: How does it do this specifically??
+        # A: the binary number tracks last 4 states of button
+        # sort of like an array 0b0000
     
     def check_state(self, cur_button_state: bool) -> bool:
         # check_state function that checks is a button is on or off on the controller
@@ -93,14 +98,17 @@ class StickyButton():  # begin creation of StickyButton class. Not a super or su
 
         # Append the current button state to the tracker then remove the leftmost bit
         # such that self.__track_state records the most recent four states of the button
-        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0x0F
+        self.__track_state = (self.__track_state << 1 | cur_button_state) & 0b1111
         # Q: someones gonna need to explain this to me...
+        # A: this is bitshifting. its moving from the binary representation of one number to another using an addition of one bit.
+        # "|" this is bitwise OR which OR's two bitwise numbers like a boolean
+        # "&" is a bitwise AND with 0b1111, it gets rid of...
 
         # Account for bounce by making sure the last four recorded states
         # appear to represent a button press. If so, update the feature state
         # Q: what is bounce?
-        if self.__track_state == 0b0011:
-            self.__feature_state = not self.__feature_state
+        if self.__track_state == 0b0011:  # if we have two off states '00' followed by two on states '11' button is probs not bouncing 
+            self.__feature_state = not self.__feature_state  # reverses polarity?
         return self.__feature_state
 
     def reset(self):
@@ -111,31 +119,38 @@ class StickyButton():  # begin creation of StickyButton class. Not a super or su
         self.__track_state = 0b0000
 
 # Q: So are we creating a node inside of a node here?
+# A: nope lol just inherticance
 
-class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node from ROS2 library
+class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node from ROS2 library. basically inheritance
     """
     Class that implements the joystick input
     """
 
     def __init__(self):  # default construcutor for current instance of InputXboxOne
+        # Q: why passing 'self' as parameter?
+        # A: unless passing in self, the method is static. by passing in self you are giving fuction access to members of specific instance of class.
+
         """
         Initialize 'input_xbox_one' node
         """
+
         super().__init__("input_xbox_one")
         # initializes the input_xbox_one node by sending name of node to super class Node
         # Q: Why do we do this? Isnt class InputXboxOne(Node); enough?
+        # A: to initialize node, there is logic that must be defined. by calling super().__init__ we're doing all set up to start this node. helpful black box.
 
-        self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
+        self.create_subscription(Joy, "joy", self.__callback, 10)
         # creates sub for current instance of class with self.create_subscription
         # 'Joy' represents the message type and "joy" is topic from which joystick messages are published
         # self.__callback is causing this to refresh whenever theres a new joystick message
-        # 10 is a QoS setting for the sub
+        # 10 is a QoS setting for the sub. mystery black box....
         # PURPOSE: this is designed to recieve joystick data from xbox_one controller
 
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
         # sets up a publisher message for the current instance of the class
         # publishes Twist type messages to the desired_twist topic 
         # 10 is the QoS setting for the pub
+        # doing self.variable makes the variable a memeber variable of the class. '__' in front of var makes it priv
         # PURPOSE: Not sure...
 
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
@@ -174,12 +189,18 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
 
         # Debug output of joy topic
         # Q: what does 'debug' mean in this case?
+        # A: basically debug is a conditional cout statement
+
         # Q: where does the function get_logger() & debug() come from? Is it a function part of the 'Node' super class?
+        # A: handles ROS specific print message
+
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
         # 'f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}"' is a f-string for string formatting
         # Q: where does the '.axes' and '.buttons' come from? are they variables that are part of something
         # that has to do with the joy_msg topic?
         # Q: what are '.axes' and '.buttons'?
+        # A: basically takes info from ROS class thats a black box that takes input from xbox controller both in terms of 
+        # joystick message & buttons and we can retrieve those messages using .axes & .buttons
 
         # Map the values sent from the joy message to useful names
         controller = {
@@ -245,13 +266,15 @@ class InputXboxOne(Node):  # creates a subclass InputXboxOne of superclass Node 
         if controller["reset"]:
             self.__buttons["bambi_mode"].reset()
 
+    # make sure the throttle curves have rotational symmetry about the origin. -1 & 1 should remain those numbers and 0 to remain as zero.
+
 
 def main(args=None):  # args = None means there are no command line arguments
     rclpy.init(args=args)  # ROS initializer for nodes
-    rclpy.spin(InputXboxOne())  # keep InputXboxOne node running for as long as needed
+    rclpy.spin(InputXboxOne())  # keep InputXboxOne node running for as long as needed like an infinite loop. killed with cntrl c
     rclpy.shutdown()  # shut down the node when not needed
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(sys.argv)  # extracts command line arguments & calls main function jumpts to l.250
 # Q: what is this? ^
