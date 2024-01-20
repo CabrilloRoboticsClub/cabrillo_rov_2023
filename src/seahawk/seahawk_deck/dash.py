@@ -1,5 +1,5 @@
 import sys
-import os
+from os import environ, path
 
 from PyQt5 import QtWidgets as qtw
 # from PyQt5 import QtGui as qtg
@@ -11,20 +11,13 @@ from dash_widgets.numeric_data_widget import NumericDataWidget
 from dash_widgets.state_widget import StateWidget
 from dash_widgets.throttle_curve_widget import ThrtCrvWidget
 
-
 # Size constants
 # MAX_WIDTH   = 1862
 # MAX_HEIGHT  = 1053
 MAX_WIDTH   = 1000  # Temp for debugging
 MAX_HEIGHT  = 600  # Temp for debugging
 
-
-# Run 'unset GTK_PATH' in new terminals if installed vs code with snap
-if "GTK_PATH" in os.environ:
-    if "snap" in os.environ["GTK_PATH"]:
-        os.environ.pop("GTK_PATH")
-
-PATH = os.path.dirname(__file__)
+PATH = path.dirname(__file__)
 
 class MainWindow(qtw.QMainWindow):
     """
@@ -78,10 +71,10 @@ class TabWidget(qtw.QWidget):
         tabs = qtw.QTabWidget()
 
         # Create a dict in which the key is the provided name of the tab, and the value is a qtw.QWidget() object
-        tab_dict = {name: qtw.QWidget() for name in tab_names}
+        self.__tab_dict = {name: qtw.QWidget() for name in tab_names}
 
         # Add tabs
-        for name, tab in tab_dict.items():
+        for name, tab in self.__tab_dict.items():
             tabs.addTab(tab, name)
         
         # Apply css styling
@@ -90,24 +83,27 @@ class TabWidget(qtw.QWidget):
         
         # Add tabs to widget
         layout.addWidget(tabs)
-        
+
+        self.create_pilot_tab()
+    
+    def create_pilot_tab(self):
         # Display feature state widget
-        feat_state_widget = StateWidget(tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        feat_state_widget = StateWidget(self.__tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         feat_state_widget.resize(180, 150) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        thrt_crv_widget = ThrtCrvWidget(tab_dict["Pilot"])
+        thrt_crv_widget = ThrtCrvWidget(self.__tab_dict["Pilot"])
         thrt_crv_widget.move(0, 140)
         thrt_crv_widget.resize(180, 150)
 
-        sensor_widget = NumericDataWidget(tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
-        sensor_widget.move(0, 280)
-        sensor_widget.resize(180, 150)
+        temp_widget = NumericDataWidget(self.__tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
+        temp_widget.move(0, 280)
+        temp_widget.resize(180, 150)
 
-        sensor_widget = NumericDataWidget(tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
-        sensor_widget.move(0, 420)
-        sensor_widget.resize(180, 150)
+        depth_widget = NumericDataWidget(self.__tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
+        depth_widget.move(0, 420)
+        depth_widget.resize(180, 150)
 
         # What to do when a tab is clicked
         # self.__tabs.currentChanged.connect(self.__on_click)
@@ -115,9 +111,23 @@ class TabWidget(qtw.QWidget):
     # @qtc.pyqtSlot()
     # def __on_click(self):
 
+
+def setup():
+    """
+    Performs setup procedures to prepare to launch the dash windows
+
+    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
+    This is automated in this function
+    """
+    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
+        environ.pop("GTK_PATH")
+
+
 def main():
+    setup()
     app = qtw.QApplication([])
-    mv = MainWindow()
+    pilot_dash = MainWindow()
+    # copilot_dash = MainWindow()
     sys.exit(app.exec_())
 
 
