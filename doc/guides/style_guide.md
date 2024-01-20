@@ -1,7 +1,7 @@
 # Style Guidelines
 
 Adhering to a standard style guide is important for code constancy across the project. Consistency in style makes code easier to read and understand by all collaborators on the project, and makes the final result more cohesive.
-The [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) is a good place to start for information about correct style practices. Below are some specific guidelines to follow
+The [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/#function-annotations) is a good place to start for information about correct style practices. Below are some specific guidelines to follow
 
 ## 1 Comments
 ### 1.1 File docstring
