@@ -289,6 +289,54 @@ Use [f-strings](https://docs.python.org/3/tutorial/inputoutput.html#tut-f-string
 > The combination of expressiveness, tenseness, and clarity provided by f-strings makes them the best built-in option for Python programmers. Anytime you need to format values into strings, choose f-stings over the alternatives.
 When possible, in this project opt for f-strings
 
+## 5 Imports
+### 5.1 Placement
+Imports should always be placed at the top of the file, just below the file docstring. 
+
+### 5.2 Order
+Imports should be ordered in the following order:
+1. Standard library imports 
+2. Third-party imports 
+3. Modules created for the project
+Each subsection should be ordered in alphabetical order and there should be a blank line between each group of imports.
+
+### 5.3 Avoid importing more than you need
+To import the `foo` package from `bar`, opt for
+```py
+from foo import bar
+```
+Rather than 
+```py
+import bar
+```
+
+### 5.4 Multiple imports
+Imports from different modules should be placed on different lines
+```py
+# Do not do this
+import foo, baz
+
+# Do this instead
+import foo
+import baz
+```
+However, if importing multiple packages from the same module, the following syntax is accepted
+```py
+from foo import bar, qux
+``` 
+
+## 6 Miscellaneous
+
+### 6.1 Type hints 
+
+### 6.2 Opening files
+
+### 6.3 Prefer enumerate over range
+
+### 6.4 Prefer comprehensions over map() and filter()
+
+### 6.5 Handling exceptions
+
 # References:
 1. [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
 2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
