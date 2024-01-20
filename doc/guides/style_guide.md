@@ -246,6 +246,8 @@ self.motor_positions = [    # [X, Y, Z] positions for each motors
 ```
 
 ### 3.6 Type hints spacing 
+*See Section 6.1 for information about type hints*
+
 For type annotations, there should be no whitespace between the variable name and colon, and one space before the type information. 
 
 **Example:**
@@ -327,18 +329,54 @@ from foo import bar, qux
 
 ## 6 Miscellaneous
 
-### 6.1 Type hints 
+### 6.1 Type hints
+Python does not enforce data types as other languages do. Variables are allowed to freely change type at run time. This can cause issues when functions expect a certain type from the user. [Type hints](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) provide the user information about the expected type. Note, adding type hints does not interfere with the way the program would otherwise run, the types are not enforced. They're more what you'd call guidelines.
+
+In all functions in this project, type hints for the parameters and return type should be used.
 
 ### 6.2 Opening files
+Files should be opened using `with open()` rather than just `open()`. When a file is opened using the [`with`](https://peps.python.org/pep-0343/) keyword, it eliminates the need to close the file, as it will automatically close.
+
+**Example:**
+```py
+with open("src/seahawk/seahawk_deck/thrust_to_current.tsv", "r") as file:
+    for data_point in file:
+        data = data_point.split("\t")
+        x.append(data[0])
+        y.append(data[1])
+```
 
 ### 6.3 Prefer enumerate over range
+Python makes it straight forward to loop over some sequence `seq` with the following syntax
+```py
+for element in seq:
+    print(element)
+```
+However sometimes it is useful to know the index of the current element. This could be accomplished by by using a [`range()`](https://docs.python.org/3/tutorial/controlflow.html#the-range-function) with an argument of the length of the sequence. While this method does work, it is cluttered and un-pythonic. The [`enumerate()`](https://docs.python.org/3/library/functions.html#enumerate) should be used instead. It is a lazy generator which yields pairs of elements in the sequence and their index.
+```py
+# Using range (don't do this)
+for i in range(len(seq)):
+    print(f"Index: {i}, Element: {seq[i]}")
+
+# Using enumerate (do this instead)
+for i, element in enumerate(seq):
+    print(f"Index: {i}, Element: {element}")
+```
 
 ### 6.4 Prefer comprehensions over map() and filter()
+Comprehensions are a method of filling lists, sets, and dictionaries with values using iteration. It is recommended to use comprehensions over [`map()`](https://docs.python.org/3/library/functions.html#map) and [`filter()`](https://docs.python.org/3/library/functions.html#filter).
+> List compressions are cleaner than `map` and `filter` built-in functions because they do not require [`lambda`](https://docs.python.org/3/reference/expressions.html#lambda) expressions.
+> 
+> List comprehensions allow you to easily skip items from the input `list`, a behavior that `map` does not support without help of `filter`.
 
-### 6.5 Handling exceptions
+
+### 6.5 Global variables 
+Global variables should be declared just below import statements. Global variables should be treated as constant.
 
 # References:
 1. [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
 2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
 3. [Effective Python, The Book: Second Edition](https://effectivepython.com/)
-4. [Python Documentation: The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
+4. [The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
+5. [The Python Standard Library](https://docs.python.org/3/library/)
+6. [MyPy](https://mypy.readthedocs.io/en/stable/index.html)
