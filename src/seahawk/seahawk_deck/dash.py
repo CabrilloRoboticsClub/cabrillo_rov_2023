@@ -43,7 +43,7 @@ class MainWindow(qtw.QMainWindow):
         # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
         
         # Create tabs
-        tab_widget = TabWidget(self, ["Home", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
+        tab_widget = TabWidget(self, ["Pilot", "Co-Pilot", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
         self.setCentralWidget(tab_widget)
 
         # Display window
@@ -92,20 +92,20 @@ class TabWidget(qtw.QWidget):
         layout.addWidget(tabs)
         
         # Display feature state widget
-        feat_state_widget = StateWidget(tab_dict["Home"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        feat_state_widget = StateWidget(tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         feat_state_widget.resize(180, 150) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        thrt_crv_widget = ThrtCrvWidget(tab_dict["Home"])
+        thrt_crv_widget = ThrtCrvWidget(tab_dict["Pilot"])
         thrt_crv_widget.move(0, 140)
         thrt_crv_widget.resize(180, 150)
 
-        sensor_widget = NumericDataWidget(tab_dict["Home"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
+        sensor_widget = NumericDataWidget(tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
         sensor_widget.move(0, 280)
         sensor_widget.resize(180, 150)
 
-        sensor_widget = NumericDataWidget(tab_dict["Home"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
+        sensor_widget = NumericDataWidget(tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
         sensor_widget.move(0, 420)
         sensor_widget.resize(180, 150)
 
