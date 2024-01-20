@@ -34,7 +34,8 @@ cabrillorobotics@gmail.com
 ``` 
 ### 1.2 Class docstring
 The beginning of a user defined class should contain a comment describing its purpose
-#### Example:
+
+**Example:**
 ```py
 class TabWidget(qtw.QWidget):
     """
@@ -62,7 +63,7 @@ Returns:
     Description of what the function returns
 """
 ```
-#### Example:
+**Example:**
 ```py
 def get_minimum_current_scalar(self, mv: list) -> float:
     """
@@ -85,7 +86,7 @@ Note, the `self` param does not need to be described in the list of arguments
 ### 1.4 Single line comments 
 Single line comments should especially be added to parts of code who's purpose is not clear upon first glance.
 
-#### Example good use of comments:
+**Example good use of comments:**
 ```py
 # Enable terminal raw mode. In raw mode characters are directly 
 # read from and written to the device without any translation or
@@ -94,7 +95,7 @@ tty.setraw(sys.stdin.fileno())
 ```
 Explains code which may not be easily understandable without further research. 
 
-#### Example unnessicary use of comments:
+**Example unnessicary use of comments:**
 ```py
 # Using the addition operator, compute the sum of two numbers: 'a' and 'b'.
 # Store the result of the computation in a variable called 'sum'
@@ -106,14 +107,16 @@ Code which is self explanatory and does not need a comment
 
 ### 2.1 File names
 Files should be named using `snake_case`. `snake_case` is a naming convention in which spaces are replaced with underscores and all letters are lowercase.
-#### Example
+
+**Example:**
 ```sh
 pilot_input.py
 ```
 
 ### 2.2 Class names
 Classes should be named using `PascalCase`. `PascalCase` is a naming convention in which the first letter of each word is capitalized. Note that this differs from camelCase because the first letter is also capitalized.
-#### Example:
+
+**Example:**
 ```py
 class SetRemoteParams():
     # Class definition here
@@ -121,7 +124,8 @@ class SetRemoteParams():
 
 ### 2.3 Function names
 Functions should be named using `snake_case`. `snake_case` is a naming convention in which spaces are replaced with underscores and all letters are lowercase.
-#### Example:
+
+**Example:**
 ```py
 def get_current_scalar_value(self, mv: list, limit: float) -> float:
     # Function definition here
@@ -129,14 +133,16 @@ def get_current_scalar_value(self, mv: list, limit: float) -> float:
 
 ### 2.4 Variable names
 Variables should generally be named using `snake_case`. `snake_case` is a naming convention in which spaces are replaced with underscores and all letters are lowercase.
-#### Example:
+
+**Example:**
 ```py
 coef_list = self.get_polynomial_coef(mv, limit)
 ```
 
 ### 2.5 Constant variable names
 Constants are variables which once set, do not change. Python does not enforce constants however constants can be denoted by the naming conventions. Constant variables should be named using `SCREAMING_SNAKE_CASE`. `SCREAMING_SNAKE_CASE` is a naming convention in which spaces are replaced with underscores and all letters are uppercase.
-#### Example:
+
+**Example:**
 ```py
 COLOR_CONSTS = {
     "MAIN_WIN_BKG":         "#0c0c0f",
@@ -154,12 +160,14 @@ COLOR_CONSTS = {
 
 ### 2.6 Private class attributes
 Private attributes are attributes of an object which can only be accessed and modified in the class itself. Python does not enforce private class attributes, however they can be denoted by the naming conventions. Python style standards advise using two leading underscores before a attribute name to denote it should be considered private.
-#### Example:
+
+**Example:**
 ```py
 self.__track_state = 0b0000  
 ```
 When creating a class for a ROS2 node, technically all member variables and functions should be private. However, since all attributes should be private to make the code cleaner for this project we have decided to **NOT** use leading double underscores within node classes.
-#### Example:
+
+**Example:**
 ```py
 self.claw_pub = self.create_publisher(Bool, "claw_state", 10)
 ```
@@ -173,13 +181,13 @@ Use 4 spaces per indentation level. See [Basic Editing: Indentation](https://cod
 - Within a class, methods should be separated by one blank line.
 - Lines with distinctly different function should be separated with a blank line
 
-
 ### 3.3 Continuation lines
 Continuation lines are single statements, broken up onto multiple lines. Lines may be broken without disrupting syntax when the content is enclosed within `()`, `{}`, or `[]`. Note: is recommended to enclose a statement which needs to be broken with parentheses than using the continuation operator.
 > Do not use a backslash for [explicit line continuation](https://docs.python.org/3/reference/lexical_analysis.html#explicit-line-joining).
 >
 > Instead, make use of Python’s [implicit line joining](https://docs.python.org/3/reference/lexical_analysis.html#implicit-line-joining) inside parentheses, brackets and braces. If necessary, you can add an extra pair of parentheses around an expression.
-#### Example:
+
+**Example:**
 ```py
 return min([(self.MAX_FWD_THRUST / thrust) if thrust > 0
     else ((self.MAX_REV_THRUST / thrust) if thrust < 0
@@ -187,7 +195,8 @@ return min([(self.MAX_FWD_THRUST / thrust) if thrust > 0
     for thrust in motor_values])
 ```
 Continuation lines should be indented another four spaces from normal indentation. Assignments of literal `set()`, `dict()` or `list()` should be broken with one element per line (see example)
-#### Example:
+
+**Example:**
 ```py
 self.buttons = {
     "claw":         StickyButton(),     # a
@@ -197,12 +206,13 @@ self.buttons = {
 
 ### 3.4 Spacing of operators
 There should should one space before and after operators.
-#### Example of good operator spacing 
+
+**Example of good operator spacing**
 ```py
 self.track_state = (self.track_state << 1 | cur_button_state) & 0b1111
 ```
 
-#### Example of poor operator spacing
+**Example of poor operator spacing**
 ```py
 self.track_state=(self.track_state<<1    | cur_button_state)&  0b1111
 ```
@@ -211,6 +221,8 @@ self.track_state=(self.track_state<<1    | cur_button_state)&  0b1111
 *See Section 3.3 for breaking literals onto multiple lines*
 
 In a dictionary, put no whitespace between each key and colon, and one space before the value. If the dictionary is separated on multiple lines, add enough tabs such that values align. 
+
+**Example:**
 ```py
 self.buttons = {
     "claw":         StickyButton(),     # a
@@ -218,7 +230,8 @@ self.buttons = {
 }
 ```
 For sets, tuples, and lists put no whitespace between the element and following comma, and one space between the comma and following element.
-#### Example:
+
+**Example:**
 ```py
 self.motor_positions = [    # [X, Y, Z] positions for each motors
     [0.19, 0.12, 0.047],    # Motor 0
@@ -234,7 +247,8 @@ self.motor_positions = [    # [X, Y, Z] positions for each motors
 
 ### Type hints spacing 
 For type annotations, there should be no whitespace between the variable name and colon, and one space before the type information. 
-#### Example:
+
+**Example:**
 ```py
 def __init__(self, parent: MainWindow, tab_names: list[str], style_sheet_file: str):
 ```
