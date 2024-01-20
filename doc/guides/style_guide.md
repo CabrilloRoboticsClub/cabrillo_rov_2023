@@ -49,8 +49,8 @@ class TabWidget(qtw.QWidget):
     # Class definition here
 ```
 
-### 1.3 Function docstrings
-Doc strings provide information about a user defined function. Every function should contain a doc string which adheres to the following format:
+### 1.3 Function docstring
+Docstrings provide information about a user defined function. Every function should contain a doc string which adheres to the following format:
 ```py
 """
 A short summary of the function's purpose
@@ -245,7 +245,7 @@ self.motor_positions = [    # [X, Y, Z] positions for each motors
 ]
 ```
 
-### Type hints spacing 
+### 3.6 Type hints spacing 
 For type annotations, there should be no whitespace between the variable name and colon, and one space before the type information. 
 
 **Example:**
@@ -253,7 +253,44 @@ For type annotations, there should be no whitespace between the variable name an
 def __init__(self, parent: MainWindow, tab_names: list[str], style_sheet_file: str):
 ```
 
+### 3.7 Additional whitespace guidelines
+See [PEP 8 – Style Guide for Python Code: White space in expressions and statements](https://peps.python.org/pep-0008/#whitespace-in-expressions-and-statements) for some additional guidelines regarding whitespace
+
+## 4 Strings
+### 4.1 Quote type
+Python treats double and single quote the same. For consistency, opt for double quotes when working on this project. Single quotes should only be used if necessary to nest strings within f-strings or to reference variable/type names within comments.
+
+**Examples:**
+```py
+# Basic usage of double quotes 
+TEAM_NUM = "PN03"
+```
+```py
+# Exception #1: Nested string within an f-string
+self.setStyleSheet(
+    f"""
+    QFrame {{
+        background-color: {COLOR_CONSTS['SURFACE_DRK']};
+        border-radius: 8px;
+    }}
+    """
+)
+```
+```py
+# Exception #2: Reference names within a comment
+"""
+Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
+provides the main application window space to overlay widgets
+"""
+```
+
+### 4.2 Use f-strings
+Use [f-strings](https://docs.python.org/3/tutorial/inputoutput.html#tut-f-strings) over [C-style](https://docs.python.org/3/tutorial/inputoutput.html#old-string-formatting) strings and [`str.format()`](https://docs.python.org/3/tutorial/inputoutput.html#the-string-format-method). Formatting strings is the process of combining predefined text with variable values into a human-readable sting message. Python has multiple methods of formatting strings, but it is recommended to use f-strings.
+> The combination of expressiveness, tenseness, and clarity provided by f-strings makes them the best built-in option for Python programmers. Anytime you need to format values into strings, choose f-stings over the alternatives.
+When possible, in this project opt for f-strings
+
 # References:
 1. [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
 2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
 3. [Effective Python, The Book: Second Edition](https://effectivepython.com/)
+4. [Python Documentation: The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
