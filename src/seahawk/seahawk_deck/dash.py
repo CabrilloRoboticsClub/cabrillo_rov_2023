@@ -11,6 +11,7 @@ from dash_widgets.numeric_data_widget import NumericDataWidget
 from dash_widgets.state_widget import StateWidget
 from dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from dash_widgets.countdown_widget import CountdownWidget
+from dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 
 # Size constants
 # MAX_WIDTH   = 1862
@@ -25,6 +26,7 @@ class MainWindow(qtw.QMainWindow):
     Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
     provides the main application window space to overlay widgets
     """
+
     def __init__(self):
         """
         Set up the 'MainWindow', overlay 'TabWidget's for multiple dash views, and display window
@@ -97,27 +99,35 @@ class TabWidget(qtw.QWidget):
             - IMU:              Displays the IMU readings as a turn/bank indicator (graphic to help keep constant acceleration)
             - Countdown:        Displays a countdown
         """
+        WIDGET_WIDTH = 180
+        WIDGET_HEIGHT = 160
+
         # Display feature state widget
         feat_state_widget = StateWidget(self.tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
-        feat_state_widget.resize(180, 150) # FIXME: This should probably not be a fixed value
+        feat_state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
         thrt_crv_widget = ThrtCrvWidget(self.tab_dict["Pilot"])
-        thrt_crv_widget.move(0, 140)
-        thrt_crv_widget.resize(180, 150)
+        thrt_crv_widget.move(0, 150)
+        thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
         temp_widget = NumericDataWidget(self.tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
-        temp_widget.move(0, 280)
-        temp_widget.resize(180, 150)
+        temp_widget.move(0, 300)
+        temp_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
         depth_widget = NumericDataWidget(self.tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
-        depth_widget.move(0, 420)
-        depth_widget.resize(180, 150)
+        depth_widget.move(0, 450)
+        depth_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
+        
+        # FIXME: Fix path
+        turn_bank_indicator_widget = TurnBankIndicator(self.tab_dict["Pilot"], PATH + "/dash_styling/numeric_data_widget.txt")
+        turn_bank_indicator_widget.move(0, 600)
+        turn_bank_indicator_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
         countdown_widget = CountdownWidget(self.tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
-        countdown_widget.move(0, 560)
-        countdown_widget.resize(180, 225)
+        countdown_widget.move(0, 750)
+        countdown_widget.resize(WIDGET_WIDTH, 210)
 
 
 def setup():
