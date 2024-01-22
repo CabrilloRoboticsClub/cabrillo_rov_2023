@@ -72,10 +72,10 @@ class TabWidget(qtw.QWidget):
         tabs = qtw.QTabWidget()
 
         # Create a dict in which the key is the provided name of the tab, and the value is a qtw.QWidget() object
-        self.__tab_dict = {name: qtw.QWidget() for name in tab_names}
+        self.tab_dict = {name: qtw.QWidget() for name in tab_names}
 
         # Add tabs
-        for name, tab in self.__tab_dict.items():
+        for name, tab in self.tab_dict.items():
             tabs.addTab(tab, name)
         
         # Apply css styling
@@ -88,33 +88,36 @@ class TabWidget(qtw.QWidget):
         self.create_pilot_tab()
     
     def create_pilot_tab(self):
+        """
+        Creates pilot dash tab with the following widgets:
+            - Feature states:   Displays the states of Bambi Mode (on/off), the claw (closed/open), CoM shift (engaged/not)
+            - Throttle curve:   Displays the activated throttle curve
+            - Temperature:      Displays the temperature reading
+            - Depth:            Displays the depth reading
+            - IMU:              Displays the IMU readings as a turn/bank indicator (graphic to help keep constant acceleration)
+            - Countdown:        Displays a countdown
+        """
         # Display feature state widget
-        feat_state_widget = StateWidget(self.__tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        feat_state_widget = StateWidget(self.tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         feat_state_widget.resize(180, 150) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        thrt_crv_widget = ThrtCrvWidget(self.__tab_dict["Pilot"])
+        thrt_crv_widget = ThrtCrvWidget(self.tab_dict["Pilot"])
         thrt_crv_widget.move(0, 140)
         thrt_crv_widget.resize(180, 150)
 
-        temp_widget = NumericDataWidget(self.__tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
+        temp_widget = NumericDataWidget(self.tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
         temp_widget.move(0, 280)
         temp_widget.resize(180, 150)
 
-        depth_widget = NumericDataWidget(self.__tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
+        depth_widget = NumericDataWidget(self.tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
         depth_widget.move(0, 420)
         depth_widget.resize(180, 150)
 
-        countdown_widget = CountdownWidget(self.__tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+        countdown_widget = CountdownWidget(self.tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
         countdown_widget.move(0, 560)
         countdown_widget.resize(180, 225)
-
-        # What to do when a tab is clicked
-        # self.__tabs.currentChanged.connect(self.__on_click)
-
-    # @qtc.pyqtSlot()
-    # def __on_click(self):
 
 
 def setup():
