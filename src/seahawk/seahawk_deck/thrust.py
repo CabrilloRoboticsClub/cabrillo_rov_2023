@@ -74,7 +74,6 @@ class Thrust(Node):
         ]
 
         self.declare_parameter("center_of_mass_offset", [0.0, 0.0, 0.0])
-        self.center_of_mass_offset = self.get_parameter("center_of_mass_offset").value
 
         self.add_on_set_parameters_callback(self.update_center_of_mass)
 
@@ -159,15 +158,14 @@ class Thrust(Node):
         Returns:
             SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
         """
-        try:
-            self.center_of_mass_offset = self.get_parameter("center_of_mass_offset").value
-            self.motor_config = self.generate_motor_config()
-            self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
-        except:
+        center_of_mass_offset = self.get_parameter("center_of_mass_offset").value
+        if len(center_of_mass_offset) != 3:
             return SetParametersResult(successful=False)
+        self.motor_config = self.generate_motor_config(center_of_mass_offset)
+        self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
         return SetParametersResult(successful=True)
 
-    def generate_motor_config(self):
+    def generate_motor_config(self, center_of_mass_offset):
         """
         Generate the motor configuration matrix based on motor positions and thrust. Allows for
         a shifting center of mass, so the motor configuration can be regenerated dynamically to
@@ -176,7 +174,7 @@ class Thrust(Node):
         Returns:
             Motor configuration matrix based on motor orientation, position, and location of center of mass
         """
-        shifted_positons = [(np.subtract(motor, self.center_of_mass_offset).tolist())
+        shifted_positons = [(np.subtract(motor, center_of_mass_offset).tolist())
                             for motor in self.motor_positions]
         torques = np.cross(shifted_positons, self.motor_thrusts)
 
