@@ -1,0 +1,57 @@
+QLabel[accessibleName="Title"] {{
+    qproperty-alignment: AlignCenter;
+    padding: 5px;
+    color: {SECONDARY_TEXT};
+    max-height: 25px;
+}}
+
+QLabel[accessibleName="Timer Display"]{{
+    qproperty-alignment: AlignCenter;
+    padding: 5px;
+    color: {ACCENT_LIGHT};
+    font: bold;
+    font-size: 36px
+}}
+
+QFrame {{
+    background-color: {SURFACE_DRK};
+	border-radius: 8px;
+}}
+
+QPushButton {{
+    background-color: {SURFACE_BRIGHT};
+    font: bold 14px;
+    padding: 6px;
+    border-radius: 5px;
+    color: {SECONDARY_TEXT};
+}}
+
+QPushButton::pressed {{
+    background-color: {ACCENT_LIGHT};
+    border-style: inset;
+    color: {PRIMARY_TEXT};
+}}
+
+QPushButton::hover {{
+    color: {PRIMARY_TEXT};
+}}
+
+QSpinBox {{
+    background: {SURFACE_BRIGHT};
+    selection-background-color: {ACCENT_LIGHT};
+    padding: 6px; /* make room for the arrows */
+    border-radius: 5px;
+    color: {SECONDARY_TEXT};
+}}
+
+QSpinBox::up-arrow {{
+    image: url(dash_styling/countdown_up.svg);
+}}
+
+QSpinBox::down-arrow {{
+    image: url(dash_styling/countdown_down.svg);
+}}
+
+QSpinBox::hover {{
+    border : 2px solid {ACCENT_LIGHT};
+}}
