@@ -108,7 +108,7 @@ class TabWidget(qtw.QWidget):
 
         countdown_widget = CountdownWidget(self.__tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
         countdown_widget.move(0, 560)
-        countdown_widget.resize(180, 200)
+        countdown_widget.resize(180, 225)
 
         # What to do when a tab is clicked
         # self.__tabs.currentChanged.connect(self.__on_click)
