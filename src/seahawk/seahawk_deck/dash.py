@@ -1,17 +1,21 @@
 import sys
 from os import environ, path
+from threading import Thread
 
 from PyQt5 import QtWidgets as qtw
 # from PyQt5 import QtGui as qtg
 # from PyQt5 import QtCore as qtc
+import rclpy
+from rclpy.node import Node
 
-# from seahawk_msgs.msg import InputStates
 from dash_styling.color_palette import COLOR_CONSTS
+from dash_widgets.countdown_widget import CountdownWidget
 from dash_widgets.numeric_data_widget import NumericDataWidget
 from dash_widgets.state_widget import StateWidget
 from dash_widgets.throttle_curve_widget import ThrtCrvWidget
-from dash_widgets.countdown_widget import CountdownWidget
 from dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_msgs.msg import InputStates
+
 
 # Size constants
 # MAX_WIDTH   = 1862
@@ -104,8 +108,8 @@ class TabWidget(qtw.QWidget):
         WIDGET_HEIGHT = 160
 
         # Display feature state widget
-        feat_state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
-        feat_state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
+        self.feat_state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        self.feat_state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
@@ -131,10 +135,20 @@ class TabWidget(qtw.QWidget):
         countdown_widget.resize(WIDGET_WIDTH, 210)
 
 
-def setup():
-    """
-    Performs setup procedures to prepare to launch the dash windows
+class Dash(Node):
+    def __init__(self, pilot_dash, copilot_dash):
+        super().__init__("Dash")
+        self.pilot_dash = pilot_dash
+        self.copilot_dash = copilot_dash
+        self.pilot_input_sub = self.create_subscription(InputStates, "input_state", self.callback, 10)
 
+    def callback(self):
+        # Uhhhhhhhh 
+        self.pilot_dash.tab_widget.tab_dict["pilot"].feat_state_widget.update_state("Bambi Mode")
+
+
+def fix_term():
+    """
     If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
     This is automated in this function
     """
@@ -142,13 +156,30 @@ def setup():
         environ.pop("GTK_PATH")
 
 
-def main():
-    setup()
+def main(args=None):
+    # Setup dashboards
+    fix_term()
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
-    # copilot_dash = MainWindow()
+    copilot_dash = MainWindow()
+
+    # Setup ROS node
+    rclpy.init(args=args)
+    dash_node = Dash(pilot_dash, copilot_dash)
+
+    # Threading allows the process to display the dash and run the node at the same time
+    # Create and start a thread for spinning the node
+    spinner = Thread(target=rclpy.spin, args=(dash_node,))
+    spinner.start()
+
+    # Kill node
+    rclpy.shutdown()
+
+    # Delays a program's flow of execution until spinner is finished its process
+    spinner.join()
+
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

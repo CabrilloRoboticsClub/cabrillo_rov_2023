@@ -89,6 +89,12 @@ def generate_launch_description():
             output='screen'
         ),
         Node(
+            package='seahawk',
+            executable='dash',
+            name='dash',
+            output='screen'
+        ),
+        Node(
             package='joy',
             executable='joy_node',
             name='joy_node',
