@@ -39,12 +39,12 @@ class MainWindow(qtw.QMainWindow):
         # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
 
         # Create tabs
-        tab_widget = TabWidget(self, ["Pilot", "Co-Pilot", "VPF", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
+        tab_widget = TabWidget(self, "dash_styling/tab_widget.txt")
         self.setCentralWidget(tab_widget)
 
         # Display window
         # self.show()
-        self.showMaximized() # Uncomment in final
+        self.showMaximized()
 
 
 class TabWidget(qtw.QWidget):
@@ -56,7 +56,7 @@ class TabWidget(qtw.QWidget):
     show a different page by clicking on its tab
     """
 
-    def __init__(self, parent: MainWindow, tab_names: list[str], style_sheet_file: str):
+    def __init__(self, parent: MainWindow, style_sheet_file: str):
         """
         Initialize tabs
         Args:
@@ -74,6 +74,7 @@ class TabWidget(qtw.QWidget):
         tabs = qtw.QTabWidget()
 
         # Create a dict in which the key is the provided name of the tab, and the value is a qtw.QWidget() object
+        tab_names = ["Pilot", "Co-Pilot", "VPF", "Debug", "Cameras", "Control Mapping"]
         self.tab_dict = {name: qtw.QWidget() for name in tab_names}
 
         # Add tabs
@@ -87,9 +88,9 @@ class TabWidget(qtw.QWidget):
         # Add tabs to widget
         layout.addWidget(tabs)
 
-        self.create_pilot_tab()
+        self.create_pilot_tab(self.tab_dict["Pilot"])
     
-    def create_pilot_tab(self):
+    def create_pilot_tab(self, tab):
         """
         Creates pilot dash tab with the following widgets:
             - Feature states:   Displays the states of Bambi Mode (on/off), the claw (closed/open), CoM shift (engaged/not)
@@ -103,29 +104,29 @@ class TabWidget(qtw.QWidget):
         WIDGET_HEIGHT = 160
 
         # Display feature state widget
-        feat_state_widget = StateWidget(self.tab_dict["Pilot"], ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        feat_state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         feat_state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        thrt_crv_widget = ThrtCrvWidget(self.tab_dict["Pilot"])
+        thrt_crv_widget = ThrtCrvWidget(tab)
         thrt_crv_widget.move(0, 150)
         thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        temp_widget = NumericDataWidget(self.tab_dict["Pilot"], "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
+        temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
         temp_widget.move(0, 300)
         temp_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        depth_widget = NumericDataWidget(self.tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
+        depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
         depth_widget.move(0, 450)
         depth_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
         
         # FIXME: Fix path
-        turn_bank_indicator_widget = TurnBankIndicator(self.tab_dict["Pilot"], PATH + "/dash_styling/numeric_data_widget.txt")
+        turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
         turn_bank_indicator_widget.move(0, 600)
         turn_bank_indicator_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        countdown_widget = CountdownWidget(self.tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+        countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
         countdown_widget.move(0, 750)
         countdown_widget.resize(WIDGET_WIDTH, 210)
 
