@@ -10,6 +10,7 @@ from dash_styling.color_palette import COLOR_CONSTS
 from dash_widgets.numeric_data_widget import NumericDataWidget
 from dash_widgets.state_widget import StateWidget
 from dash_widgets.throttle_curve_widget import ThrtCrvWidget
+from dash_widgets.countdown_widget import CountdownWidget
 
 # Size constants
 # MAX_WIDTH   = 1862
@@ -34,9 +35,9 @@ class MainWindow(qtw.QMainWindow):
         self.setWindowTitle("SeaHawk II Dashboard")
         self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
         # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
-        
+
         # Create tabs
-        tab_widget = TabWidget(self, ["Pilot", "Co-Pilot", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
+        tab_widget = TabWidget(self, ["Pilot", "Co-Pilot", "VPF", "Debug", "Cameras", "Control Mapping"], "dash_styling/tab_widget.txt")
         self.setCentralWidget(tab_widget)
 
         # Display window
@@ -104,6 +105,10 @@ class TabWidget(qtw.QWidget):
         depth_widget = NumericDataWidget(self.__tab_dict["Pilot"], "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
         depth_widget.move(0, 420)
         depth_widget.resize(180, 150)
+
+        countdown_widget = CountdownWidget(self.__tab_dict["Pilot"], PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+        countdown_widget.move(0, 560)
+        countdown_widget.resize(180, 200)
 
         # What to do when a tab is clicked
         # self.__tabs.currentChanged.connect(self.__on_click)
