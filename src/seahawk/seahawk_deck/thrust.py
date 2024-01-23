@@ -77,7 +77,7 @@ class Thrust(Node):
 
         self.add_on_set_parameters_callback(self.update_center_of_mass)
 
-        self.motor_config = self.generate_motor_config()
+        self.motor_config = self.generate_motor_config(self.get_parameter("center_of_mass_offset").value)
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         self.subscription = self.create_subscription(Twist, "desired_twist", self._callback, 10)
