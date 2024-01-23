@@ -20,9 +20,6 @@ class NumericDataWidget(qtw.QWidget):
         """
         super().__init__(parent)
 
-        self.__sensor_name = qtw.QLabel()
-        self.__sensor_data = qtw.QLabel()
-
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
         self.setLayout(layout_outer)
@@ -35,24 +32,28 @@ class NumericDataWidget(qtw.QWidget):
         layout_inner = qtw.QVBoxLayout(frame)
         frame.setLayout(layout_inner)
 
+        # Create label widgets
+        self.header = qtw.QLabel()
+        self.numeric_data = qtw.QLabel()
+
         # Set text on widget 
-        self.__sensor_name.setText(sensor_name)
-        self.__sensor_data.setText("n/a")
+        self.header.setText(sensor_name)
+        self.numeric_data.setText("n/a")
 
         # Set an accessible name for each 
-        self.__sensor_name.setAccessibleName("name")
-        self.__sensor_data.setAccessibleName("data")
-        layout_inner.addWidget(self.__sensor_name)
-        layout_inner.addWidget(self.__sensor_data)
+        self.header.setAccessibleName("name")
+        self.numeric_data.setAccessibleName("data")
+        layout_inner.addWidget(self.header)
+        layout_inner.addWidget(self.numeric_data)
        
         with open(style_sheet_file) as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         
-    def update_data(self, data):
+    def update_data(self, data: str):
         """
         Update data displayed by widget
 
         Args:
             data: New data to display
         """
-        self.__sensor_data.setText(data)
+        self.numeric_data.setText(data)
