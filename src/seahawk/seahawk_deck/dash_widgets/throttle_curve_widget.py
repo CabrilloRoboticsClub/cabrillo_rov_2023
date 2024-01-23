@@ -3,8 +3,9 @@ from os import path
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from dash_styling.color_palette import COLOR_CONSTS
+from seahawk_deck.dash_styling.color_palette import DARK_MODE
 
+COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
 class ThrtCrvWidget(qtw.QWidget):

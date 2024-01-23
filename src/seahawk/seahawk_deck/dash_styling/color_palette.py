@@ -1,4 +1,8 @@
-COLOR_CONSTS = {
+from os import path
+
+PATH = path.dirname(__file__)
+
+DARK_MODE = {
     "MAIN_WIN_BKG"      : "#0c0c0f",
     "INACTIVE_TAB_BKG"  : "#141416",
     "INACTIVE_TAB_BD"   : "#2d2938",
@@ -9,5 +13,7 @@ COLOR_CONSTS = {
     "ACCENT_DRK"        : "#5c4ba3",
     "PRIMARY_TEXT"      : "#fff0f5",
     "SECONDARY_TEXT"    : "#8f8c95",
-    "WARNING"           : "#EE4B2B"
+    "WARNING"           : "#EE4B2B",
+    "DOWN_ARROW"        : f"{PATH}/countdown_down.svg",
+    "UP_ARROW"          : f"{PATH}/countdown_up.svg",
 }

@@ -45,11 +45,11 @@ QSpinBox {{
 }}
 
 QSpinBox::up-arrow {{
-    image: url(dash_styling/countdown_up.svg);
+    image: url({UP_ARROW});
 }}
 
 QSpinBox::down-arrow {{
-    image: url(dash_styling/countdown_down.svg);
+    image: url({DOWN_ARROW});
 }}
 
 QSpinBox::hover {{

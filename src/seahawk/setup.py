@@ -7,7 +7,7 @@ package_name = 'seahawk'
 setup(
     name=package_name,
     version='0.0.1',
-    packages=['seahawk_deck', 'seahawk_rov'],
+    packages=['seahawk_deck', 'seahawk_rov', 'seahawk_deck.dash_styling', 'seahawk_deck.dash_widgets'],
     data_files=[
         ('share/ament_index/resource_index/packages', ['resources/' + package_name]),
         (os.path.join('share', package_name), ['package.xml']),

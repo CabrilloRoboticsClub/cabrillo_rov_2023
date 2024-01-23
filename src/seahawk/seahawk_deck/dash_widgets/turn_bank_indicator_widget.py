@@ -1,6 +1,8 @@
 from PyQt5 import QtWidgets as qtw
 
-from dash_styling.color_palette import COLOR_CONSTS
+from seahawk_deck.dash_styling.color_palette import DARK_MODE
+
+COLOR_CONSTS = DARK_MODE
 
 class TurnBankIndicator(qtw.QWidget):
     """

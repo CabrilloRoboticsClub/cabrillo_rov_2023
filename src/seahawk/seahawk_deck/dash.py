@@ -8,13 +8,14 @@ from PyQt5 import QtWidgets as qtw
 import rclpy
 from rclpy.node import Node
 
-from dash_styling.color_palette import COLOR_CONSTS
-from dash_widgets.countdown_widget import CountdownWidget
-from dash_widgets.numeric_data_widget import NumericDataWidget
-from dash_widgets.state_widget import StateWidget
-from dash_widgets.throttle_curve_widget import ThrtCrvWidget
-from dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_deck.dash_styling.color_palette import DARK_MODE
+from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
+from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
+from seahawk_deck.dash_widgets.state_widget import StateWidget
+from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
+from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_msgs.msg import InputStates
+from std_msgs.msg import String
 
 
 # Size constants
@@ -22,6 +23,8 @@ from seahawk_msgs.msg import InputStates
 # MAX_HEIGHT  = 1053
 MAX_WIDTH   = 1000  # Temp for debugging
 MAX_HEIGHT  = 600  # Temp for debugging
+
+COLOR_CONSTS = DARK_MODE
 
 PATH = path.dirname(__file__)
 
@@ -43,8 +46,8 @@ class MainWindow(qtw.QMainWindow):
         # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
 
         # Create tabs
-        tab_widget = TabWidget(self, "dash_styling/tab_widget.txt")
-        self.setCentralWidget(tab_widget)
+        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt")
+        self.setCentralWidget(self.tab_widget)
 
         # Display window
         # self.show()
@@ -63,6 +66,7 @@ class TabWidget(qtw.QWidget):
     def __init__(self, parent: MainWindow, style_sheet_file: str):
         """
         Initialize tabs
+
         Args:
             parent: Window where to place tabs
             tab_names: List of tab names
@@ -136,15 +140,10 @@ class TabWidget(qtw.QWidget):
 
 
 class Dash(Node):
-    def __init__(self, pilot_dash, copilot_dash):
+    def __init__(self):
         super().__init__("Dash")
-        self.pilot_dash = pilot_dash
-        self.copilot_dash = copilot_dash
-        self.pilot_input_sub = self.create_subscription(InputStates, "input_state", self.callback, 10)
-
     def callback(self):
-        # Uhhhhhhhh 
-        self.pilot_dash.tab_widget.tab_dict["pilot"].feat_state_widget.update_state("Bambi Mode")
+        self.pilot_dash.tab_widget.tab_dict["Pilot"].feat_state_widget.update_state("Bambi Mode")
 
 
 def fix_term():
@@ -157,20 +156,21 @@ def fix_term():
 
 
 def main(args=None):
-    # Setup dashboards
-    fix_term()
-    app = qtw.QApplication([])
-    pilot_dash = MainWindow()
-    copilot_dash = MainWindow()
-
     # Setup ROS node
     rclpy.init(args=args)
-    dash_node = Dash(pilot_dash, copilot_dash)
+    dash_node = Dash()
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for spinning the node
     spinner = Thread(target=rclpy.spin, args=(dash_node,))
     spinner.start()
+
+    # Setup dashboards
+    fix_term()
+    app = qtw.QApplication([])
+    pilot_dash = MainWindow()
+    # copilot_dash = MainWindow()
+    
 
     # Kill node
     rclpy.shutdown()
