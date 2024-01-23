@@ -15,8 +15,6 @@ from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_msgs.msg import InputStates
-from std_msgs.msg import String
-
 
 # Size constants
 # MAX_WIDTH   = 1862
@@ -117,33 +115,93 @@ class TabWidget(qtw.QWidget):
         # feat_state_widget.update_state("Claw")
 
         # Display throttle curve widget
-        thrt_crv_widget = ThrtCrvWidget(tab)
-        thrt_crv_widget.move(0, 150)
-        thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
+        self.thrt_crv_widget = ThrtCrvWidget(tab)
+        self.thrt_crv_widget.move(0, 150)
+        self.thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
-        temp_widget.move(0, 300)
-        temp_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
+        self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
+        self.temp_widget.move(0, 300)
+        self.temp_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
-        depth_widget.move(0, 450)
-        depth_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
+        self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
+        self.depth_widget.move(0, 450)
+        self.depth_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
         
-        # FIXME: Fix path
-        turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
-        turn_bank_indicator_widget.move(0, 600)
-        turn_bank_indicator_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
+        # FIXME: Fix path when a updated css file gets made
+        self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
+        self.turn_bank_indicator_widget.move(0, 600)
+        self.turn_bank_indicator_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
 
-        countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
-        countdown_widget.move(0, 750)
-        countdown_widget.resize(WIDGET_WIDTH, 210)
+        self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+        self.countdown_widget.move(0, 750)
+        self.countdown_widget.resize(WIDGET_WIDTH, 210)
+    
+    def update_pilot_tab_input_states(self, feat_state_update: list[str]=None, thrt_crv_update: str=None):
+        """
+        Update gui display of input states
+
+        Args:
+            feat_state_update: List of values to update for the feature widget
+            thrt_crv_update: Updated value for throttle curve
+        """
+        if feat_state_update is not None:
+            for feature in feat_state_update:
+               self.feat_state_widget.update_state(feature)
+        if thrt_crv_update is not None:
+            self.thrt_crv_widget.update_thrt_crv(thrt_crv_update)
+    
+    def update_pilot_tab_sensors(self, temp_update: str=None, depth_update: str=None):
+        """
+        Update gui display of sensors
+
+        Args:
+            temp_update: List of values to update for the feature widget
+            depth_update: Updated choice of throttle curve
+        """
+        if temp_update is not None:
+            self.temp_widget.update_data(temp_update)
+        if depth_update is not None:
+            self.depth_widget.update_data(depth_update)
 
 
 class Dash(Node):
-    def __init__(self):
-        super().__init__("Dash")
-    def callback(self):
-        self.pilot_dash.tab_widget.tab_dict["Pilot"].feat_state_widget.update_state("Bambi Mode")
+    """
+    Class that displays the PyQt dashboard as ROS node. Widgets on the dash are updated
+    with values from ROS topics
+    """
+
+    def __init__(self, pilot_dash):
+        """
+        Initialized `dash` node
+        """
+        super().__init__("dash")
+        self.pilot_dash = pilot_dash
+        self.subscription = self.create_subscription(InputStates,"input_states", self.callback_input_states, 10)
+        # self.subscription = self.create_subscription(Sensors, "sensor_data", self.callback_sensors, 10)
+    
+    def callback_input_states(self, input_state_msg: InputStates):
+        """
+        For every message published to the 'input-states' topic, update the relevant values on the gui
+
+        Updates dash representation of:
+            - Bambi mode
+            - Claw state
+            - CoM shift
+            - Throttle curve option
+        Based on values from 'input-states' topic
+
+        Args:
+            input_state_msg: Message of type 'InputStates' from the 'input-states' topic
+        """
+        # input_state_msg.bambi_mode
+        # input_state_msg.claw_state
+        # input_state_msg.com_shift
+        # input_state_msg.throttle_curve
+        self.pilot_dash.tab_widget.update_pilot_tab_input_states(feat_state_update=["Claw"])
+    
+    # def callback_sensors(self, sensors_msg: Sensors):
+        # TODO: We do not have sensors yet so this cannot be written
+        # pass
 
 
 def fix_term():
@@ -156,21 +214,20 @@ def fix_term():
 
 
 def main(args=None):
-    # Setup ROS node
-    rclpy.init(args=args)
-    dash_node = Dash()
-
-    # Threading allows the process to display the dash and run the node at the same time
-    # Create and start a thread for spinning the node
-    spinner = Thread(target=rclpy.spin, args=(dash_node,))
-    spinner.start()
-
     # Setup dashboards
     fix_term()
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
     # copilot_dash = MainWindow()
-    
+
+    # Setup ROS node
+    rclpy.init(args=args)
+    dash_node = Dash(pilot_dash)
+
+    # Threading allows the process to display the dash and run the node at the same time
+    # Create and start a thread for spinning the node
+    spinner = Thread(target=rclpy.spin, args=(dash_node,))
+    spinner.start()
 
     # Kill node
     rclpy.shutdown()
