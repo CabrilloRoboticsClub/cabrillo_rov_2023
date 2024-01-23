@@ -1,7 +1,7 @@
 """
-input_xbox_one.py
+pilot_input.py
 
-Handle input from an Xbox One controller
+Handle all pilot input
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -25,7 +25,7 @@ cabrillorobotics@gmail.com
 # For reading argv
 import sys 
 
-# ROS client libary imports
+# ROS client library imports
 import rclpy
 from rclpy.node import Node 
 
@@ -33,7 +33,6 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
-
 
 class StickyButton():
     """
@@ -77,21 +76,28 @@ class StickyButton():
         self.__track_state = 0b0000
 
 
-class InputXboxOne(Node):
+class PilotInput(Node):
     """
     Class that implements the joystick input
     """
 
     def __init__(self):
         """
-        Initialize 'input_xbox_one' node
+        Initialize 'pilot_input' node
         """
-        super().__init__("input_xbox_one")
+        super().__init__("pilot_input")
 
+        # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
         self.__claw_pub = self.create_publisher(Bool, "claw_state", 10)
-        
+
+        # Create and store parameter which determines which throttle curve
+        # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
+        self.declare_parameter("throttle_curve_choice", "0")
+        self.__throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
+
+        # Button mapping
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
@@ -145,24 +151,20 @@ class InputXboxOne(Node):
             "reset":            joy_msg.buttons[8], # xbox
         }
 
-
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"] # Z (forwards)
-        twist_msg.linear.y  = -controller["linear_y"] # Y (sideways)
-        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2) # Z (depth)
-
-        # Roll is activated at a constant 0.5 throttle if either the left or right button is pressed
-        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5
-    
-        twist_msg.angular.y = controller["angular_y"] # P (pitch)
-        twist_msg.angular.z = -controller["angular_z"] # Y (yaw)
+        twist_msg.linear.x  = controller["linear_x"]    # forwards
+        twist_msg.linear.y  = -controller["linear_y"]   # sideways
+        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2)       # depth
+        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5     # roll (const +/- 0.5 thrust)
+        twist_msg.angular.y = controller["angular_y"]   # pitch
+        twist_msg.angular.z = -controller["angular_z"]  # yaw
 
         # Bambi mode cuts all twist values in half for more precise movements
         if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
-            twist_msg.linear.x /= 2
-            twist_msg.linear.y /= 2
-            twist_msg.linear.z /= 2
+            twist_msg.linear.x  /= 2
+            twist_msg.linear.y  /= 2
+            twist_msg.linear.z  /= 2
             twist_msg.angular.x /= 2
             twist_msg.angular.y /= 2
             twist_msg.angular.z /= 2
@@ -184,7 +186,7 @@ class InputXboxOne(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    rclpy.spin(InputXboxOne())
+    rclpy.spin(PilotInput())
     rclpy.shutdown()
 
 

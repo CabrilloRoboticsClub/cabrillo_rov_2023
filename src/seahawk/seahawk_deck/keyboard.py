@@ -1,5 +1,5 @@
 """
-input_keyboard.py
+keyboard.py
 
 Take input from the keyboard and republish it to topic 'keystroke'
 
@@ -36,16 +36,16 @@ import threading
 import sys, tty, os, termios
 
 
-class InputKeyboard(Node):
+class Keyboard(Node):
     """
     Class that actively reads keyboard input
     """
 
     def __init__(self, settings):
         """
-        Initialize 'input_keyboard' node
+        Initialize 'keyboard' node
         """
-        super().__init__("input_keyboard")
+        super().__init__("keyboard")
     
         # Create publisher to topic 'key_press'
         self.__key_pub = self.create_publisher(String, "keystroke", 10)
@@ -97,7 +97,7 @@ def main(args=None):
     orig_settings = termios.tcgetattr(sys.stdin)
 
     # Instance of InputKeyboard()
-    node = InputKeyboard(orig_settings)
+    node = Keyboard(orig_settings)
 
     # Threading allows the process to look for input and run the node at the same time
     # Create and start a thread for spinning the node
