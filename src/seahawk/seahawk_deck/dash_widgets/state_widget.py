@@ -27,9 +27,6 @@ class StateWidget(qtw.QWidget):
         # Import state images
         self.__on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
         self.__off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
-        
-        # Track if feature is engaged
-        self.__prev_state = {name: False for name in feature_names}
 
         # Create a dictionary of label objects
         self.__label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
@@ -60,21 +57,16 @@ class StateWidget(qtw.QWidget):
         with open(style_sheet_file) as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
 
-    def update_state(self, feature: str):
+    def update_state(self, states: dict[str: bool]):
         """
-        Update graphical representation of the feature state if the state has changed
+        Update graphical representation of the feature state
 
         Args:
-            The name of the feature to update
+            Dictionary in which the name of the feature is the key and the state
+            to update it to is the value
         """
-        # If last recorded feature state was on, and the function was called because of an updated state,
-        # then the graphic is updated to the off state
-        if self.__prev_state[feature]: 
-            self.__label_dict[feature]["state"].setPixmap(self.__off_img)
-            self.__prev_state[feature] = False
-        
-        # If last recorded feature state was off, and the function was called because of an updated state,
-        # then the graphic is updated to the on state
-        else:
-            self.__label_dict[feature]["state"].setPixmap(self.__on_img)
-            self.__prev_state[feature] = True
+        for feature, state_of_feature in states.items():
+            if state_of_feature:
+                self.__label_dict[feature]["state"].setPixmap(self.__on_img)
+            else:
+                self.__label_dict[feature]["state"].setPixmap(self.__off_img)       
