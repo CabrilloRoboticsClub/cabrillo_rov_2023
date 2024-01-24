@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets as qtw
 # from PyQt5 import QtGui as qtg
 # from PyQt5 import QtCore as qtc
 import rclpy
+from rclpy.node import Node 
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -151,15 +152,20 @@ def fix_term():
         environ.pop("GTK_PATH")
 
 
-def run_node(dash, args):
+class Dash(Node):
     """
     Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
     """
-    rclpy.init(args=args)
-    dash_node = rclpy.create_node("dash")
 
-
-    def callback_input_states(input_state_msg: InputStates,): 
+    def __init__(self, dash_window):
+        """
+        Initialize 'dash' node
+        """
+        super().__init__("dash")
+        self.dash_window = dash_window
+        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
+    
+    def callback_input_states(self, input_state_msg: InputStates): 
         """
         For every message published to the 'input_states' topic, update the relevant values on the gui 
 
@@ -182,13 +188,7 @@ def run_node(dash, args):
             },
             "throttle_curve":   int(input_state_msg.throttle_curve),
         }
-        dash.tab_widget.update_pilot_tab_input_states(input_state_dict)
-
-
-    # Create a subscription to 'input_state' and call the `callback_input_states` function for every message
-    dash_node.create_subscription(InputStates, "input_states", callback_input_states, 10)
-    rclpy.spin(dash_node)
-    rclpy.shutdown()
+        self.dash_window.tab_widget.update_pilot_tab_input_states(input_state_dict)
 
 
 def main(args=None):
@@ -196,10 +196,14 @@ def main(args=None):
     fix_term()
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
+    
+    # Setup node
+    rclpy.init(args=args)
+    dash_node = Dash(pilot_dash)
 
     # Threading allows the process to display the dash and run the node at the same time
-    # Create and start a thread for run_node the function which creates and runs the node
-    node_thread = Thread(target=run_node, args=(pilot_dash, args))
+    # Create and start a thread for rclpy.spin function so the node spins while the dash is running
+    node_thread = Thread(target=rclpy.spin, args=(dash_node,))
     node_thread.start()
 
     sys.exit(app.exec_())
