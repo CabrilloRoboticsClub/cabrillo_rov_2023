@@ -7,6 +7,9 @@ from PyQt5 import QtWidgets as qtw
 # from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node
+from rclpy.subscription import Subscription
+import threading
+
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -110,9 +113,9 @@ class TabWidget(qtw.QWidget):
         WIDGET_HEIGHT = 160
 
         # Display feature state widget
-        self.feat_state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
-        self.feat_state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
-        # feat_state_widget.update_state("Claw")
+        self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
+        self.state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
+        # state_widget.update_state("Claw")
 
         # Display throttle curve widget
         self.thrt_crv_widget = ThrtCrvWidget(tab)
@@ -136,7 +139,7 @@ class TabWidget(qtw.QWidget):
         self.countdown_widget.move(0, 750)
         self.countdown_widget.resize(WIDGET_WIDTH, 210)
     
-    def update_pilot_tab_input_states(self, feat_state_update: list[str]=None, thrt_crv_update: str=None):
+    def update_pilot_tab_input_states(self, state_to_update: str):
         """
         Update gui display of input states
 
@@ -144,64 +147,8 @@ class TabWidget(qtw.QWidget):
             feat_state_update: List of values to update for the feature widget
             thrt_crv_update: Updated value for throttle curve
         """
-        if feat_state_update is not None:
-            for feature in feat_state_update:
-               self.feat_state_widget.update_state(feature)
-        if thrt_crv_update is not None:
-            self.thrt_crv_widget.update_thrt_crv(thrt_crv_update)
-    
-    def update_pilot_tab_sensors(self, temp_update: str=None, depth_update: str=None):
-        """
-        Update gui display of sensors
-
-        Args:
-            temp_update: List of values to update for the feature widget
-            depth_update: Updated choice of throttle curve
-        """
-        if temp_update is not None:
-            self.temp_widget.update_data(temp_update)
-        if depth_update is not None:
-            self.depth_widget.update_data(depth_update)
-
-
-class Dash(Node):
-    """
-    Class that displays the PyQt dashboard as ROS node. Widgets on the dash are updated
-    with values from ROS topics
-    """
-
-    def __init__(self, pilot_dash):
-        """
-        Initialized `dash` node
-        """
-        super().__init__("dash")
-        self.pilot_dash = pilot_dash
-        self.subscription = self.create_subscription(InputStates,"input_states", self.callback_input_states, 10)
-        # self.subscription = self.create_subscription(Sensors, "sensor_data", self.callback_sensors, 10)
-    
-    def callback_input_states(self, input_state_msg: InputStates):
-        """
-        For every message published to the 'input-states' topic, update the relevant values on the gui
-
-        Updates dash representation of:
-            - Bambi mode
-            - Claw state
-            - CoM shift
-            - Throttle curve option
-        Based on values from 'input-states' topic
-
-        Args:
-            input_state_msg: Message of type 'InputStates' from the 'input-states' topic
-        """
-        # input_state_msg.bambi_mode
-        # input_state_msg.claw_state
-        # input_state_msg.com_shift
-        # input_state_msg.throttle_curve
-        self.pilot_dash.tab_widget.update_pilot_tab_input_states(feat_state_update=["Claw"])
-    
-    # def callback_sensors(self, sensors_msg: Sensors):
-        # TODO: We do not have sensors yet so this cannot be written
-        # pass
+        self.state_widget.update_state(state_to_update["state_widget"])
+        self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
 
 
 def fix_term():
@@ -213,27 +160,56 @@ def fix_term():
         environ.pop("GTK_PATH")
 
 
+def run_node(dash, args):
+    """
+    Creates and runs a ROS node which updates the PyQt dashboard from ROS topics
+    """
+    rclpy.init(args=args)
+    dash_node = rclpy.create_node("dash")
+
+
+    def callback_input_states(input_state_msg: InputStates,): 
+        """
+        For every message published to the 'input_states' topic, update the relevant values on the gui 
+
+        Updates dash representation of:
+            - Bambi mode
+            - Claw state 
+            - CoM shift
+            - Throttle curve option
+        Based on values from 'input_states' topic
+
+        Args:
+            input_state_msg: Message from the type 'InputStates' from the 'input_states' topic
+        """
+        # Map the values sent from 'input_states' to feature names
+        input_state_dict = {
+            "state_widget": {
+                "Bambi Mode":   input_state_msg.bambi_mode,
+                "Claw":         input_state_msg.claw_state,
+                "CoM Shift":    input_state_msg.com_shift,
+            },
+            "throttle_curve":   int(input_state_msg.throttle_curve),
+        }
+        dash.tab_widget.update_pilot_tab_input_states(input_state_dict)
+
+
+    # Create a subscription to 'input_state' and call the `callback_input_states` function for every message
+    dash_node.create_subscription(InputStates, "input_states", callback_input_states, 10)
+    rclpy.spin(dash_node)
+    rclpy.shutdown()
+
+
 def main(args=None):
     # Setup dashboards
     fix_term()
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
-    # copilot_dash = MainWindow()
-
-    # Setup ROS node
-    rclpy.init(args=args)
-    dash_node = Dash(pilot_dash)
 
     # Threading allows the process to display the dash and run the node at the same time
-    # Create and start a thread for spinning the node
-    spinner = Thread(target=rclpy.spin, args=(dash_node,))
-    spinner.start()
-
-    # Kill node
-    rclpy.shutdown()
-
-    # Delays a program's flow of execution until spinner is finished its process
-    spinner.join()
+    # Create and start a thread for run_node the function which creates and runs the node
+    node_thread = threading.Thread(target=run_node, args=(pilot_dash, args))
+    node_thread.start()
 
     sys.exit(app.exec_())
 
