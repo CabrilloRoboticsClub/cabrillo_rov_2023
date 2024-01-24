@@ -6,10 +6,6 @@ from PyQt5 import QtWidgets as qtw
 # from PyQt5 import QtGui as qtg
 # from PyQt5 import QtCore as qtc
 import rclpy
-from rclpy.node import Node
-from rclpy.subscription import Subscription
-import threading
-
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -19,20 +15,18 @@ from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_msgs.msg import InputStates
 
-# Size constants
+# Constants
 # MAX_WIDTH   = 1862
 # MAX_HEIGHT  = 1053
 MAX_WIDTH   = 1000  # Temp for debugging
-MAX_HEIGHT  = 600  # Temp for debugging
-
+MAX_HEIGHT  = 600   # Temp for debugging
 COLOR_CONSTS = DARK_MODE
-
 PATH = path.dirname(__file__)
 
 class MainWindow(qtw.QMainWindow):
     """
     Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
-    provides the main application window space to overlay widgets
+    provides the main dash window space to overlay widgets
     """
 
     def __init__(self):
@@ -66,11 +60,10 @@ class TabWidget(qtw.QWidget):
 
     def __init__(self, parent: MainWindow, style_sheet_file: str):
         """
-        Initialize tabs
+        Initialize tab widget
 
         Args:
             parent: Window where to place tabs
-            tab_names: List of tab names
             style_sheet_file: Style sheet text file formatted as a CSS f-string
         """
         super().__init__(parent)
@@ -97,6 +90,7 @@ class TabWidget(qtw.QWidget):
         # Add tabs to widget
         layout.addWidget(tabs)
 
+        # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
     
     def create_pilot_tab(self, tab):
@@ -112,12 +106,9 @@ class TabWidget(qtw.QWidget):
         WIDGET_WIDTH = 180
         WIDGET_HEIGHT = 160
 
-        # Display feature state widget
         self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         self.state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
-        # state_widget.update_state("Claw")
 
-        # Display throttle curve widget
         self.thrt_crv_widget = ThrtCrvWidget(tab)
         self.thrt_crv_widget.move(0, 150)
         self.thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
@@ -162,7 +153,7 @@ def fix_term():
 
 def run_node(dash, args):
     """
-    Creates and runs a ROS node which updates the PyQt dashboard from ROS topics
+    Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
     """
     rclpy.init(args=args)
     dash_node = rclpy.create_node("dash")
@@ -208,7 +199,7 @@ def main(args=None):
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for run_node the function which creates and runs the node
-    node_thread = threading.Thread(target=run_node, args=(pilot_dash, args))
+    node_thread = Thread(target=run_node, args=(pilot_dash, args))
     node_thread.start()
 
     sys.exit(app.exec_())
