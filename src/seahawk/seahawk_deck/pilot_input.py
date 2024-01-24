@@ -33,6 +33,8 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
+from seahawk_msgs.msg import InputStates
+
 
 class StickyButton():
     """
@@ -91,6 +93,7 @@ class PilotInput(Node):
         self.subscription = self.create_subscription(Joy, "joy", self.callback, 10)
         self.twist_pub = self.create_publisher(Twist, "desired_twist", 10)
         self.claw_pub = self.create_publisher(Bool, "claw_state", 10)
+        self.input_states_pub = self.create_publisher(InputStates, "input_states", 10)
 
         # Create and store parameter which determines which throttle curve
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
@@ -161,7 +164,7 @@ class PilotInput(Node):
         twist_msg.angular.z = -controller["angular_z"]  # yaw
 
         # Bambi mode cuts all twist values in half for more precise movements
-        if self.buttons["bambi_mode"].check_state(controller["bambi_mode"]):
+        if bambi_state := self.buttons["bambi_mode"].check_state(controller["bambi_mode"]):
             twist_msg.linear.x  /= 2
             twist_msg.linear.y  /= 2
             twist_msg.linear.z  /= 2
@@ -178,6 +181,14 @@ class PilotInput(Node):
 
         # Publish claw message
         self.claw_pub.publish(claw_msg)
+
+        # Publish input states message for the dashboard
+        input_states_msg = InputStates()
+        input_states_msg.bambi_mode = bambi_state
+        input_states_msg.claw_state = claw_msg.data
+        input_states_msg.com_shift = False
+        input_states_msg.throttle_curve = "0"
+        self.input_states_pub.publish(input_states_msg)
 
         # If the x-box button is pressed, all settings get reset to default configurations
         if controller["reset"]:
