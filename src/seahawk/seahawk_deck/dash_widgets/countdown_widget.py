@@ -194,15 +194,16 @@ class CountdownWidget(qtw.QWidget):
         """
         # The timer should start (resume if was paused)
         if (self.status == TimerStatus.init or self.status == TimerStatus.paused) and self.sec_remaining > 0:
-            # Track the total time set
-            self.total_time = self.sec_remaining
-            # Change spin boxes to progress bar and setup progress bar
-            self.progress_bar.show()
-            self.progress_bar.setMaximum(self.total_time)
-            self.min_spin_box.hide()
-            self.sec_spin_box.hide()
+            if self.status == TimerStatus.init: # Code required only on start from beginning
+                # Track the total time set
+                self.total_time = self.sec_remaining
+                # Change spin boxes to progress bar and setup progress bar
+                self.progress_bar.show()
+                self.progress_bar.setMaximum(self.total_time)
+                self.min_spin_box.hide()
+                self.sec_spin_box.hide()
             # Start button becomes pause button upon counting
-            self.start_button.setText("Pause") 
+            self.start_button.setText("Pause")
             # Setup for beginning timer
             self.status = TimerStatus.counting
             self.display_time()
@@ -212,7 +213,7 @@ class CountdownWidget(qtw.QWidget):
             self.status = TimerStatus.paused
             # Button function switches back to start
             self.start_button.setText("Start")
-
+        
     def stop_event(self):
         """
         Called when the stop button is pressed. Stops timer and resets timer to original settings
