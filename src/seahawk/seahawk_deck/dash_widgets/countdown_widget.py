@@ -232,7 +232,7 @@ class CountdownWidget(qtw.QWidget):
         Update time display
         """
         # FIXME: Changing this to one makes things seem better but still weird...
-        if self.sec_remaining == 1:
+        if self.sec_remaining == 0:
             self.count_status = CountStatus.counting_up
 
             # Set progress bar to 'completed' state
