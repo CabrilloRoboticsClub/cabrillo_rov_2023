@@ -27,6 +27,7 @@ MAX_HEIGHT  = 600   # Temp for debugging
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
+
 class MainWindow(qtw.QMainWindow):
     """
     Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'

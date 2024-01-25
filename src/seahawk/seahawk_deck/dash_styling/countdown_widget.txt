@@ -55,3 +55,14 @@ QSpinBox::down-arrow {{
 QSpinBox::hover {{
     border : 2px solid {ACCENT_LIGHT};
 }}
+
+QProgressBar {{
+    background: {SURFACE_DRK};
+    border: 2px solid {ACCENT_LIGHT};
+    border-radius: 5px;
+}}
+
+QProgressBar::chunk {{
+    background-color: {ACCENT_LIGHT};
+    width: 20px;
+}}

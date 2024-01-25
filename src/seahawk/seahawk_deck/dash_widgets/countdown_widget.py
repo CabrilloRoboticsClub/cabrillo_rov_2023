@@ -18,11 +18,11 @@ class SecSpinBox(qtw.QSpinBox):
     This is useful to represent seconds for a timer.
     """
 
-    def init(self):
+    def __init__(self):
         """
         Initialize 'SecSpinBox' object
         """
-        super().init()
+        super().__init__()
     
     def textFromValue(self, v: int)-> str:
         """
@@ -56,11 +56,13 @@ class TimerStatus(Enum):
     """
     init, counting, paused = 0, 1, 2
 
+
 class CountStatus(Enum):
     """
     Tracks wether the timer is counting up or down
     """
     counting_down, counting_up = 0, 1
+
 
 class CountdownWidget(qtw.QWidget):
     """
@@ -92,8 +94,8 @@ class CountdownWidget(qtw.QWidget):
         layout_outer.addWidget(frame)
 
         # Set layout of widgets on frame to grid
-        layout_inner = qtw.QGridLayout(frame)
-        frame.setLayout(layout_inner)
+        self.layout_inner = qtw.QGridLayout(frame)
+        frame.setLayout(self.layout_inner)
         
         # Setup minutes spin box
         self.min_spin_box = qtw.QSpinBox()
@@ -120,6 +122,12 @@ class CountdownWidget(qtw.QWidget):
         self.timer_display.setAccessibleName("Timer Display")
         self.timer_display.setText(f"{self.min_spin_box.value()}:{self.sec_spin_box.textFromValue(self.sec_spin_box.value())}")
 
+        # Setup progress bar
+        self.progress_bar = qtw.QProgressBar()
+        self.progress_bar.setFormat("")
+        self.progress = 0
+        self.progress_increment = 0
+
         # Setup start button
         self.start_button = qtw.QPushButton("Start")
         self.start_button.setAccessibleName("Start")
@@ -131,13 +139,15 @@ class CountdownWidget(qtw.QWidget):
         self.stop_button.clicked.connect(self.stop_event)
 
         # Add widgets to frame
-        layout_inner.addWidget(self.title, 0, 0, 1, 2)
-        layout_inner.addWidget(self.timer_display, 1, 0, 1, 2)
-        layout_inner.addWidget(self.min_spin_box, 2, 0)
-        layout_inner.addWidget(self.sec_spin_box, 2, 1)
-        layout_inner.addWidget(self.start_button, 3, 0)
-        layout_inner.addWidget(self.stop_button, 3, 1)
-        layout_inner.setRowStretch(1, 20)
+        self.layout_inner.addWidget(self.title, 0, 0, 1, 2)
+        self.layout_inner.addWidget(self.timer_display, 1, 0, 1, 2)
+        self.layout_inner.addWidget(self.progress_bar, 2, 0, 1, 2) 
+        self.progress_bar.hide()
+        self.layout_inner.addWidget(self.min_spin_box, 2, 0)
+        self.layout_inner.addWidget(self.sec_spin_box, 2, 1)
+        self.layout_inner.addWidget(self.start_button, 3, 0)
+        self.layout_inner.addWidget(self.stop_button, 3, 1)
+        self.layout_inner.setRowStretch(1, 20)
 
         # Setup timer
         self.timer = qtc.QTimer()
@@ -168,13 +178,19 @@ class CountdownWidget(qtw.QWidget):
         """
         # The timer should start (resume if was paused)
         if (self.status == TimerStatus.init or self.status == TimerStatus.paused) and self.sec_remaining > 0:
+            # Change spin boxes to progress bar
+            self.progress_bar.show()
+            self.progress_bar.setValue(0)
+            self.progress_increment = 100 / self.sec_remaining
+            self.progress = 0
+            self.min_spin_box.hide()
+            self.sec_spin_box.hide()
+            # Setup for beginning timer
             self.status = TimerStatus.counting
-            self.sec_remaining -= 1
             self.display_time()
             self.timer.start(1000) # Starts or restarts the timer with a timeout of duration msec milliseconds.
             self.start_button.setText("Pause") # Start button becomes pause button upon counting
-        # Timer is paused
-        elif self.status == TimerStatus.counting:
+        elif self.status == TimerStatus.counting: # Timer is paused
             self.timer.stop()
             self.status = TimerStatus.paused
             self.start_button.setText("Start")
@@ -184,10 +200,12 @@ class CountdownWidget(qtw.QWidget):
         Called when the stop button is pressed. Stops timer and resets timer to original settings
         """
         self.timer.stop()
-
         # Reset timer to original settings
         self.display_time()
         self.start_button.setText("Start")
+        self.min_spin_box.show()
+        self.sec_spin_box.show()
+        self.progress_bar.hide()
         self.status = TimerStatus.init
         self.count_status = CountStatus.counting_down
         self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['ACCENT_LIGHT']};")
@@ -201,9 +219,12 @@ class CountdownWidget(qtw.QWidget):
         """
         if self.sec_remaining == 0:
             self.count_status = CountStatus.counting_up
+            self.progress_bar.setValue(100)
 
         if self.count_status == CountStatus.counting_down:
             self.sec_remaining -= 1
+            self.progress += self.progress_increment
+            self.progress_bar.setValue(int(self.progress))
         else:
             # Begin counting up and change text color to red
             self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['WARNING']};")
