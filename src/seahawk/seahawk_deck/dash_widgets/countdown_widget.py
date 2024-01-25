@@ -124,9 +124,7 @@ class CountdownWidget(qtw.QWidget):
 
         # Setup progress bar
         self.progress_bar = qtw.QProgressBar()
-        self.progress_bar.setFormat("")
-        self.progress = 0
-        self.progress_increment = 0
+        self.progress_bar.setFormat("Mission Complete")
 
         # Setup start button
         self.start_button = qtw.QPushButton("Start")
@@ -142,7 +140,6 @@ class CountdownWidget(qtw.QWidget):
         self.layout_inner.addWidget(self.title, 0, 0, 1, 2)
         self.layout_inner.addWidget(self.timer_display, 1, 0, 1, 2)
         self.layout_inner.addWidget(self.progress_bar, 2, 0, 1, 2) 
-        self.progress_bar.hide()
         self.layout_inner.addWidget(self.min_spin_box, 2, 0)
         self.layout_inner.addWidget(self.sec_spin_box, 2, 1)
         self.layout_inner.addWidget(self.start_button, 3, 0)
@@ -151,17 +148,36 @@ class CountdownWidget(qtw.QWidget):
 
         # Setup timer
         self.timer = qtc.QTimer()
+        self.timer_init()
         self.timer.timeout.connect(self.countdown_and_display)
-        self.status = TimerStatus.init
-        self.count_status = CountStatus.counting_down
-        self.sec_remaining = minutes * 60 + seconds
-        self.display_time()
 
         # Apply css styling
         with open(style_sheet_file) as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # Set style of stop button to be red when pressed, could not be included in style sheet
         self.stop_button.setStyleSheet(f"QPushButton::pressed {{background-color: {COLOR_CONSTS['WARNING']};}}")
+
+    def timer_init(self):
+        # Setup progress bar
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(f"""
+            QProgressBar {{
+                border: 2px solid {COLOR_CONSTS['ACCENT_LIGHT']};
+            }}
+
+            QProgressBar::chunk {{
+                background-color: {COLOR_CONSTS['ACCENT_LIGHT']};
+            }}
+        """)
+        self.progress_bar.hide()
+
+        # Setup timer
+        self.status = TimerStatus.init
+        self.count_status = CountStatus.counting_down
+        self.sec_remaining = self.min_spin_box.value() * 60 + self.sec_spin_box.value()
+        self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['ACCENT_LIGHT']};")
+        self.display_time()
 
     def spin_box_edit_event(self):
         """
@@ -178,21 +194,23 @@ class CountdownWidget(qtw.QWidget):
         """
         # The timer should start (resume if was paused)
         if (self.status == TimerStatus.init or self.status == TimerStatus.paused) and self.sec_remaining > 0:
-            # Change spin boxes to progress bar
+            # Track the total time set
+            self.total_time = self.sec_remaining
+            # Change spin boxes to progress bar and setup progress bar
             self.progress_bar.show()
-            self.progress_bar.setValue(0)
-            self.progress_increment = 100 / self.sec_remaining
-            self.progress = 0
+            self.progress_bar.setMaximum(self.total_time)
             self.min_spin_box.hide()
             self.sec_spin_box.hide()
+            # Start button becomes pause button upon counting
+            self.start_button.setText("Pause") 
             # Setup for beginning timer
             self.status = TimerStatus.counting
             self.display_time()
             self.timer.start(1000) # Starts or restarts the timer with a timeout of duration msec milliseconds.
-            self.start_button.setText("Pause") # Start button becomes pause button upon counting
         elif self.status == TimerStatus.counting: # Timer is paused
             self.timer.stop()
             self.status = TimerStatus.paused
+            # Button function switches back to start
             self.start_button.setText("Start")
 
     def stop_event(self):
@@ -200,16 +218,11 @@ class CountdownWidget(qtw.QWidget):
         Called when the stop button is pressed. Stops timer and resets timer to original settings
         """
         self.timer.stop()
-        # Reset timer to original settings
-        self.display_time()
+        # Reset timer to original setting
         self.start_button.setText("Start")
         self.min_spin_box.show()
         self.sec_spin_box.show()
-        self.progress_bar.hide()
-        self.status = TimerStatus.init
-        self.count_status = CountStatus.counting_down
-        self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['ACCENT_LIGHT']};")
-        self.sec_remaining = self.min_spin_box.value() * 60 + self.sec_spin_box.value()
+        self.timer_init()
 
     def countdown_and_display(self):
         """
@@ -217,17 +230,30 @@ class CountdownWidget(qtw.QWidget):
         counter display. If the timer reaches zero, change text color to red and begin counting negatives
         Update time display
         """
+        # FIXME: Changing this to one makes things seem better but still weird...
         if self.sec_remaining == 0:
             self.count_status = CountStatus.counting_up
-            self.progress_bar.setValue(100)
+
+            # Set progress bar to 'completed' state
+            # Bar is fully filled, colored as 'WARNING' and displays 'Mission Complete'
+            self.progress_bar.setValue(self.total_time)
+            self.progress_bar.setStyleSheet(f"""
+                QProgressBar::chunk {{
+                    background-color: {COLOR_CONSTS['WARNING']};
+                }}
+                QProgressBar {{
+                    border: 2px solid {COLOR_CONSTS['WARNING']};
+                }}
+            """)
+            self.progress_bar.setTextVisible(True)
+
+            # Change text color to red
+            self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['WARNING']};")
 
         if self.count_status == CountStatus.counting_down:
+            self.progress_bar.setValue(self.total_time - self.sec_remaining)
             self.sec_remaining -= 1
-            self.progress += self.progress_increment
-            self.progress_bar.setValue(int(self.progress))
         else:
-            # Begin counting up and change text color to red
-            self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['WARNING']};")
             self.sec_remaining += 1
 
         self.display_time()

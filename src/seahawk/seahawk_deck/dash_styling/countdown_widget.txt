@@ -60,9 +60,11 @@ QProgressBar {{
     background: {SURFACE_DRK};
     border: 2px solid {ACCENT_LIGHT};
     border-radius: 5px;
+    qproperty-alignment: AlignCenter;
+    color: {SURFACE_DRK};
 }}
 
 QProgressBar::chunk {{
     background-color: {ACCENT_LIGHT};
-    width: 20px;
+    width: 1px;
 }}
