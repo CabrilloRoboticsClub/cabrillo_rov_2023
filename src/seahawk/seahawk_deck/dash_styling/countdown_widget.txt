@@ -24,6 +24,7 @@ QPushButton {{
     padding: 6px;
     border-radius: 5px;
     color: {SECONDARY_TEXT};
+    selection-background-color: rgba(0, 0, 0, 0)
 }}
 
 QPushButton::pressed {{
