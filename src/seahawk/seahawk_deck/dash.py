@@ -151,6 +151,25 @@ class TabWidget(qtw.QWidget):
         self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
         self.countdown_widget.move(0, 750)
         self.countdown_widget.resize(WIDGET_WIDTH, 210)
+
+        # self.gridLayoutWidget = qtw.QWidget(tab)
+        # self.gridLayoutWidget.setGeometry(qtc.QRect(180, 5, 1655, 950))
+        # self.cam_layout = qtw.QGridLayout(self.gridLayoutWidget)
+        # cam_frame_1 = qtw.QFrame()
+        # cam_frame_1.setStyleSheet("background-color: red;")
+        # cam_frame_2 = qtw.QFrame()
+        # cam_frame_2.setStyleSheet("background-color: green;")
+        # cam_frame_3 = qtw.QFrame()
+        # cam_frame_3.setStyleSheet("background-color: blue;")
+        # cam_frame_4 = qtw.QFrame()
+        # cam_frame_4.setStyleSheet("background-color: yellow;")
+        # self.cam_layout.setContentsMargins(0, 0, 0, 0)
+        # self.cam_layout.addWidget(cam_frame_1, 0, 0)
+        # self.cam_layout.addWidget(cam_frame_2, 0, 1)
+        # self.cam_layout.addWidget(cam_frame_3, 1, 0)
+        # self.cam_layout.addWidget(cam_frame_4, 1, 1)
+
+        
     
     def update_pilot_tab_input_states(self, state_to_update: str):
         """
