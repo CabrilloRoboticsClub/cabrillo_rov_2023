@@ -142,8 +142,8 @@ class CountdownWidget(qtw.QWidget):
         self.layout_inner.addWidget(self.progress_bar, 2, 0, 1, 2) 
         self.layout_inner.addWidget(self.min_spin_box, 2, 0)
         self.layout_inner.addWidget(self.sec_spin_box, 2, 1)
-        self.layout_inner.addWidget(self.start_button, 3, 0)
-        self.layout_inner.addWidget(self.stop_button, 3, 1)
+        self.layout_inner.addWidget(self.stop_button, 3, 0)
+        self.layout_inner.addWidget(self.start_button, 3, 1)
         self.layout_inner.setRowStretch(1, 20)
 
         # Setup timer
@@ -231,7 +231,7 @@ class CountdownWidget(qtw.QWidget):
         Update time display
         """
         # FIXME: Changing this to one makes things seem better but still weird...
-        if self.sec_remaining == 0:
+        if self.sec_remaining == 1:
             self.count_status = CountStatus.counting_up
 
             # Set progress bar to 'completed' state
