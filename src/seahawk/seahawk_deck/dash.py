@@ -3,10 +3,13 @@ from os import environ, path
 from threading import Thread
 
 from PyQt5 import QtWidgets as qtw
+from PyQt5.QtGui import QKeyEvent
 # from PyQt5 import QtGui as qtg
 # from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node 
+from rclpy.publisher import Publisher
+from std_msgs.msg import Int32
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -45,9 +48,26 @@ class MainWindow(qtw.QMainWindow):
         self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt")
         self.setCentralWidget(self.tab_widget)
 
+        self.keystroke_pub = None
+
         # Display window
         # self.show()
         self.showMaximized()
+    
+    def keyPressEvent(self, a0: QKeyEvent) -> None:
+        """
+        Called for each time there is a keystroke. Publishes the code of the key that was
+        pressed or released to the ROS topic 'keystroke'
+        """
+        msg = Int32()
+        msg.data = a0.key()
+        self.keystroke_pub.publish(msg)
+
+    def add_keystroke_publisher(self, pub: Publisher):
+        """
+        Adds the keystroke publisher to 'MainWindow'
+        """
+        self.keystroke_pub = pub
 
 
 class TabWidget(qtw.QWidget):
@@ -163,8 +183,11 @@ class Dash(Node):
         """
         super().__init__("dash")
         self.dash_window = dash_window
+
         self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
-    
+        # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
+        dash_window.add_keystroke_publisher(self.create_publisher(Int32, "keystroke", 10))
+
     def callback_input_states(self, input_state_msg: InputStates): 
         """
         For every message published to the 'input_states' topic, update the relevant values on the gui 
