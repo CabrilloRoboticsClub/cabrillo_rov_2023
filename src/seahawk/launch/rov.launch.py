@@ -45,6 +45,12 @@ def generate_launch_description():
             output='screen'
         ),
         Node(
+            package='seahawk',
+            executable='debug',
+            name='debug',
+            output='screen'
+        ),
+        Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='imu_transform',
