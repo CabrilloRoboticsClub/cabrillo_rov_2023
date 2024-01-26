@@ -72,19 +72,19 @@ class MarkerMaker(Node):
             self.labels[i].color.a = 1.0
             self.labels[i].text = f"({i})0N"
 
-            self.boxes[i].type = ObjectTypes.CUBE.value # Cube 
-            self.boxes[i].action = 0 # Add/Modify
-            self.boxes[i].scale.x = 0.05
-            self.boxes[i].scale.y = 0.05
-            self.boxes[i].scale.z = 0.05
-            self.boxes[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
-            self.boxes[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
-            self.boxes[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
-            self.boxes[i].pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[i][1])
-            self.boxes[i].color.r = 1.0
-            self.boxes[i].color.g = 1.0
-            self.boxes[i].color.b = 1.0
-            self.boxes[i].color.a = 0.5
+            # self.boxes[i].type = ObjectTypes.CUBE.value # Cube 
+            # self.boxes[i].action = 0 # Add/Modify
+            # self.boxes[i].scale.x = 0.05
+            # self.boxes[i].scale.y = 0.05
+            # self.boxes[i].scale.z = 0.05
+            # self.boxes[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
+            # self.boxes[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
+            # self.boxes[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
+            # self.boxes[i].pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[i][1])
+            # self.boxes[i].color.r = 1.0
+            # self.boxes[i].color.g = 1.0
+            # self.boxes[i].color.b = 1.0
+            # self.boxes[i].color.a = 0.5
 
             self.arrows[i].type = ObjectTypes.ARROW.value
             self.arrows[i].action = 0 # Add/Modify
