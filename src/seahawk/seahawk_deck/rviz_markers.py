@@ -60,9 +60,9 @@ class MarkerMaker(Node):
         for i in range(NUM_MOTORS):
             self.labels[i].type = ObjectTypes.TEXT_VIEW_FACING.value
             self.labels[i].action = 0 # Add/Modify
-            self.labels[i].scale.x = 0.1
-            self.labels[i].scale.y = 0.1
-            self.labels[i].scale.z = 0.1
+            self.labels[i].scale.x = 0.05
+            self.labels[i].scale.y = 0.05
+            self.labels[i].scale.z = 0.05
             self.labels[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0]) + 0.5 * MarkerMaker.MOTORS[i][0][0] 
             self.labels[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1]) + 0.5 * MarkerMaker.MOTORS[i][0][1]
             self.labels[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
