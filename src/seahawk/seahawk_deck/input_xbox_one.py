@@ -50,7 +50,7 @@ class Input(Node):
         self.declare_parameter('angular_y_scale', 0.5) # Pitch
         self.declare_parameter('angular_z_scale', 0.5) # Yaw
         self.subscription = self.create_subscription(Joy, 'joy', self._callback, 10)
-        self.twist_pub = self.create_publisher(Twist, 'drive/twist', 10)
+        self.twist_pub = self.create_publisher(Twist, 'desired_twist', 10)
         self.claw_pub = self.create_publisher(Int8MultiArray, 'claw_control', 10)
         self.cam_servo_pub = self.create_publisher(Float32, 'camera_control', 10)
         self.claw_grab = False
