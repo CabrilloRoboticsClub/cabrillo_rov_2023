@@ -105,23 +105,13 @@ class MarkerMaker(Node):
         """
         Called every time a message is published to 'motor_values'. Draws arrows and publishes markers to 'motor_debug'
         """
+        MAX_FWD_THRUST = 36.3826715 / 4
         for i, motor in enumerate(motor_msg.data):
-            self.arrows[i].scale.x = -motor / 4
-            self.labels[i].text = f"{i}:{round(motor,2)}"
-            if motor < -1 or motor > 1:
-                self.arrows[i].color.r = 1.0
-                self.arrows[i].color.g = 0.0
-                self.arrows[i].color.b = 0.0
-                self.labels[i].color.r = 1.0
-                self.labels[i].color.g = 0.0
-                self.labels[i].color.b = 0.0
-            else:
-                self.arrows[i].color.r = 0.0
-                self.arrows[i].color.g = 1.0
-                self.arrows[i].color.b = 1.0
-                self.labels[i].color.r = 1.0
-                self.labels[i].color.g = 1.0
-                self.labels[i].color.b = 1.0
+            self.arrows[i].scale.x = -motor / 10 # Scale arrows down to a reasonable size
+            self.labels[i].text = f"({i}){round(motor, 2)}N"
+            self.arrows[i].color.r = abs(motor) / MAX_FWD_THRUST
+            self.arrows[i].color.g = 0.2
+            self.arrows[i].color.b = 0.45
 
         self.marker_pub.publish(self.markers)
 
