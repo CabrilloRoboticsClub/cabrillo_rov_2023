@@ -12,24 +12,26 @@ class MarkerMaker(Node):
     """
     Node to visualize the motor controls of the robot using RViz markers
     """
-
-    MOTOR_X = 0.22
-    MOTOR_Y = 0.22
-    TOP_Z   = 0.10
-    BOT_Z   = -0.05
-    TOP_P   = 47 * math.pi / 36
+    # Position constants for top motors (0-3)
+    X_TOP = 0.19
+    Y_TOP = 0.12
+    Z_TOP = 0.047
+    # Position constants for top motors (4-7)
+    X_BOT = 0.105
+    Y_BOT = 0.15
+    Z_BOT = -0.038
 
     # Motor positions
-    # (x, y, z spatial position)    , (rotation)
+    # Position: (x, y, z)       , Rotation: (Roll, Pitch, Yaw)
     MOTORS = [
-        (( MOTOR_X,  MOTOR_Y, TOP_Z), (0,   TOP_P,  math.pi     / 4)),
-        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,   TOP_P,  7 * math.pi / 4)),
-        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,   TOP_P,  3 * math.pi / 4)),
-        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,   TOP_P,  5 * math.pi / 4)),
-        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,   0,      3 * math.pi / 4)),
-        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,   0,      5 * math.pi / 4)),     
-        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,   0,      math.pi     / 4)),
-        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,   0,      7 * math.pi / 4)),
+        ((-X_TOP,  Y_TOP, Z_TOP), (0,   math.pi / 2,  0)),      # 0 (Top)
+        ((-X_TOP, -Y_TOP, Z_TOP), (0,   math.pi / 2,  0)),      # 1 (Top)
+        (( X_TOP,  Y_TOP, Z_TOP), (0,   math.pi / 2,  0)),      # 2 (Top)
+        (( X_TOP, -Y_TOP, Z_TOP), (0,   math.pi / 2,  0)),      # 3 (Top)
+        (( X_BOT,  Y_BOT, Z_BOT), (0,   0,  3 * math.pi / 4)),  # 4 (Bottom)
+        (( X_BOT, -Y_BOT, Z_BOT), (0,   0,  5 * math.pi / 4)),  # 5 (Bottom)    
+        ((-X_BOT,  Y_BOT, Z_BOT), (0,   0,  math.pi     / 4)),  # 6 (Bottom)
+        ((-X_BOT, -Y_BOT, Z_BOT), (0,   0,  7 * math.pi / 4)),  # 7 (Bottom)
     ]
 
     def __init__(self):
@@ -56,7 +58,6 @@ class MarkerMaker(Node):
             marker.header.frame_id = "base_link"
             marker.id = i 
 
-
         for i in range(NUM_MOTORS):
             self.labels[i].type = ObjectTypes.TEXT_VIEW_FACING.value
             self.labels[i].action = 0 # Add/Modify
@@ -72,20 +73,6 @@ class MarkerMaker(Node):
             self.labels[i].color.a = 1.0
             self.labels[i].text = f"({i})0N"
 
-            # self.boxes[i].type = ObjectTypes.CUBE.value # Cube 
-            # self.boxes[i].action = 0 # Add/Modify
-            # self.boxes[i].scale.x = 0.05
-            # self.boxes[i].scale.y = 0.05
-            # self.boxes[i].scale.z = 0.05
-            # self.boxes[i].pose.position.x = float(MarkerMaker.MOTORS[i][0][0])
-            # self.boxes[i].pose.position.y = float(MarkerMaker.MOTORS[i][0][1])
-            # self.boxes[i].pose.position.z = float(MarkerMaker.MOTORS[i][0][2])
-            # self.boxes[i].pose.orientation = self._quaternion_from_euler(*MarkerMaker.MOTORS[i][1])
-            # self.boxes[i].color.r = 1.0
-            # self.boxes[i].color.g = 1.0
-            # self.boxes[i].color.b = 1.0
-            # self.boxes[i].color.a = 0.5
-
             self.arrows[i].type = ObjectTypes.ARROW.value
             self.arrows[i].action = 0 # Add/Modify
             self.arrows[i].scale.x = 0.0
@@ -100,14 +87,13 @@ class MarkerMaker(Node):
             self.arrows[i].color.b = 0.0
             self.arrows[i].color.a = 1.0 # Full opacity
 
-
     def callback(self, motor_msg):
         """
         Called every time a message is published to 'motor_values'. Draws arrows and publishes markers to 'motor_debug'
         """
         MAX_FWD_THRUST = 36.3826715 / 4
         for i, motor in enumerate(motor_msg.data):
-            self.arrows[i].scale.x = -motor / 10 # Scale arrows down to a reasonable size
+            self.arrows[i].scale.x = -motor / 16 # Scale arrows down to a reasonable size
             self.labels[i].text = f"({i}){round(motor, 2)}N"
             self.arrows[i].color.r = abs(motor) / MAX_FWD_THRUST
             self.arrows[i].color.g = 0.2
@@ -148,18 +134,3 @@ def main(args=None):
 
 if __name__ == "__main__":
     main(sys.argv)
-
-
-
-# TODO list
-# 1. Fix this error (done)
-    # ❯ ros2 launch seahawk kinematics_viz.launch.py
-    # [INFO] [launch]: All log files can be found below /home/steph/.ros/log/2024-01-24-02-38-43-893948-steph-ThinkPad-L14-Gen-3-155587
-    # [INFO] [launch]: Default logging verbosity is set to INFO
-    # [ERROR] [launch]: Caught exception in launch (see debug for traceback): "package 'joint_state_publisher' not found, searching: ['/home/steph/Documents/robotics/mate_2024/cabrillo_rov_2023/install/seahawk_msgs', '/home/steph/Documents/robotics/mate_2024/cabrillo_rov_2023/install/seahawk_description', '/home/steph/Documents/robotics/mate_2024/cabrillo_rov_2023/install/seahawk', '/home/steph/Documents/robotics/mate_2024/cabrillo_rov_2023/install/h264_image_transport', '/home/steph/Documents/robotics/mate_2024/cabrillo_rov_2023/install/h264_msgs', '/opt/ros/humble']"
-# 2. Look at launch file
-# 3. See if rviz file is needed
-# 4. Understand quaternion_from_euler()
-# 5. Add gradients to thrust vectors
-# 6. Scale thrust vectors down
-# 7. Integrate new files with rviz
