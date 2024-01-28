@@ -38,10 +38,10 @@ class MarkerMaker(Node):
             ((-X_TOP, -Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 1 (Top)
             (( X_TOP,  Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 2 (Top)
             (( X_TOP, -Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 3 (Top)
-            (( X_BOT,  Y_BOT, Z_BOT), (0, 0,     3 * pi / 4)),   # 4 (Bottom)
-            (( X_BOT, -Y_BOT, Z_BOT), (0, 0,     5 * pi / 4)),   # 5 (Bottom)    
-            ((-X_BOT,  Y_BOT, Z_BOT), (0, 0,     pi     / 4)),   # 6 (Bottom)
-            ((-X_BOT, -Y_BOT, Z_BOT), (0, 0,     7 * pi / 4)),   # 7 (Bottom)
+            ((-X_BOT,  Y_BOT, Z_BOT), (0, 0,     pi     / 4)),   # 4 (Bottom)
+            ((-X_BOT, -Y_BOT, Z_BOT), (0, 0,     7 * pi / 4)),   # 5 (Bottom)
+            (( X_BOT,  Y_BOT, Z_BOT), (0, 0,     3 * pi / 4)),   # 6 (Bottom)
+            (( X_BOT, -Y_BOT, Z_BOT), (0, 0,     5 * pi / 4)),   # 7 (Bottom)    
         ]
         NUM_MOTORS = 8
 
