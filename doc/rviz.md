@@ -2,19 +2,24 @@
 
 ## Introduction
 [Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. Our project uses RViz to visualize the thrust vectors of the motors.
-
-![RViz image](img/rviz.png)
+<img src="img/rviz.gif" width="400">
 
 ## Running RViz
+### Steps
 1. Launch the deck or run relevant nodes independently. If running individual nodes, be sure to also run the node which is responsible for creating and displaying the force vectors
     ```sh
-    ros2 run seahawk rviz_marker
+    ros2 run seahawk rviz_markers
     ```
 2. Launch RViz
     ```sh
     ros2 launch seahawk kinematics_viz.launch.py
     ```
 3. A window with the RViz simulation should open automatically
+### Notes
+1. If using VS Code and the RViz window will not open, you may have installed VS Code with Snap. In that case, the environment variable `GTK_PATH` must be unset
+    ```sh
+    unset GTK_PATH
+    ```
 
 ## Maintaining/updating Rviz
 
