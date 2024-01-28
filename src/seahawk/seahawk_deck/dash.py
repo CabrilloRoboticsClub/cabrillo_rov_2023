@@ -125,52 +125,36 @@ class TabWidget(qtw.QWidget):
             - IMU:              Displays the IMU readings as a turn/bank indicator (graphic to help keep constant acceleration)
             - Countdown:        Displays a countdown
         """
-        WIDGET_WIDTH = 180
-        WIDGET_HEIGHT = 160
+        home_window_layout = qtw.QHBoxLayout(tab)
+        vert_widgets_layout = qtw.QVBoxLayout()
+        vert_widgets_layout.setSpacing(0)
+        cam_layout = qtw.QVBoxLayout()
 
+        # Create widgetss
         self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
-        self.state_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT) # FIXME: This should probably not be a fixed value
-
         self.thrt_crv_widget = ThrtCrvWidget(tab)
-        self.thrt_crv_widget.move(0, 150)
-        self.thrt_crv_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
-
         self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
-        self.temp_widget.move(0, 300)
-        self.temp_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
-
         self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
-        self.depth_widget.move(0, 450)
-        self.depth_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
-        
-        # FIXME: Fix path when a updated css file gets made
         self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
-        self.turn_bank_indicator_widget.move(0, 600)
-        self.turn_bank_indicator_widget.resize(WIDGET_WIDTH, WIDGET_HEIGHT)
-
         self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
-        self.countdown_widget.move(0, 750)
-        self.countdown_widget.resize(WIDGET_WIDTH, 210)
 
-        # self.gridLayoutWidget = qtw.QWidget(tab)
-        # self.gridLayoutWidget.setGeometry(qtc.QRect(180, 5, 1655, 950))
-        # self.cam_layout = qtw.QGridLayout(self.gridLayoutWidget)
-        # cam_frame_1 = qtw.QFrame()
-        # cam_frame_1.setStyleSheet("background-color: red;")
-        # cam_frame_2 = qtw.QFrame()
-        # cam_frame_2.setStyleSheet("background-color: green;")
-        # cam_frame_3 = qtw.QFrame()
-        # cam_frame_3.setStyleSheet("background-color: blue;")
-        # cam_frame_4 = qtw.QFrame()
-        # cam_frame_4.setStyleSheet("background-color: yellow;")
-        # self.cam_layout.setContentsMargins(0, 0, 0, 0)
-        # self.cam_layout.addWidget(cam_frame_1, 0, 0)
-        # self.cam_layout.addWidget(cam_frame_2, 0, 1)
-        # self.cam_layout.addWidget(cam_frame_3, 1, 0)
-        # self.cam_layout.addWidget(cam_frame_4, 1, 1)
+        # Add widgets to side vertical layout
+        # Stretch modifies the ratios of the widgets (must add up to 100)
+        vert_widgets_layout.addWidget(self.state_widget, stretch=16)
+        vert_widgets_layout.addWidget(self.thrt_crv_widget, stretch=16)
+        vert_widgets_layout.addWidget(self.temp_widget, stretch=16)
+        vert_widgets_layout.addWidget(self.depth_widget, stretch=16)
+        vert_widgets_layout.addWidget(self.turn_bank_indicator_widget, stretch=16)
+        vert_widgets_layout.addWidget(self.countdown_widget, stretch=20)
 
-        
-    
+        # Temp code for cameras
+        frame = qtw.QFrame()
+        frame.setStyleSheet("background-color: red;")
+        cam_layout.addWidget(frame)
+
+        home_window_layout.addLayout(vert_widgets_layout, stretch=1)
+        home_window_layout.addLayout(cam_layout, stretch=9)
+
     def update_pilot_tab_input_states(self, state_to_update: str):
         """
         Update gui display of input states
