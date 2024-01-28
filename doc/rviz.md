@@ -43,28 +43,27 @@ Most RViz related files are found in [`seahawk_description`](https://github.com/
 ### 3. Update `rviz_markers.py` motor config
 [rviz_markers.py](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/rviz_markers.py) is responsible for creating [Markers](http://wiki.ros.org/rviz/DisplayTypes/Marker) which display the thrust vectors in RViz. For a new model, the `MOTORS` list must be updated with updated motor positions and rotation.
 ```py
-# Position constants for top motors (0-3)
+# Position and angle constants for top motors (0-3)
 X_TOP = 0.19
 Y_TOP = 0.12
 Z_TOP = 0.047
-# Position constants for top motors (4-7)
+P_TOP = pi / 2
+# Position constants for bottom motors (4-7)
 X_BOT = 0.105
 Y_BOT = 0.15
 Z_BOT = -0.038
-# Angle constants
-ANGLE_TOP = pi / 2
 
-# Motor position constants
 # Position: (x, y, z),         Rotation: (Roll, Pitch, Yaw)
 MOTORS = [
-    ((-X_TOP,  Y_TOP, Z_TOP), (0, ANGLE_TOP,  0)),            # 0 (Top)
-    ((-X_TOP, -Y_TOP, Z_TOP), (0, ANGLE_TOP,  0)),            # 1 (Top)
-    (( X_TOP,  Y_TOP, Z_TOP), (0, ANGLE_TOP,  0)),            # 2 (Top)
-    (( X_TOP, -Y_TOP, Z_TOP), (0, ANGLE_TOP,  0)),            # 3 (Top)
-    (( X_BOT,  Y_BOT, Z_BOT), (0, 0,          3 * pi / 4)),   # 4 (Bottom)
-    (( X_BOT, -Y_BOT, Z_BOT), (0, 0,          5 * pi / 4)),   # 5 (Bottom)    
-    ((-X_BOT,  Y_BOT, Z_BOT), (0, 0,          pi     / 4)),   # 6 (Bottom)
-    ((-X_BOT, -Y_BOT, Z_BOT), (0, 0,          7 * pi / 4)),   # 7 (Bottom)
+    ((-X_TOP,  Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 0 (Top)
+    ((-X_TOP, -Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 1 (Top)
+    (( X_TOP,  Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 2 (Top)
+    (( X_TOP, -Y_TOP, Z_TOP), (0, P_TOP, 0)),            # 3 (Top)
+    (( X_BOT,  Y_BOT, Z_BOT), (0, 0,     3 * pi / 4)),   # 4 (Bottom)
+    (( X_BOT, -Y_BOT, Z_BOT), (0, 0,     5 * pi / 4)),   # 5 (Bottom)    
+    ((-X_BOT,  Y_BOT, Z_BOT), (0, 0,     pi     / 4)),   # 6 (Bottom)
+    ((-X_BOT, -Y_BOT, Z_BOT), (0, 0,     7 * pi / 4)),   # 7 (Bottom)
 ]
+NUM_MOTORS = 8
 ```
 Modify the position constants and angles to match the new model. The measurements are in meters and angles in radians.
