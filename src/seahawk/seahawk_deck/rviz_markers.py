@@ -1,6 +1,7 @@
 from sys import argv
 from math import pi, cos, sin
 from enum import Enum
+from os import environ
 
 import rclpy
 from rclpy.node import Node 
@@ -129,7 +130,16 @@ class MarkerMaker(Node):
         return q
 
 
+def fix_term():
+    """
+    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset
+    """
+    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
+        environ.pop("GTK_PATH")
+
+
 def main(args=None):
+    fix_term()
     rclpy.init(args=args)
     rclpy.spin(MarkerMaker())
     rclpy.shutdown()    
