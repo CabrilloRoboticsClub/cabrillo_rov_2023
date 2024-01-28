@@ -35,7 +35,7 @@ class MarkerMaker(Node):
         """Initialize this node"""
         super().__init__('marker_maker')
         self.marker_pub = self.create_publisher(MarkerArray, 'drive/motors_debug', 10)
-        self.subscription = self.create_subscription(Float32MultiArray, 'drive/motors', self._callback, 10)
+        self.subscription = self.create_subscription(Float32MultiArray, 'motor_values', self._callback, 10)
 
         self.markers = MarkerArray()
         self.markers.markers = [ Marker() for x in range(8*3) ]   
