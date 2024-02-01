@@ -5,7 +5,6 @@ from psutil._common import bytes2human
 from rclpy.node import Node 
 from seahawk_msgs.msg import DebugInfo
 
-
 class Debug(Node):
     def __init__(self):
         super().__init__("debug")
@@ -39,6 +38,7 @@ class Debug(Node):
 
         msg.net_sent = sent
         msg.net_recv = recv
+
         self._publisher.publish(msg)
 
 def main(args=None):
