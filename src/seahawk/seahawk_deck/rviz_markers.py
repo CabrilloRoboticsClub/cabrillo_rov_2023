@@ -23,14 +23,14 @@ class MarkerMaker(Node):
         self.subscription = self.create_subscription(Float32MultiArray, "motor_values", self.callback, 10)
 
         # Position and angle constants for top motors (0-3)
-        X_TOP = 0.19
-        Y_TOP = 0.12
-        Z_TOP = 0.047
+        X_TOP = 0.2
+        Y_TOP = 0.13
+        Z_TOP = 0.004
         P_TOP = pi / 2
         # Position constants for bottom motors (4-7)
-        X_BOT = 0.105
-        Y_BOT = 0.15
-        Z_BOT = -0.038
+        X_BOT = 0.198
+        Y_BOT = 0.156
+        Z_BOT = -0.056
 
         # Position: (x, y, z),         Rotation: (Roll, Pitch, Yaw)
         MOTORS = [
