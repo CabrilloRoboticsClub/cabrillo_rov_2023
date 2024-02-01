@@ -20,7 +20,7 @@ class Debug(Node):
 
         # Grabs CPU temps and averages temperature across cores
         temp_all = psutil.sensors_temperatures()["cpu_thermal"]
-        msg.cpu_temperature = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
+        msg.cpu_temperature = sum(temp[1] for temp in temp_all) / len(temp_all)
 
         # Grab CPU usage, load average, and memory usage percent
         msg.cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
