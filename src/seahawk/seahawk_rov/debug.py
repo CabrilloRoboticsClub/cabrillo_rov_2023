@@ -18,14 +18,13 @@ class Debug(Node):
     def pub_callback(self):
         msg = Debug()
 
-        # Grab CPU usage, load average, and memory usage percent
-        cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
-        mem = psutil.virtual_memory().percent
-
         # Grabs CPU temps and averages temperature across cores
         temp_all = psutil.sensors_temperatures()["cpu_thermal"]
-        temp_ave = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
+        msg.cpu_temperature = sum([temp_all[i][1] for i in range(len(temp_all))])/len(temp_all)
 
+        # Grab CPU usage, load average, and memory usage percent
+        msg.cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
+        msg.memory_usage = psutil.virtual_memory().percent
 
         # Gets Net Stats
         net = psutil.net_io_counters()
@@ -38,10 +37,6 @@ class Debug(Node):
         self.sent = curr_sent
         self.recv = curr_recv
 
-        # msg.data = f"CPU: {cpu_usage}%\nLoad Average: {load_ave}\nMemory: {mem}%\nTemperatures: {temp_ave}°C\nSent: {sent}\nReceived: {recv}"
-        msg.cpu_temperature = temp_ave
-        msg.cpu_usage = cpu_usage
-        msg.memory_usage = mem
         msg.net_sent = sent
         msg.net_recv = recv
         self._publisher.publish(msg)
