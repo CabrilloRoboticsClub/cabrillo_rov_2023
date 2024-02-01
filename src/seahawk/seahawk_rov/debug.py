@@ -16,7 +16,7 @@ class Debug(Node):
         self.recv = net.bytes_recv
     
     def pub_callback(self):
-        msg = Debug()
+        msg = DebugInfo()
 
         # Grabs CPU temps and averages temperature across cores
         temp_all = psutil.sensors_temperatures()["cpu_thermal"]
