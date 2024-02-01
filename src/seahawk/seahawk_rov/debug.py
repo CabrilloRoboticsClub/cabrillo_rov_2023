@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 import rclpy 
 import psutil
-import time
 from psutil._common import bytes2human
 from rclpy.node import Node 
-from std_msgs.msg import String
-from geometry_msgs.msg import Vector3
 from seahawk_msgs.msg import DebugInfo
 
 
@@ -23,7 +20,6 @@ class Debug(Node):
 
         # Grab CPU usage, load average, and memory usage percent
         cpu_usage = psutil.cpu_percent(interval=None, percpu=False)
-        load_ave = psutil.getloadavg()
         mem = psutil.virtual_memory().percent
 
         # Grabs CPU temps and averages temperature across cores
