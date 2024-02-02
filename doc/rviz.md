@@ -16,11 +16,6 @@
     ros2 launch seahawk kinematics_viz.launch.py
     ```
 3. A window with the RViz simulation should open automatically.
-### Notes
-1. If using VS Code and the RViz window will not open, you may have installed VS Code with Snap. In that case, the environment variable `GTK_PATH` must be unset.
-    ```sh
-    unset GTK_PATH
-    ```
 
 ## Maintaining/updating Rviz model
 
