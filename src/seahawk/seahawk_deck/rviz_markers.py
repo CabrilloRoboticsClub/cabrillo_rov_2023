@@ -28,9 +28,9 @@ class MarkerMaker(Node):
         Z_TOP = 0.004
         P_TOP = pi / 2
         # Position constants for bottom motors (4-7)
-        X_BOT = 0.198
-        Y_BOT = 0.156
-        Z_BOT = -0.056
+        X_BOT = 0.102
+        Y_BOT = 0.152
+        Z_BOT = -0.052
 
         # Position: (x, y, z),         Rotation: (Roll, Pitch, Yaw)
         MOTORS = [
