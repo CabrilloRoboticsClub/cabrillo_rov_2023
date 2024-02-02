@@ -1,4 +1,4 @@
-# Style Guidelines
+# Python Style Guideline
 
 Adhering to a standard style guide is important for code constancy across the project. Consistency in style makes code easier to read and understand by all collaborators on the project, and makes the final result more cohesive.
 The [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/#function-annotations) is a good place to start for information about correct style practices. Below are some specific guidelines to follow.
@@ -464,7 +464,7 @@ Global variables should be declared just below import statements. Global variabl
 
 **Source:** Edward Parrish, CS-11
 
-# References:
+# References
 1. [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/)
 2. [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
 3. [Effective Python, The Book: Second Edition](https://effectivepython.com/)
