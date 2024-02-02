@@ -52,8 +52,11 @@ CATKIN_IGNORE
 COLCON_IGNORE
 
 # vscode dev docker container
-.devcontainer/devcontainer.json
+*.vscode
 
 # From colcon build 
 install/
 log/
+
+# Apple
+.DS_Store

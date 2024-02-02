@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             "thrust=seahawk_deck.thrust:main",
-            "input_xbox_one=seahawk_deck.input_xbox_one:main",
+            "pilot_input=seahawk_deck.pilot_input:main",
+            "keyboard=seahawk_deck.keyboard:main",
             "rviz_markers=seahawk_deck.rviz_markers:main",
             'seahawk_rov = seahawk_rov:main'
         ],
