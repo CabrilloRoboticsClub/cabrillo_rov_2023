@@ -101,9 +101,9 @@ class PilotInput(Node):
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
-            "claw":             StickyButton(),     # a
-            "bambi_mode":       StickyButton()      # b
-            # "":               StickyButton(),     # x
+            # "" :              StickyButton(),     # a
+            "bambi_mode":       StickyButton(),     # b
+            "claw":             StickyButton(),     # x
             # "":               StickyButton(),     # y
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
