@@ -140,9 +140,9 @@ class PilotInput(Node):
             # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "claw":             joy_msg.buttons[0], # a
+            # "":               joy_msg.buttons[0], # a
             "bambi_mode":       joy_msg.buttons[1], # b
-            # "":               joy_msg.buttons[2], # x
+            "claw":             joy_msg.buttons[2], # x
             # "":               joy_msg.buttons[3], # y
             "pos_angular_x":    joy_msg.buttons[4], # left_bumper
             "neg_angular_x":    joy_msg.buttons[5], # right_bumper
