@@ -1,4 +1,4 @@
-import os
+from os import path, environ
 
 from ament_index_python.packages import get_package_share_path
 
@@ -10,9 +10,13 @@ from launch_ros.parameter_descriptions import ParameterValue
 from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
+    # If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
+    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
+        environ.pop("GTK_PATH")
+
     PKG_NAME = 'seahawk_description'
     pkg_path = get_package_share_path(PKG_NAME)
-    model_path = os.path.join(pkg_path, f'urdf/{PKG_NAME}.urdf')
+    model_path = path.join(pkg_path, f'urdf/{PKG_NAME}.urdf')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -29,7 +33,7 @@ def generate_launch_description():
             package='rviz2',
             executable='rviz2',
             name='rviz2',
-            arguments=['-d', os.path.join(get_package_share_path('seahawk'), 'rviz/debug_kinematics.rviz')]
+            arguments=['-d', path.join(get_package_share_path('seahawk'), 'rviz/debug_kinematics.rviz')]
         ),
 
         Node(
