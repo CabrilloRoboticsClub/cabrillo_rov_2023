@@ -8,6 +8,11 @@
   become: yes
   tasks:
     # This will fail if you try it on a desktop. Good.
+    - name: Set kernel command line parameters to remove ttyS0
+      ansible.builtin.copy:
+        content: 'dwc_otg.lpm_enable=0 console=tty1 root=LABEL=writable rootfstype=ext4 rootwait fixrtc quiet splash'
+        dest: /boot/firmware/config.txt
+
     - name: disable camera auto detect
       become: true
       lineinfile:
@@ -83,10 +88,19 @@
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
       - { name: 'liam', comment: 'Liam Gilligan', ghuser: 'liamgilligan' }
-      - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'hugo10123' }
+      - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'taschnell' }
       - { name: 'steph', comment: "Stephanie L'Heureux", ghuser: 'steph1111' }
       - { name: 'cjbf', comment: 'CJ Bridgman-Ford', ghuser: 'cjikaika' }
       - { name: 'michaelatobias', comment: 'Michael Tobias', ghuser: 'michaelatobias' }
+      - { name: 'katew', comment: 'Kate Wolsfeld', ghuser: 'Katewolsfeld10' }
+      - { name: 'akcarney', comment: 'Ava Carney', ghuser: 'akcarney' }
+      - { name: 'orion', comment: 'Orion Ellefson', ghuser: 'OrionOth' }
+      - { name: 'massimo', comment: 'Massimo Ginella', ghuser: 'tinymassi' }
+      - { name: 'wwb', comment: 'Weston Brown', ghuser: 'onwest' }
+      - { name: 'katerosep', comment: 'Kate Rosenbloom Pohl', ghuser: 'katerosep' }
+      - { name: 'theo', comment: 'Theo Paris', ghuser: 'theoparis'}
+      - { name: 'whitlockmcorbett', comment: 'Corbett Whitlock', ghuser: 'whitlockmcorbett'}
+      - { name: 'daniel', comment: 'Daniel Bledsoe', ghuser: 'epic-coding-23' }
   tasks:
     - name: Add user
       ansible.builtin.user:
