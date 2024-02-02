@@ -21,21 +21,21 @@ class MarkerMaker(Node):
     TOP_P = 47*math.pi/36
 
     MOTORS = [
-        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,5*math.pi/4)),  
-        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,7*math.pi/4)),
-        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,7*math.pi/4)),
-        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,5*math.pi/4)),
-        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,math.pi/4)),
-        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,3*math.pi/4)),
-        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,3*math.pi/4)),
         (( MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,math.pi/4)),
+        (( MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,7*math.pi/4)),
+        ((-MOTOR_X,  MOTOR_Y, TOP_Z), (0,TOP_P,3*math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, TOP_Z), (0,TOP_P,5*math.pi/4)),
+        (( MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,3*math.pi/4)),
+        (( MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,5*math.pi/4)),     
+        ((-MOTOR_X,  MOTOR_Y, BOT_Z), (0,0,math.pi/4)),
+        ((-MOTOR_X, -MOTOR_Y, BOT_Z), (0,0,7*math.pi/4)),
     ]
 
     def __init__(self):
         """Initialize this node"""
         super().__init__('marker_maker')
         self.marker_pub = self.create_publisher(MarkerArray, 'drive/motors_debug', 10)
-        self.subscription = self.create_subscription(Float32MultiArray, 'drive/motors', self._callback, 10)
+        self.subscription = self.create_subscription(Float32MultiArray, 'motor_values', self._callback, 10)
 
         self.markers = MarkerArray()
         self.markers.markers = [ Marker() for x in range(8*3) ]   
@@ -98,7 +98,7 @@ class MarkerMaker(Node):
         """
         self.get_logger().info(f"Motor Message: {motor_msg.data}")
         for i, motor in enumerate(motor_msg.data):
-            self.arrows[i].scale.x = -motor
+            self.arrows[i].scale.x = -motor / 4
             self.labels[i].text = f"{i}:{round(motor,2)}"
             if motor < -1 or motor > 1:
                 self.arrows[i].color.r = 1.0
