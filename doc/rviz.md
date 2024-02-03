@@ -1,7 +1,7 @@
 # RViz
 
 ## Introduction
-[Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. Our project uses RViz to visualize the thrust vectors of the motors.
+[Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. Our project uses RViz to visualize water flow from the motors.
 
 <img src="img/rviz.gif" width="400">
 
