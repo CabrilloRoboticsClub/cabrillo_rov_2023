@@ -55,7 +55,7 @@ def generate_launch_description():
         condition=UnlessCondition(LaunchConfiguration('enable_joint_state_pub_gui'))
     )
 
-    # TODO: Is this node useful for anything? They inclu de it in the exported
+    # TODO: Is this node useful for anything? They include it in the exported
     #   URDF package's launch file by default
     joint_state_publisher_gui_node = Node(
         package='joint_state_publisher_gui',
