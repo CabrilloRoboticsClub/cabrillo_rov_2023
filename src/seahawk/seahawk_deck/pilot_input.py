@@ -87,6 +87,9 @@ class PilotInput(Node):
         """
         super().__init__("pilot_input")
 
+        # Variable of type string for storing hot keys for throttle curves
+        self.__key_input = ""
+
         # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
@@ -109,6 +112,20 @@ class PilotInput(Node):
             # "":               StickyButton(),     # menu
         }
 
+    # Modifies joystick input through a polynomial to simulate throttle curves
+    # More throttle curves to be added. this is just a starting point.
+    def __throttle_curve (joy_msg: Joy):
+        match key_input:  # functionality needs to be added for adding value to key_input
+            case "1":
+                joy_msg  # Linear joystick input, default.
+            case "2":
+                pow(joy_msg, 3)  # Cubed joystick input, key '2'.
+            case __:
+                print("No keyboard input")  # Maybe helpful for debugging.
+
+        return joy_msg
+                
+
     def __callback(self, joy_msg: Joy):
         """
         Takes in input from the joy message from the x box and republishes it as a twist specifying 
@@ -120,6 +137,8 @@ class PilotInput(Node):
 
         # Debug output of joy topic
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
+
+        __throttle_curve(joy_msg)
 
         # Map the values sent from the joy message to useful names
         controller = {
