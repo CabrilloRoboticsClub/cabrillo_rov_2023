@@ -11,7 +11,7 @@
     - name: Set kernel command line parameters to remove ttyS0
       ansible.builtin.copy:
         content: 'dwc_otg.lpm_enable=0 console=tty1 root=LABEL=writable rootfstype=ext4 rootwait fixrtc quiet splash'
-        dest: /boot/firmware/config.txt
+        dest: /boot/firmware/cmdline.txt
 
     - name: disable camera auto detect
       become: true
