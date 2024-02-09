@@ -112,19 +112,24 @@ class PilotInput(Node):
             # "":               StickyButton(),     # menu
         }
 
-    # Modifies joystick input through a polynomial to simulate throttle curves
-    # More throttle curves to be added. this is just a starting point.
-    def __throttle_curve (joy_msg: Joy):
-        match key_input:  # functionality needs to be added for adding value to key_input
+    def __throttle_curve(self, twist_msg: Twist):
+        """
+        Changes the value of twist messages (-1 -> 1) and fixes it to a polynomial depending on input from a keyboard
+
+        Args:
+            twist_msg: Message of type Twist from ROS2 library
+        """
+
+        # Check value of key_input and assign it to a polynomial to modify joy_msg
+        match self.__key_input:  # functionality needs to be added for adding value to key_input
             case "1":
-                joy_msg  # Linear joystick input, default.
+                twist_msg  # Linear joystick input, key '1'.
             case "2":
-                pow(joy_msg, 3)  # Cubed joystick input, key '2'.
+                pow(twist_msg, 3)  # Cubed joystick input, key '2'.
             case __:
                 print("No keyboard input")  # Maybe helpful for debugging.
 
-        return joy_msg
-                
+        return twist_msg
 
     def __callback(self, joy_msg: Joy):
         """
@@ -137,8 +142,6 @@ class PilotInput(Node):
 
         # Debug output of joy topic
         self.get_logger().debug(f"Joystick axes: {joy_msg.axes} buttons: {joy_msg.buttons}")
-
-        __throttle_curve(joy_msg)
 
         # Map the values sent from the joy message to useful names
         controller = {
@@ -156,7 +159,7 @@ class PilotInput(Node):
             # Dpad
             # "":               int(max(joy_msg.axes[7], 0)),   # dpad_up
             # "":               int(-min(joy_msg.axes[7], 0)),  # dpad_down
-            # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
+            # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left
             # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
             # "":               joy_msg.buttons[0], # a
@@ -172,12 +175,12 @@ class PilotInput(Node):
 
         # Create twist message
         twist_msg = Twist()
-        twist_msg.linear.x  = controller["linear_x"]    # forwards
-        twist_msg.linear.y  = -controller["linear_y"]   # sideways
-        twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2)       # depth
-        twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5     # roll (const +/- 0.5 thrust)
-        twist_msg.angular.y = controller["angular_y"]   # pitch
-        twist_msg.angular.z = controller["angular_z"]  # yaw
+        twist_msg.linear.x  = self.__throttle_curve(controller["linear_x"])  # forwards
+        twist_msg.linear.y  = self.__throttle_curve(-controller["linear_y"])   # sideways
+        twist_msg.linear.z  = self.__throttle_curve(((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2))       # depth
+        twist_msg.angular.x = self.__throttle_curve((controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5)     # roll (const +/- 0.5 thrust)
+        twist_msg.angular.y = self.__throttle_curve(controller["angular_y"])   # pitch
+        twist_msg.angular.z = self.__throttle_curve(controller["angular_z"])  # yaw
 
         # Bambi mode cuts all twist values in half for more precise movements
         if self.__buttons["bambi_mode"].check_state(controller["bambi_mode"]):
