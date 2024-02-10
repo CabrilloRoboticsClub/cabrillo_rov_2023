@@ -112,7 +112,7 @@ class PilotInput(Node):
             # "":               StickyButton(),     # menu
         }
 
-    def __throttle_curve(self, twist_msg: Twist):
+    def __throttle_curve(self, twist_msg: float):
         """
         Changes the value of twist messages (-1 -> 1) and fixes it to a polynomial depending on input from a keyboard
 
