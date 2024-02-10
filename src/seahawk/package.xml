@@ -18,8 +18,12 @@
   <exec_depend>python3</exec_depend>
   <exec_depend>python-rpi.gpio-pip</exec_depend>
   <exec_depend>python3-adafruit-blinka-pip</exec_depend>
-
   <exec_depend>python3</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend version_gte="0.2.19">python_qt_binding</exec_depend>
+  <exec_depend>rqt_gui</exec_depend>
+  <exec_depend>rqt_gui_py</exec_depend>
+  <exec_depend>rqt_py_common</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
@@ -29,6 +33,8 @@
   <test_depend>ament_lint_common</test_depend>
 
   <export>
+    <architecture_independent/>
     <build_type>ament_python</build_type>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
   </export>
 </package>

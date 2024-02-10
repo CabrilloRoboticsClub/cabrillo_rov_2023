@@ -1,0 +1,17 @@
+<library path=".">
+  <class name="Console" type="seahawk_deck.dash.DashPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A Python GUI plugin for displaying and filtering ROS messages.
+    </description>
+    <qtgui>
+      <group>
+        <label>Seahawk</label>
+        <icon type="theme">folder</icon>
+        <statustip>Custom Seahawk plugins.</statustip>
+      </group>
+      <label>Dash</label>
+      <icon type="theme">mail-message-new</icon>
+      <statustip>Seahawk Dash Plugin</statustip>
+    </qtgui>
+  </class>
+</library>

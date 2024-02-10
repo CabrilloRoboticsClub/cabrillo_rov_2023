@@ -1,12 +1,11 @@
-import sys
 from os import environ, path
-from threading import Thread
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
-# from PyQt5 import QtGui as qtg
-# from PyQt5 import QtCore as qtc
-import rclpy
+from PyQt5.QtCore import QEvent, QObject
+
+from qt_gui.plugin import Plugin
+
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
 from std_msgs.msg import Int32
@@ -17,6 +16,7 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+
 from seahawk_msgs.msg import InputStates, DebugInfo
 
 # Constants
@@ -28,49 +28,6 @@ COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
 
-class MainWindow(qtw.QMainWindow):
-    """
-    Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
-    provides the main dash window space to overlay widgets
-    """
-
-    def __init__(self):
-        """
-        Set up the 'MainWindow', overlay 'TabWidget's for multiple dash views, and display window
-        """
-        super().__init__()
-
-        # Set up main window
-        self.setWindowTitle("SeaHawk II Dashboard")
-        self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
-        # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
-
-        # Create tabs
-        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt")
-        self.setCentralWidget(self.tab_widget)
-
-        self.keystroke_pub = None
-
-        # Display window
-        # self.show()
-        self.showMaximized()
-    
-    def keyPressEvent(self, a0: QKeyEvent) -> None:
-        """
-        Called for each time there is a keystroke. Publishes the code of the key that was
-        pressed or released to the ROS topic 'keystroke'
-        """
-        msg = Int32()
-        msg.data = a0.key()
-        self.keystroke_pub.publish(msg)
-
-    def add_keystroke_publisher(self, pub: Publisher):
-        """
-        Adds the keystroke publisher to 'MainWindow'
-        """
-        self.keystroke_pub = pub
-
-
 class TabWidget(qtw.QWidget):
     """
     Creates a 'TabWidget' which inherits from the 'qtw.QWidget' class. A 'TabWidget' provides 
@@ -80,7 +37,7 @@ class TabWidget(qtw.QWidget):
     show a different page by clicking on its tab
     """
 
-    def __init__(self, parent: MainWindow, style_sheet_file: str):
+    def __init__(self, style_sheet_file: str):
         """
         Initialize tab widget
 
@@ -88,7 +45,7 @@ class TabWidget(qtw.QWidget):
             parent: Window where to place tabs
             style_sheet_file: Style sheet text file formatted as a CSS f-string
         """
-        super().__init__(parent)
+        super().__init__()
         
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
@@ -114,7 +71,16 @@ class TabWidget(qtw.QWidget):
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
-    
+
+        # Keystroke publisher
+        self.keystroke_pub = None
+
+    def add_keystroke_publisher(self, pub: Publisher):
+        """
+        Adds the keystroke publisher to 'MainWindow'
+        """
+        self.keystroke_pub = pub
+
     def create_pilot_tab(self, tab):
         """
         Creates pilot dash tab with the following widgets:
@@ -137,6 +103,9 @@ class TabWidget(qtw.QWidget):
         self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
         self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
         self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+
+        # FIXME: Need a better way to get keys. 
+        self.countdown_widget.keyPressEvent = self.keyPressEvent
 
         # Add widgets to side vertical layout
         # Stretch modifies the ratios of the widgets (must add up to 100)
@@ -166,6 +135,15 @@ class TabWidget(qtw.QWidget):
         self.state_widget.update_state(state_to_update["state_widget"])
         self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
 
+    def keyPressEvent(self, a0: QKeyEvent) -> None:
+        """
+        Called for each time there is a keystroke. Publishes the code of the key that was
+        pressed or released to the ROS topic 'keystroke'
+        """
+        if self.keystroke_pub is not None:
+            msg = Int32()
+            msg.data = a0.key()
+            self.keystroke_pub.publish(msg)
 
 def fix_term():
     """
@@ -176,22 +154,40 @@ def fix_term():
         environ.pop("GTK_PATH")
 
 
-class Dash(Node):
+class DashPlugin(Plugin):
+
     """
-    Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
+    rqt_console plugin's main class. Handles communication with ros_gui and contains
+    callbacks to handle incoming message
     """
 
-    def __init__(self, dash_window):
+    def __init__(self, context):
         """
-        Initialize 'dash' node
+        :param context: plugin context hook to enable adding widgets as a ROS_GUI pane,
+                        ''PluginContext''
         """
-        super().__init__("dash")
-        self.dash_window = dash_window
+        super().__init__(context)
+        self.setObjectName('Seahawk')
 
-        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
-        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
-        # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
-        dash_window.add_keystroke_publisher(self.create_publisher(Int32, "keystroke", 10))
+        self._context = context
+        self._widget = TabWidget(style_sheet_file=PATH + "/dash_styling/tab_widget.txt")
+        if context.serial_number() > 1:
+            self._widget.setWindowTitle(
+                self._widget.windowTitle() + (' (%d)' % context.serial_number()))
+        context.add_widget(self._widget)
+
+        self._context.node.create_subscription(
+            InputStates, "input_states", self.callback_input_states, 10
+        )
+        self._context.node.create_subscription(
+            DebugInfo, "debug_info", self.callback_debug, 10
+        )
+        self._widget.add_keystroke_publisher(
+            self._context.node.create_publisher(Int32, "keystroke", 10)
+        )
+
+    def shutdown_plugin(self):
+        pass
 
     def callback_input_states(self, input_state_msg: InputStates): 
         """
@@ -216,29 +212,8 @@ class Dash(Node):
             },
             "throttle_curve":   int(input_state_msg.throttle_curve),
         }
-        self.dash_window.tab_widget.update_pilot_tab_input_states(input_state_dict)
+        self._widget.update_pilot_tab_input_states(input_state_dict)
 
     def callback_debug(self):
         pass
 
-
-def main(args=None):
-    # Setup dashboards
-    fix_term()
-    app = qtw.QApplication([])
-    pilot_dash = MainWindow()
-    
-    # Setup node
-    rclpy.init(args=args)
-    dash_node = Dash(pilot_dash)
-
-    # Threading allows the process to display the dash and run the node at the same time
-    # Create and start a thread for rclpy.spin function so the node spins while the dash is running
-    node_thread = Thread(target=rclpy.spin, args=(dash_node,))
-    node_thread.start()
-
-    sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-    main(sys.argv)
