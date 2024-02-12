@@ -1,10 +1,10 @@
-# Set Remote Params 
-The `SetRemoteParams` class from [`set_remote_params.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/set_remote_params.py) provides functionality for nodes to modify each other's [ROS parameters](https://docs.ros.org/en/humble/Concepts/Basic/About-Parameters.html) using [services](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html). The `SetRemoteParams` class streamlines setting another node's parameters to a user-friendly abstraction to reduce redundancy creating cleaner code and increased ease-of-use.
+# ROS Params
+[ROS parameters](https://docs.ros.org/en/humble/Concepts/Basic/About-Parameters.html) are a way of setting attributes of a node which can be accessed and modified by the ROS network
 
 ## Usage
 ### Client node
 *The client node is the node which makes a request to update another node's parameters*
-1. Import the `RemoteParamsClient` class to any node on the deck with the following syntax.
+1. Import the `RemoteParamsClient` class to any node on the deck with the following syntax. The `SetRemoteParams` class from [`set_remote_params.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/set_remote_params.py) provides functionality for nodes to modify each other's [ROS parameters](https://docs.ros.org/en/humble/Concepts/Basic/About-Parameters.html) using [services](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html). The `SetRemoteParams` class streamlines setting another node's parameters to a user-friendly abstraction to reduce redundancy creating cleaner code and increased ease-of-use.
 	```py
 	from .set_remote_params import RemoteParamsClient
 	```
