@@ -18,7 +18,7 @@ from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_msgs.msg import InputStates, DebugInfo
-from h264_image_transport.h264_msgs import Packet
+# from h264_image_transport.h264_msgs import Packet
 
 # Constants
 # MAX_WIDTH   = 1862
@@ -191,7 +191,7 @@ class Dash(Node):
 
         self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
         self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
-        self.create_subscription(Packet, "republish_claw_camera", self.callback_camera, 10)
+        # self.create_subscription(Packet, "republish_claw_camera", self.callback_camera, 10)
         
         # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
         dash_window.add_keystroke_publisher(self.create_publisher(Int32, "keystroke", 10))
