@@ -104,9 +104,9 @@ class PilotInput(Node):
         self.buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
-            "claw":             StickyButton(),     # a
-            "bambi_mode":       StickyButton()      # b
-            # "":               StickyButton(),     # x
+            # "" :              StickyButton(),     # a
+            "bambi_mode":       StickyButton(),     # b
+            "claw":             StickyButton(),     # x
             # "":               StickyButton(),     # y
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
@@ -143,9 +143,9 @@ class PilotInput(Node):
             # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "claw":             joy_msg.buttons[0], # a
+            # "":               joy_msg.buttons[0], # a
             "bambi_mode":       joy_msg.buttons[1], # b
-            # "":               joy_msg.buttons[2], # x
+            "claw":             joy_msg.buttons[2], # x
             # "":               joy_msg.buttons[3], # y
             "pos_angular_x":    joy_msg.buttons[4], # left_bumper
             "neg_angular_x":    joy_msg.buttons[5], # right_bumper
@@ -161,7 +161,7 @@ class PilotInput(Node):
         twist_msg.linear.z  = ((controller["neg_linear_z"] - controller["pos_linear_z"]) / 2)       # depth
         twist_msg.angular.x = (controller["pos_angular_x"] - controller["neg_angular_x"]) * 0.5     # roll (const +/- 0.5 thrust)
         twist_msg.angular.y = controller["angular_y"]   # pitch
-        twist_msg.angular.z = -controller["angular_z"]  # yaw
+        twist_msg.angular.z = controller["angular_z"]  # yaw
 
         # Bambi mode cuts all twist values in half for more precise movements
         if bambi_state := self.buttons["bambi_mode"].check_state(controller["bambi_mode"]):
