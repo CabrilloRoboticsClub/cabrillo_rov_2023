@@ -126,3 +126,17 @@ ros2 launch seahawk kinematics_viz.launch.py
 ```
 
 **Description:** [Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. The `????` node uses RViz to visualize water propulsion from the motors.
+
+---
+### motor_encoding
+- **File:** DNE
+- **Subscribes to:** `/motor_values`
+- **Publishes to:** uhhhhhh
+
+**Run the node:**
+```
+ros2 run seahawk motor_encoding
+```
+
+**Description:** TODO
+ 
