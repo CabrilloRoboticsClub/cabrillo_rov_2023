@@ -107,3 +107,22 @@ Additionally, buttons on the controller contribute to the behavior of the robot.
 ```
 
 **Description:** Liam do things pls
+
+---
+
+### ???????????
+- **File:** [`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/src/seahawk/seahawk_deck/rviz_markers.py)
+- **Subscribes to:** `/motor_values`
+- **Publishes to:** `/motor_debug`
+- **See:** [rviz.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/doc/rviz.md)
+
+**Run the node:**
+```
+# Run the node
+ros2 run seahawk rviz_markers
+
+# Launch Rviz
+ros2 launch seahawk kinematics_viz.launch.py
+```
+
+**Description:** [Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. The `????` node uses RViz to visualize water propulsion from the motors.
