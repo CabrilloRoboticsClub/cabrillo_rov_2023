@@ -79,10 +79,17 @@ The `joy_node` node from the [joy](http://wiki.ros.org/joy) package reads input 
 - **File:** [`pilot_input.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/pilot_input.py)
 - **Subscribes to:** [`/joy`](http://docs.ros.org/en/api/sensor_msgs/html/msg/Joy.html)
 - **Publishes to:** `/desired_twist`, `/claw_state`
+- **Parameters:** TODO
 
 **Run the node:**
 ```console
  ros2 run seahawk pilot_input
 ```
 
-**Description:**
+**Description:** The `pilot_input` node subscribes to the `/joy` topic, mapping `Joy` message contents to its functionality in piloting the robot. Values from the controller are modified if requested, and then republished to topics. 
+
+The bumpers and sticks (axes) are mapped to driving the robot in linear and angular space. From these values, a [`Twist`](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html) message is created specifying the direction (linear/angular x, y, z) and percent of max throttle the pilot wants the robot to move. The throttle may be modified from default by initiating bambi mode and by using throttle curves. Bambi mode cuts all inputs in half for precise movements. Throttle curves change the relationship between the position of the stick and the amount of throttle produced. The pilot may choose a throttle curve using the keyboard, which remotely updates the curve selection on this node using parameters. 
+
+Additionally, buttons on the controller contribute to the behavior of the robot. This includes triggering the claw, whose state is published to the`claw_state` topic. The complete controller mapping can be found below.
+
+![Controller map](/img/controller_map.png)
