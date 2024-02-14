@@ -139,4 +139,17 @@ ros2 run seahawk motor_encoding
 ```
 
 **Description:** TODO
- 
+
+---
+### debug_node
+- **File:** [debug_node.py](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/src/seahawk/seahawk_rov/debug_node.py)
+- **Publishes to:** `/debug_info`
+
+**Run the node:**
+```
+ros2 run seahawk debug_node
+```
+
+**Description:** TODO
+
+Also add microros things here
