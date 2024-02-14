@@ -93,3 +93,17 @@ The bumpers and sticks (axes) are mapped to driving the robot in linear and angu
 Additionally, buttons on the controller contribute to the behavior of the robot. This includes triggering the claw, whose state is published to the`claw_state` topic. The complete controller mapping can be found below.
 
 ![Controller map](/img/controller_map.png)
+
+---
+### thrust
+- **File:** [`thrust.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/thrust.py)
+- **Subscribes to:** `/desired_twist`
+- **Publishes to:** `/motor_values`
+- **Parameters:** `center_of_mass_offset`
+
+**Run the node:**
+```console
+ ros2 run seahawk thrust
+```
+
+**Description:** Liam do things pls
