@@ -123,9 +123,11 @@ class PilotInput(Node):
         # Check value of key_input and assign it to a polynomial to modify joy_msg
         match self.__key_input:  # functionality needs to be added for adding value to key_input
             case "1":
-                twist_msg  # Linear joystick input, key '1'.
+                twist_msg  # Linear joystick input, key '1'. For simple constant acceleration.
             case "2":
-                pow(twist_msg, 3)  # Cubed joystick input, key '2'.
+                pow(twist_msg, 3)  # Cubed joystick input, key '2'. Median between both curves.
+            case "3":
+                pow(twist_msg, 5)  # Quintuple joystick input, key '3'. Helpful for quick acceleration.
             case __:
                 print("No keyboard input")  # Maybe helpful for debugging.
 
