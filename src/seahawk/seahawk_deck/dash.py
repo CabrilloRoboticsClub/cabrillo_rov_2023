@@ -4,12 +4,17 @@ from threading import Thread
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
-# from PyQt5 import QtGui as qtg
+from cv_bridge import CvBridge, CvBridgeError
+from PyQt5 import QtGui as qtg
 # from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
 from std_msgs.msg import Int32
+from sensor_msgs.msg import Image
+from rclpy.executors import ExternalShutdownException
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -17,14 +22,9 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_deck.dash_widgets.image_view import Image_View
 from seahawk_msgs.msg import InputStates, DebugInfo
-# from h264_image_transport.h264_msgs import Packet
 
-# Constants
-# MAX_WIDTH   = 1862
-# MAX_HEIGHT  = 1053
-MAX_WIDTH   = 1000  # Temp for debugging
-MAX_HEIGHT  = 600   # Temp for debugging
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
@@ -44,7 +44,6 @@ class MainWindow(qtw.QMainWindow):
         # Set up main window
         self.setWindowTitle("SeaHawk II Dashboard")
         self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
-        # self.setGeometry(0, 0, MAX_WIDTH, MAX_HEIGHT)
 
         # Create tabs
         self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt")
@@ -53,9 +52,8 @@ class MainWindow(qtw.QMainWindow):
         self.keystroke_pub = None
 
         # Display window
-        # self.show()
         self.showMaximized()
-    
+
     def keyPressEvent(self, a0: QKeyEvent) -> None:
         """
         Called for each time there is a keystroke. Publishes the code of the key that was
@@ -126,12 +124,13 @@ class TabWidget(qtw.QWidget):
             - IMU:              Displays the IMU readings as a turn/bank indicator (graphic to help keep constant acceleration)
             - Countdown:        Displays a countdown
         """
+        # Setup layouts
         home_window_layout = qtw.QHBoxLayout(tab)
         vert_widgets_layout = qtw.QVBoxLayout()
         vert_widgets_layout.setSpacing(0)
         cam_layout = qtw.QVBoxLayout()
 
-        # Create widgetss
+        # Create widgets
         self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
         self.thrt_crv_widget = ThrtCrvWidget(tab)
         self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
@@ -149,9 +148,8 @@ class TabWidget(qtw.QWidget):
         vert_widgets_layout.addWidget(self.countdown_widget, stretch=20)
 
         # Temp code for cameras
-        frame = qtw.QFrame()
-        frame.setStyleSheet("background-color: red;")
-        cam_layout.addWidget(frame)
+        self.label = qtw.QLabel()
+        cam_layout.addWidget(self.label)
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
@@ -166,15 +164,19 @@ class TabWidget(qtw.QWidget):
         """
         self.state_widget.update_state(state_to_update["state_widget"])
         self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
-
-
-def fix_term():
-    """
-    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
-    This is automated in this function
-    """
-    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
-        environ.pop("GTK_PATH")
+    
+    def update_cam_img(self, cam_msg: Image):
+        self.bridge = CvBridge()
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8")
+        except CvBridgeError as error:
+            print(f"Image_View.callback_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
+            sys.exit()
+        
+        height, width, channel = cv_image.shape
+        bytesPerLine = 3 * width
+        frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
+        self.label.setPixmap(qtg.QPixmap(frame))
 
 
 class Dash(Node):
@@ -189,8 +191,12 @@ class Dash(Node):
         super().__init__("dash")
         self.dash_window = dash_window
 
-        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
-        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
+        dash_group = MutuallyExclusiveCallbackGroup()
+        cam_group = MutuallyExclusiveCallbackGroup()
+
+        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10, callback_group=dash_group)
+        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10, callback_group=dash_group)
+        self.create_subscription(Image, "repub_raw", self.callback_img, 10, callback_group=cam_group)
         # self.create_subscription(Packet, "republish_claw_camera", self.callback_camera, 10)
         
         # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
@@ -221,27 +227,40 @@ class Dash(Node):
         }
         self.dash_window.tab_widget.update_pilot_tab_input_states(input_state_dict)
 
-    def callback_camera(self, camera_msg):
-        # self.dash_window.tab_widget.write_framw(camera_msg)
-        pass
+    def callback_img(self, camera_msg: Image):
+        self.dash_window.tab_widget.update_cam_img(camera_msg)
 
     def callback_debug(self):
         pass
 
 
+def fix_term():
+    """
+    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
+    This is automated in this function
+    """
+    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
+        environ.pop("GTK_PATH")
+
+
 def main(args=None):
-    # Setup dashboards
+    rclpy.init(args=args)
+    
     fix_term()
+
+    executor = MultiThreadedExecutor(num_threads=4)
+
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
     
     # Setup node
-    rclpy.init(args=args)
     dash_node = Dash(pilot_dash)
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for rclpy.spin function so the node spins while the dash is running
-    node_thread = Thread(target=rclpy.spin, args=(dash_node,))
+    executor.add_node(dash_node)
+
+    node_thread = Thread(target=executor.spin, args=())
     node_thread.start()
 
     sys.exit(app.exec_())
