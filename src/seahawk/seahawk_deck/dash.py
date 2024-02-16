@@ -12,9 +12,6 @@ from rclpy.node import Node
 from rclpy.publisher import Publisher
 from std_msgs.msg import Int32
 from sensor_msgs.msg import Image
-from rclpy.executors import ExternalShutdownException
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
@@ -22,7 +19,6 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
-from seahawk_deck.dash_widgets.image_view import Image_View
 from seahawk_msgs.msg import InputStates, DebugInfo
 
 COLOR_CONSTS = DARK_MODE
@@ -170,7 +166,7 @@ class TabWidget(qtw.QWidget):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8")
         except CvBridgeError as error:
-            print(f"Image_View.callback_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
+            print(f"update_cam_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
         
         height, width, channel = cv_image.shape
@@ -191,13 +187,9 @@ class Dash(Node):
         super().__init__("dash")
         self.dash_window = dash_window
 
-        dash_group = MutuallyExclusiveCallbackGroup()
-        cam_group = MutuallyExclusiveCallbackGroup()
-
-        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10, callback_group=dash_group)
-        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10, callback_group=dash_group)
-        self.create_subscription(Image, "repub_raw", self.callback_img, 10, callback_group=cam_group)
-        # self.create_subscription(Packet, "republish_claw_camera", self.callback_camera, 10)
+        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
+        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
+        self.create_subscription(Image, "repub_raw", self.callback_img, 10)
         
         # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
         dash_window.add_keystroke_publisher(self.create_publisher(Int32, "keystroke", 10))
@@ -247,20 +239,17 @@ def main(args=None):
     rclpy.init(args=args)
     
     fix_term()
-
-    executor = MultiThreadedExecutor(num_threads=4)
+    # pdb.run()
 
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
-    
+
     # Setup node
     dash_node = Dash(pilot_dash)
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for rclpy.spin function so the node spins while the dash is running
-    executor.add_node(dash_node)
-
-    node_thread = Thread(target=executor.spin, args=())
+    node_thread = Thread(target=rclpy.spin, args=(dash_node,))
     node_thread.start()
 
     sys.exit(app.exec_())
@@ -268,3 +257,7 @@ def main(args=None):
 
 if __name__ == "__main__":
     main(sys.argv)
+
+# Global variables (image variable) make it so the ro scallbacks are simple
+# Take the message and put it somewhere the qt thread can access. Then emmit a sgnal that tells it to do stuff
+# 
