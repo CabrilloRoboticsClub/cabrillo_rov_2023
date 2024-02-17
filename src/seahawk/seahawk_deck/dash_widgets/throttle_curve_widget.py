@@ -62,7 +62,7 @@ class ThrtCrvWidget(qtw.QWidget):
         """
 
         # Fetch throttle curve image based on thrt_crv param value
-        self.__throttle_curve_img = qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_func_{thrt_crv}.svg")
+        self.__throttle_curve_img = qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_func_{thrt_crv}.png")
 
         # Create a layout for image to be placed in. Is curve_layout the parent?
         curve_layout = qtw.QVBoxLayout(self)
