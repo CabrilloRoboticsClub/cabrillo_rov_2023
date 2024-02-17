@@ -25,7 +25,6 @@ class ThrtCrvWidget(qtw.QWidget):
 
         NUM_CURVES = 3
         self.__throttle_crv_imgs = {i : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(NUM_CURVES)}
-        # ^ variable for added details to throttle curve widget
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -39,9 +38,11 @@ class ThrtCrvWidget(qtw.QWidget):
         layout_inner = qtw.QVBoxLayout(self.frame)
         self.frame.setLayout(layout_inner)
 
+        # Qlabel allows text and images to be displayed as widget
         self.__label = qtw.QLabel()
         self.__label.setPixmap(self.__throttle_crv_imgs[0])
 
+        # Add widget to layout
         layout_inner.addWidget(self.__label)
 
         self.setStyleSheet(
@@ -61,6 +62,7 @@ class ThrtCrvWidget(qtw.QWidget):
             Index of throttle curve to update (also the key you press to change it)
         """
 
+        # Grab the specific throttle curve img needed to be displayed on widget
         self.__label.setPixmap(self.throttle_crv_imgs[thrt_crv])
 
 
