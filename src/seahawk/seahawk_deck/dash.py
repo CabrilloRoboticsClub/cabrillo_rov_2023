@@ -10,7 +10,7 @@ from PyQt5 import QtGui as qtg
 import rclpy
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
-from std_msgs.msg import Int32
+from std_msgs.msg import String
 from sensor_msgs.msg import Image
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
@@ -55,9 +55,16 @@ class MainWindow(qtw.QMainWindow):
         Called for each time there is a keystroke. Publishes the code of the key that was
         pressed or released to the ROS topic 'keystroke'
         """
-        msg = Int32()
-        msg.data = a0.key()
+        msg = String()
+        data = ""
+        try:
+            data = chr(a0.key())
+        except ValueError:
+            data = "Invalid key"
+        # self.set_params.update_params("throttle_curve", param_val)
+        msg.data = data
         self.keystroke_pub.publish(msg)
+
 
     def add_keystroke_publisher(self, pub: Publisher):
         """
@@ -190,9 +197,9 @@ class Dash(Node):
         self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
         self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
         self.create_subscription(Image, "repub_raw", self.callback_img, 10)
-        
+
         # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
-        dash_window.add_keystroke_publisher(self.create_publisher(Int32, "keystroke", 10))
+        dash_window.add_keystroke_publisher(self.create_publisher(String, "keystroke", 10))
 
     def callback_input_states(self, input_state_msg: InputStates): 
         """
