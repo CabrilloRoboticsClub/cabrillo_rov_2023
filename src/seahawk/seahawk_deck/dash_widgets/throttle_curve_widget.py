@@ -24,7 +24,8 @@ class ThrtCrvWidget(qtw.QWidget):
         super().__init__(parent)
 
         NUM_CURVES = 3
-        self.__thrt_crv_imgs = {i : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(NUM_CURVES)}
+        self.__throttle_widget_details = {i : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_detail_{i}.svg") for i in range(NUM_CURVES)}
+        # ^ variable for added details to throttle curve widget
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -39,7 +40,7 @@ class ThrtCrvWidget(qtw.QWidget):
         self.frame.setLayout(layout_inner)
 
         self.__label = qtw.QLabel()
-        self.__label.setPixmap(self.__thrt_crv_imgs[0])
+        self.__label.setPixmap(self.__throttle_widget_details[0])
 
         layout_inner.addWidget(self.__label)
 
@@ -59,4 +60,24 @@ class ThrtCrvWidget(qtw.QWidget):
         Args:
             Index of throttle curve to update (also the key you press to change it)
         """
-        self.__label.setPixmap(self.__thrt_crv_imgs[thrt_crv])
+
+        # Fetch throttle curve image based on thrt_crv param value
+        self.__throttle_curve_img = qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_func_{thrt_crv}.svg")
+
+        # Create a layout for image to be placed in. Is curve_layout the parent?
+        curve_layout = qtw.QVBoxLayout(self)
+        self.setLayout(curve_layout)  # Creates the layout
+
+        # Images and text need Qlabels in order to be displayed
+        self.__curve_label = qtw.QLabel()
+        self.__curve_label.setPixmap(self.__throttle_curve_img)
+
+        # Creates a widget of the svg throttle curve image
+        curve_layout.addWidget(self.__curve_label)
+
+
+
+
+
+        
+        

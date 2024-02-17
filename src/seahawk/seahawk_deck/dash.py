@@ -22,7 +22,7 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
-from seahawk_deck.dash_widgets.image_view import Image_View
+# from seahawk_deck.dash_widgets.image_view import Image_View
 from seahawk_msgs.msg import InputStates, DebugInfo
 
 COLOR_CONSTS = DARK_MODE
@@ -196,7 +196,7 @@ class Dash(Node):
 
         self.create_subscription(InputStates, "input_states", self.callback_input_states, 10, callback_group=dash_group)
         self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10, callback_group=dash_group)
-        self.create_subscription(Image, "repub_raw", self.callback_img, 10, callback_group=cam_group)
+        # self.create_subscription(Image, "repub_raw", self.callback_img, 10, callback_group=cam_group)
         # self.create_subscription(Packet, "republish_claw_camera", self.callback_camera, 10)
         
         # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
