@@ -3,7 +3,7 @@ Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/cabrill
 
 ## Graph
 ```mermaid
-flowchart TB
+flowchart LR
  subgraph seahawk_deck
         direction LR
         id_in --- id_desired_twist[desired_twist]:::top--> id_thrust(thrust):::node
@@ -21,7 +21,7 @@ flowchart TB
         id_xbox(Xbox One Controller):::out ---> id_joy_n(joy_node):::out
         id_joy_n(joy_node):::out --- id_joy_t[joy]:::top ---> id_in(pilot_input):::node
     end
-    classDef node stroke:#CF9FFF, fill:#373038
+    classDef node stroke:#9172f8, fill:#373038
     classDef out stroke:#F12626, fill:#573838
     classDef top fill:#949494, stroke:#949494
 ```
@@ -79,16 +79,16 @@ The `joy_node` node from the [joy](http://wiki.ros.org/joy) package reads input 
 - **File:** [`pilot_input.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/pilot_input.py)
 - **Subscribes to:** [`/joy`](http://docs.ros.org/en/api/sensor_msgs/html/msg/Joy.html)
 - **Publishes to:** `/desired_twist`, `/claw_state`
-- **Parameters:** TODO
+- **Parameters:** `throttle_curve_choice`
 
 **Run the node:**
 ```console
  ros2 run seahawk pilot_input
 ```
 
-**Description:** The `pilot_input` node subscribes to the `/joy` topic, mapping `Joy` message contents to its functionality in piloting the robot. Values from the controller are modified if requested, and then republished to topics. 
+**Description:** The `pilot_input` node subscribes to the `/joy` topic, mapping `Joy` message contents to its functionality piloting the robot. Values from the controller are modified if requested, and then republished to topics. 
 
-The bumpers and sticks (axes) are mapped to driving the robot in linear and angular space. From these values, a [`Twist`](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html) message is created specifying the direction (linear/angular x, y, z) and percent of max throttle the pilot wants the robot to move. The throttle may be modified from default by initiating bambi mode and by using throttle curves. Bambi mode cuts all inputs in half for precise movements. Throttle curves change the relationship between the position of the stick and the amount of throttle produced. The pilot may choose a throttle curve using the keyboard, which remotely updates the curve selection on this node using parameters. 
+The bumpers and sticks (axes) are mapped to driving the robot in linear and angular space. From these values, a [`Twist`](http://docs.ros.org/en/melodic/api/geometry_msgs/html/msg/Twist.html) message is created specifying the direction ($\pm$ linear/angular x, y, z) and percent of max throttle the pilot wants the robot to move. The throttle may be modified from default by initiating bambi mode and by using throttle curves. Bambi mode cuts all inputs in half for precise movements. Throttle curves change the relationship between the position of the stick and the amount of throttle produced. The pilot may choose a throttle curve using the keyboard, which remotely updates the curve selection on this node using parameters. 
 
 Additionally, buttons on the controller contribute to the behavior of the robot. This includes triggering the claw, whose state is published to the`claw_state` topic. The complete controller mapping can be found below.
 
