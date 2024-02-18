@@ -25,6 +25,7 @@ cabrillorobotics@gmail.com
 """
 import rclpy 
 import psutil
+from time import time
 from psutil._common import bytes2human
 from rclpy.node import Node 
 from seahawk_msgs.msg import DebugInfo
@@ -65,6 +66,8 @@ class Debug(Node):
 
         msg.net_sent = sent
         msg.net_recv = recv
+
+        msg.time = time()
 
         self._publisher.publish(msg)
 
