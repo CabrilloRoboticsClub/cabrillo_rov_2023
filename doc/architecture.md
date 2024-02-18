@@ -92,7 +92,7 @@ The bumpers and sticks (axes) are mapped to driving the robot in linear and angu
 
 Additionally, buttons on the controller contribute to the behavior of the robot. This includes triggering the claw, whose state is published to the`claw_state` topic. The complete controller mapping can be found below.
 
-![Controller map](/img/controller_map.png)
+<img src="img/controller_map.png" width="700">
 
 ---
 ### thrust
