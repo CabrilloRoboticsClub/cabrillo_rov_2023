@@ -9,8 +9,8 @@ Documentation for the software in this repo is found in the [`doc`](https://gith
 | Documentation content | File |
 | ---- | ---- | 
 | Project architecture | [architecture.md ](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/architecture.md) | 
-| Notes on the cameras| [camera_notes.md ](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/architecture.md) | 
-| Getting started developing | [getting_started.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/camera_notes.md) | 
+| Notes on the cameras| [camera_notes.md ](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/camera_notes.md) | 
+| Getting started developing | [getting_started.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/getting_started.md) | 
 | Using Git/GitHub | [github.md ](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/github.md) |
 | ROS parameters and the SetRemoteParams class| [params.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/params.md) | 
 | Using and updating RViz | [rviz.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/rviz.md) | 
