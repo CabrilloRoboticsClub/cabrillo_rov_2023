@@ -15,6 +15,7 @@ Documentation for the software in this repo is found in the [`doc`](https://gith
 | ROS parameters and the SetRemoteParams class| [params.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/params.md) | 
 | Using and updating RViz | [rviz.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/rviz.md) | 
 | Running the project | [run.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/run.md) | 
+| Collecting and running ROS bags | [ros_bags.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/ros_bags.md) | 
 | Miscellaneous notes on the ROS packaging process | [rosdep_notes.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/rosdep_notes.md) | 
 | Project style guide (Python) | [style_guide_python.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/doc/style_guide_python.md) | 
 
