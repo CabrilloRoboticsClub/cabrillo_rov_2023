@@ -97,7 +97,7 @@ class PilotInput(Node):
 
         # Create and store parameter which determines which throttle curve
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
-        self.declare_parameter("throttle_curve_choice", "0")
+        self.declare_parameter("throttle_curve_choice", "1")
         self.throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
 
         # Button mapping

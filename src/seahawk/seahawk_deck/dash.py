@@ -19,7 +19,9 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_deck.set_remote_params import SetRemoteParams
 from seahawk_msgs.msg import InputStates, DebugInfo
+
 
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
@@ -46,6 +48,7 @@ class MainWindow(qtw.QMainWindow):
         self.setCentralWidget(self.tab_widget)
 
         self.keystroke_pub = None
+        self.pilot_input_set_params = None
 
         # Display window
         self.showMaximized()
@@ -53,24 +56,36 @@ class MainWindow(qtw.QMainWindow):
     def keyPressEvent(self, a0: QKeyEvent) -> None:
         """
         Called for each time there is a keystroke. Publishes the code of the key that was
-        pressed or released to the ROS topic 'keystroke'
+        pressed or released to the ROS topic 'keystroke' and sets parameters of other nodes
+        dependant on keystrokes
         """
-        msg = String()
-        data = ""
         try:
             data = chr(a0.key())
         except ValueError:
             data = "Invalid key"
-        # self.set_params.update_params("throttle_curve", param_val)
+        
+        # Publish key to 'keystroke' topic
+        msg = String()
         msg.data = data
         self.keystroke_pub.publish(msg)
 
+        # Update throttle curve parameter
+        if data in ["1", "2", "3"]:
+            self.pilot_input_set_params.update_params("throttle_curve_choice", data)
+            self.pilot_input_set_params.send_params()
 
-    def add_keystroke_publisher(self, pub: Publisher):
+
+    def add_publisher(self, pub: Publisher):
         """
         Adds the keystroke publisher to 'MainWindow'
         """
         self.keystroke_pub = pub
+    
+    def add_set_params(self, set_param_obj: SetRemoteParams):
+        """
+        Adds the pilot input set params object to 'MainWindow'
+        """
+        self.pilot_input_set_params = set_param_obj
 
 
 class TabWidget(qtw.QWidget):
@@ -198,8 +213,9 @@ class Dash(Node):
         self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
         self.create_subscription(Image, "repub_raw", self.callback_img, 10)
 
-        # Add keystroke publisher to the dash so it can capture keystrokes and publish them to the ROS network
-        dash_window.add_keystroke_publisher(self.create_publisher(String, "keystroke", 10))
+        dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
+        dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
+
 
     def callback_input_states(self, input_state_msg: InputStates): 
         """
@@ -246,7 +262,6 @@ def main(args=None):
     rclpy.init(args=args)
     
     fix_term()
-    # pdb.run()
 
     app = qtw.QApplication([])
     pilot_dash = MainWindow()
@@ -264,7 +279,3 @@ def main(args=None):
 
 if __name__ == "__main__":
     main(sys.argv)
-
-# Global variables (image variable) make it so the ro scallbacks are simple
-# Take the message and put it somewhere the qt thread can access. Then emmit a sgnal that tells it to do stuff
-# 
