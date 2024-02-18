@@ -43,12 +43,12 @@ GitHub is the free web based platform we and many other software engineers use t
 1. Return to GitHub and open your [settings](https://github.com/settings/) by clicking on your icon then ⚙️ `settings`
 2. Scroll to  🔑 `SSH and GPG keys`
 
-   <img width="300" alt="Tabs" src="https://github.com/steph1111/F23_CS11_SI/assets/96219204/43005ec1-80b4-4a11-8659-41eff2ee83b7">
+   <img width="300" alt="Tabs" src="img/github_settings_menu.png">
 
-4. Click the <img width="80" alt="New SSH Key" src="https://github.com/steph1111/F23_CS11_SI/assets/96219204/7529cd77-805d-4df4-a24d-e10786648852"> button located in the top right corner.
+4. Click the <img width="80" alt="New SSH Key" src="img/new_ssh.png"> button located in the top right corner.
 1. Choose a name for the key (something such that you'll remember what computer/system it was for)
 2. Paste the key from step 2 into the `Key` box
-3. Save the key by clicking <img width="80" alt="Add SSH Key" src="https://github.com/steph1111/F23_CS11_SI/assets/96219204/cb49a8b5-7d60-4498-9595-57634f3f6bba">
+3. Save the key by clicking <img width="80" alt="Add SSH Key" src="img/add_ssh.png">
 
 
 ## 5️ Clone the repository to your system
@@ -116,17 +116,11 @@ Once you have finished a coding session it is a good idea to `push` your commits
 
 ## 4️ Create a pull request
 When you think your code is ready to merge into the main Cabrillo Robotics Code create a pull request. 
-1. Go to the pull requests page on GitHub and click on <img width="80" alt="new pull request" src="https://i.imgur.com/EXaY4og.png">.
+1. Go to the pull requests page on GitHub and click on <img width="80" alt="new pull request" src="img/new_pr.png">.
 2. Select your branch as the branch to compare to.
 3. Add a description of what changes you made and why.
 
 # What are Git and GitHub
 ## Recording 
 *Click on the image to open the [video](https://youtu.be/hzFErKeImTs)*
-[![Watch the video](https://i.imgur.com/ytJSMpi.png)](https://youtu.be/Opt-DSF9d_Y?si=3k5_N0q704sF5LPl "Tiny Hawk: What are Git and GitHub")
-
-<br>
-
-## Slides
-*Click on the image to open the [slides](https://www.canva.com/design/DAFurH8Zj8M/pdIT0beDIdiFNPjTMQ6ZKQ/view?utm_content=DAFurH8Zj8M&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink)*
-[![Slides](https://i.imgur.com/fXF5XmL.png)](https://www.canva.com/design/DAFurH8Zj8M/pdIT0beDIdiFNPjTMQ6ZKQ/view?utm_content=DAFurH8Zj8M&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink "Tiny Hawk: What are Git and GitHub")
+[![Watch the video](img/what_are_git_and_github_yt.png)](https://youtu.be/Opt-DSF9d_Y?si=3k5_N0q704sF5LPl "Tiny Hawk: What are Git and GitHub")
