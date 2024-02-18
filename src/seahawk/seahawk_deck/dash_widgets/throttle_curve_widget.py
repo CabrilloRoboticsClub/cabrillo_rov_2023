@@ -5,8 +5,10 @@ from PyQt5 import QtGui as qtg
 
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 
+
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
+
 
 class ThrtCrvWidget(qtw.QWidget):
     """
@@ -64,11 +66,3 @@ class ThrtCrvWidget(qtw.QWidget):
 
         # Grab the specific throttle curve img needed to be displayed on widget
         self.label.setPixmap(self.throttle_crv_imgs[thrt_crv])
-
-
-
-
-
-
-        
-        
