@@ -24,6 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "debug=seahawk_rov.debug:main",
             "thrust=seahawk_deck.thrust:main",
             "pilot_input=seahawk_deck.pilot_input:main",
             "keyboard=seahawk_deck.keyboard:main",
