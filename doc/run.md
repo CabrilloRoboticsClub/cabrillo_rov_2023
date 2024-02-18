@@ -1,8 +1,19 @@
 # Running the project
 ## 1 Make
-Before anything can be ran, the project has to be made using `make`. This should be ran once per session developing in a separate terminal in the `cabrillo_rov_2023` directory. You will only need to rerun `make` during that session if you modify the launch/setup files.
+The ROS nodes are built with the `colcon` program. A `makefile` is present so we do not have to remember those commands. This should be ran once per session developing in a separate terminal in the `cabrillo_rov_2023` directory. You will only need to rerun `make` during that session if you modify the launch/setup files.
 ```
 make
+```
+The build artifacts are in:
+
+- `build`
+- `install`
+- `log`
+
+Clean the build with:
+
+```console
+make clean 
 ```
 
 ## 2 Source
