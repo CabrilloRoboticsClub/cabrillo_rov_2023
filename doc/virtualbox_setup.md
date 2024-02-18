@@ -199,7 +199,7 @@ GitHub lets you upload an SSH key file for authentication when pushing changes. 
 
 Still from within your terminal, grab a clone of the club code repository:
 
-`git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git`
+`git clone git@github.com:CabrilloRoboticsClub/seahawk.git`
 
 You will be prompted to verify the host fingerprint. You are safe to accept the fingerprint (press enter to continue).
 
@@ -211,7 +211,7 @@ Most likely it's because you don't have an SSH key that GitHub will accept. If y
 
 #### If the connection succeedes
 
-You are now in possession of a clone of the repository in a folder named `cabrillo_rov_2023` in the current directory.
+You are now in possession of a clone of the repository in a folder named `seahawk` in the current directory.
 
 > I like to have mine in a `$HOME/projects` folder. It's not a document so "$HOME/Documents" doesn't quite make sense, so I make a new thing. You can do this, or leave it just there in `$HOME` where you were when cloning it. Folder organization is definitely outside the scope of this document, though, so this will be an exercise for the reader.
 

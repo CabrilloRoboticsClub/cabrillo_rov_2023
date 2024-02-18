@@ -54,7 +54,7 @@ Person 1 and person 2 work in parallel
 1. in the first window launch the deck
 
 ```console
-source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_deck deck.launch.py
+source ~/seahawk/install/setup.bash && ros2 launch seahawk_deck deck.launch.py
 ```
 
 1. In the second window ssh into the rov
@@ -66,13 +66,13 @@ ssh ubuntu@SeaHawk-ROV.lan
 1. In the second window launch the ROV
 
 ```console
-source ~/cabrillo_rov_2023/install/setup.bash && ros2 launch seahawk_rov rov.launch.py
+source ~/seahawk/install/setup.bash && ros2 launch seahawk_rov rov.launch.py
 ```
 
 1. In the third window open rqt
 
 ```console
-source ~/cabrillo_rov_2023/install/setup.bash && rqt
+source ~/seahawk/install/setup.bash && rqt
 ```
 
 ## YOU ARE READY TO DRIVE THE ROV

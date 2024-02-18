@@ -1,5 +1,5 @@
 # Software Architecture
-Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses The Robot Operating System (ROS) for its modularity and tools for developing software specifically to robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes preform tasks then communicate messages over topics.
+Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/seahawk/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses The Robot Operating System (ROS) for its modularity and tools for developing software specifically to robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes preform tasks then communicate messages over topics.
 
 ## Graph
 ```mermaid
@@ -76,7 +76,7 @@ The `joy_node` node from the [joy](http://wiki.ros.org/joy) package reads input 
 
 ---
 ### pilot_input
-- **File:** [`pilot_input.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/pilot_input.py)
+- **File:** [`pilot_input.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/pilot_input.py)
 - **Subscribes to:** [`/joy`](http://docs.ros.org/en/api/sensor_msgs/html/msg/Joy.html)
 - **Publishes to:** `/desired_twist`, `/claw_state`
 - **Parameters:** `throttle_curve_choice`
@@ -96,7 +96,7 @@ Additionally, buttons on the controller contribute to the behavior of the robot.
 
 ---
 ### thrust
-- **File:** [`thrust.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/thrust.py)
+- **File:** [`thrust.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/thrust.py)
 - **Subscribes to:** `/desired_twist`
 - **Publishes to:** `/motor_values`
 - **Parameters:** `center_of_mass_offset`
@@ -111,10 +111,10 @@ Additionally, buttons on the controller contribute to the behavior of the robot.
 ---
 
 ### ???????????
-- **File:** [`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/src/seahawk/seahawk_deck/rviz_markers.py)
+- **File:** [`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/architecture/src/seahawk/seahawk_deck/rviz_markers.py)
 - **Subscribes to:** `/motor_values`
 - **Publishes to:** `/motor_debug`
-- **See:** [rviz.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/doc/rviz.md)
+- **See:** [rviz.md](https://github.com/CabrilloRoboticsClub/seahawk/blob/architecture/doc/rviz.md)
 
 **Run the node:**
 ```
@@ -142,7 +142,7 @@ ros2 run seahawk motor_encoding
 
 ---
 ### debug_node
-- **File:** [debug_node.py](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/architecture/src/seahawk/seahawk_rov/debug_node.py)
+- **File:** [debug_node.py](https://github.com/CabrilloRoboticsClub/seahawk/blob/architecture/src/seahawk/seahawk_rov/debug_node.py)
 - **Publishes to:** `/debug_info`
 
 **Run the node:**

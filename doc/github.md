@@ -55,8 +55,8 @@ GitHub is the free web based platform we and many other software engineers use t
 1. Return to your terminal and navigate using `cd` to where you would like this repo's contents to live with your file system.
 2. Clone the repo and its sub modules.
     ```sh
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    cd ~/cabrillo_rov_2023
+    git clone git@github.com:CabrilloRoboticsClub/seahawk.git
+    cd ~/seahawk
     git submodule init 
     git submodule update
     ```
