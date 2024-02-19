@@ -1,0 +1,78 @@
+TASK 1: Coastal Pioneer Array {
+
+[1.1] Release multi-function node
+Trigger release of multi-func node's recovery float ........... 10pts
+Visually determine failed recovery float ....................... 5pts
+Pull pin & release failed recovery float ...................... 10pts
+Return failed recovery float to surface ........................ 5pts
+Connect recovery line to bale on multi-func node .............. 15pts
+Manually return multi-func node to surface ..................... 5pts
+
+}
+
+TASK 2: SMART Cables for Ocean Observing {
+
+[2.1] Deploy SMART cable
+Deploy SMART cable on seafloor (1) ............................. 5pts
+Deploy SMART cable on seafloor (2) ............................. 5pts
+Deploy SMART cable on seamount ................................ 10pts
+Place SMART repeater in designated area ....................... 10pts
+Return end of cable to surface ................................. 5pts
+Measure temp to check SMART cable sensor ...................... 15pts
+Retrieve power connector from AUV .............................. 5pts
+Install power connector ....................................... 15pts
+
+}
+
+TASK 3: From the Red Sea to Tennessee {
+
+[3.1] Probiotics 2
+Place irrigation sys in loc ................................... 10pts
+Deploy sprinkler on coral head ................................ 10pts
+Activate irrigation sys ....................................... 10pts
+
+
+[3.2] Coral Restoration
+Transplant branching coral .................................... 10pts
+Transplant brain coral (autonomously) ......................... 30pts
+
+
+[3.3] 3D Coral Modeling (Autonomous)
+Create 3D model of coral area ................................. 20pts
+Measure length of coral area .................................. 10pts
+Scale 3D model using len of coral area ......................... 5pts
+Use 3D model to estimate height of coral area ................. 10pts
+
+
+[3.3] 3D Coral Modeling (Manual)
+Measure len of coral area ..................................... 10pts
+Measure height of coral area .................................. 10pts
+Create 3D model of coral area ................................. 10pts
+
+
+[3.4] Determine the Location of Sturgeon Spawning Grounds
+Recover acoustic receiver ..................................... 10pts
+Create graph of sturgeon loc from receiver data ............... 15pts
+Determine spawning site ........................................ 5pts
+Place ADCP .................................................... 10pts
+Recover sediment sample ....................................... 10pts
+
+}
+
+TASK 4: MATE Floats {
+
+Build vertical profile float ................................... 5pts
+Deploy float ................................................... 5pts
+Float comms w/ mission station b4 descent ..................... 10pts
+Float completes vert prof w/ buoyancy engine (1) .............. 10pts
+Float comms data w/ mission station (1) ........................ 5pts
+Data graph of depth vs time (2) ............................... 10pts
+Float completes vert prof w/ buoyancy engine (2) .............. 10pts
+Float comms data w/ mission station (2) ........................ 5pts
+Data graph of depth vs time (2) ............................... 10pts
+
+
+}
+
+
+
