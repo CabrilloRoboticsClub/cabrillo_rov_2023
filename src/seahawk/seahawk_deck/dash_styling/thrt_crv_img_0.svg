@@ -1,5 +1,0 @@
-<svg width="140" height="120" xmlns="http://www.w3.org/2000/svg">
-  <line x1="5" y1="60" x2="135" y2="60" stroke="#8f8c95" stroke-width="2px" stroke-linecap="round" />
-  <line x1="70" y1="5" x2="70" y2="115" stroke="#8f8c95" stroke-width="2px" stroke-linecap="round" />
-  <text x="125" y="115" fill="#9172f8">0</text>
-</svg>

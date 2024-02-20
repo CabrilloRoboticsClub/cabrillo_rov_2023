@@ -18,15 +18,15 @@ class ThrtCrvWidget(qtw.QWidget):
 
     def __init__(self, parent: qtw.QWidget):
         """
-        Initialize feature state widget
+        Initialize throttle curve widget
         
         Args:
-            parent: Widget to overlay 'StateWidget' on
+            parent: Widget to overlay 'ThrtCrvWidget' on
         """
         super().__init__(parent)
 
         NUM_CURVES = 3
-        self.throttle_crv_imgs = {i : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(NUM_CURVES)}
+        self.throttle_crv_imgs = {str(i) : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(1, NUM_CURVES + 1)}
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -42,7 +42,8 @@ class ThrtCrvWidget(qtw.QWidget):
 
         # Qlabel allows text and images to be displayed as widget
         self.label = qtw.QLabel()
-        self.label.setPixmap(self.throttle_crv_imgs[0])
+        # Set default curve as one
+        self.label.setPixmap(self.throttle_crv_imgs["1"])
 
         # Add widget to layout
         layout_inner.addWidget(self.label)
@@ -56,13 +57,12 @@ class ThrtCrvWidget(qtw.QWidget):
             """
         )
 
-    def update_thrt_crv(self, thrt_crv: int):
+    def update_thrt_crv(self, thrt_crv: str):
         """
         Update graphical representation of the throttle curves
 
         Args:
-            Index of throttle curve to update (also the key you press to change it)
+            Key of throttle curve to update
         """
-
         # Grab the specific throttle curve img needed to be displayed on widget
         self.label.setPixmap(self.throttle_crv_imgs[thrt_crv])
