@@ -53,13 +53,12 @@ class CheckList(qtw.QWidget):
         # Add variable for checkBox
         self.checkBox = qtw.QCheckBox()
 
-
        
         # Uncomment later when we add the CSS
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # test.py
-        
+
     """
     def parse_txt_file (self, task_list_file: str):
         
