@@ -70,9 +70,9 @@ class MainWindow(qtw.QMainWindow):
         self.keystroke_pub.publish(msg)
 
         # Update throttle curve parameter
-        if data in ["1", "2", "3"]:
-            self.pilot_input_set_params.update_params("throttle_curve_choice", data)
-            self.pilot_input_set_params.send_params()
+        # if data in ["1", "2", "3"]:
+        #     self.pilot_input_set_params.update_params("throttle_curve_choice", data)
+        #     self.pilot_input_set_params.send_params()
 
 
     def add_publisher(self, pub: Publisher):
@@ -214,7 +214,7 @@ class Dash(Node):
         self.create_subscription(Image, "repub_raw", self.callback_img, 10)
 
         dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
-        dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
+        # dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
     def callback_input_states(self, input_state_msg: InputStates): 
