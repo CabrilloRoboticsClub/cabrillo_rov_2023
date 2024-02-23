@@ -41,7 +41,7 @@ class CheckList(qtw.QWidget):
         frame.setLayout(inner_layout)
 
         # Variable for title of widget
-        category_title = "ALL TASKS: "
+        category_title = "ROV TASKS: "
 
         # Variable for storing sub_cat titles during txt parsing
         sub_category_title = ""
@@ -91,56 +91,3 @@ class CheckList(qtw.QWidget):
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # test.py
-                
-from os import environ
-import sys
-
-from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
-
-# It may be either of these depending on how you run it
-# from seahawk_deck.dash_widgets.check_list import CheckList
-# from dash_widgets.check_list import CheckList
-
-class MainWindow(qtw.QMainWindow):
-    """
-    Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
-    provides the main dash window space to overlay widgets
-    """
-
-    def __init__(self):
-        """
-        Set up the 'MainWindow'
-        """
-        super().__init__()
-
-        # Set up main window
-        self.setWindowTitle("Check List Test")
-
-        # task_list = CheckList(self, "dummy_file.csv", "dummy_file.txt")
-        # self.setCentralWidget(task_list)
-
-        # Display window
-        self.showMaximized()
-
-
-def fix_term():
-    """
-    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
-    This is automated in this function
-    """
-    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
-        environ.pop("GTK_PATH")
-
-
-def main():
-    # Setup dashboards
-    fix_term()
-    app = qtw.QApplication([])
-    pilot_dash = MainWindow()
-    sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-    main()
