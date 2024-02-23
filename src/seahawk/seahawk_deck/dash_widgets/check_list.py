@@ -6,6 +6,8 @@ from PyQt5 import QtCore as qtc
 from seahawk_deck.dash_styling.color_palette import DARK_MODE
 COLOR_CONSTS = DARK_MODE
 
+import re
+
 
 class CheckList(qtw.QWidget):
     """
@@ -39,8 +41,9 @@ class CheckList(qtw.QWidget):
         frame.setLayout(inner_layout)
 
         # Place holders for the category & subcategory strs
-        category_title = ""
+        category_title = "ALL TASKS: "
         sub_category_title = ""
+        task = ""
 
         # Creating labels for text to be displayed on
         self.category = qtw.QLabel()
@@ -48,40 +51,40 @@ class CheckList(qtw.QWidget):
 
         # Giving string values to the created labels
         self.category.setText(category_title)
-        self.sub_category.setText(sub_category_title)
-        
+
         # Add variable for checkBox
         self.checkBox = qtw.QCheckBox()
+
+        in_sub_cat = False
+        
+        # Has the task as a key, and a its # of points as value
+        self.task_dict = {}
+
+        # Variable to store points of each task
+        points = 0
+
+        with open(task_list_file, 'r') as file:
+            for line in file:
+                if line == "[SUB]":
+                    next(file)  # Move one line in the file
+                    sub_category_title = line  # This should give the title of subcategory
+                    self.sub_category.setText(sub_category_title)  # Add this as text to widget
+                    in_sub_cat = True  # We are in a sub category now, so this is true
+                elif line == "[END_SUB]":
+                    in_sub_cat = False  # At the end of a sub category, so this will be false
+                    # Add a couple of white spaces between chunks such as [1.1] & [2.1]
+                else:
+                    task = line
+                    self.checkBox.setText(task)  # is this legal? and is it making and publishing a checkbox?
+                    match = re.search(r'(\d+)pts', line)  # grabs the number before 'pts' in txt file
+                    points = int(match.group(1))  # sets points variable equal to the value grabbed by match
+                    self.task_dict[task] = points  # adds the task with associated pts to dict
 
        
         # Uncomment later when we add the CSS
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # test.py
-
-    """
-    def parse_txt_file (self, task_list_file: str):
-        
-        Reads through the task list file to gather info on tasks to add to widget
-
-        Args:
-            self: current instance of the CheckList class
-            task_list_file: string representing the name of the file that holds the ROV tasks
-        
-        txt_storage = []
-
-        # i want to make a data structure like this ->
-        # vector<pair<string, vector<pair<string, vector<string>>>>> 
-        # so that i can store the text file data in an organized manner, 
-        # but i cant figure out how to format it in python
-
-        with open(task_list_file, 'r') as file:
-            for line in file:
-                if line == "[CAT]":
-                    next(file)  # move ahead one line
-                    txt_storage
-    """
-
                 
 from os import environ
 import sys
