@@ -40,9 +40,13 @@ class CheckList(qtw.QWidget):
         inner_layout = qtw.QVBoxLayout(frame)
         frame.setLayout(inner_layout)
 
-        # Place holders for the category & subcategory strs
+        # Variable for title of widget
         category_title = "ALL TASKS: "
+
+        # Variable for storing sub_cat titles during txt parsing
         sub_category_title = ""
+
+        # Variable for storing tasks during txt parsing
         task = ""
 
         # Creating labels for text to be displayed on
@@ -55,6 +59,7 @@ class CheckList(qtw.QWidget):
         # Add variable for checkBox
         self.checkBox = qtw.QCheckBox()
 
+        # Checks if we're in a sub category
         in_sub_cat = False
         
         # Has the task as a key, and a its # of points as value
@@ -63,6 +68,7 @@ class CheckList(qtw.QWidget):
         # Variable to store points of each task
         points = 0
 
+        # Moves through text file line by line and parses important data
         with open(task_list_file, 'r') as file:
             for line in file:
                 if line == "[SUB]":
@@ -70,7 +76,7 @@ class CheckList(qtw.QWidget):
                     sub_category_title = line  # This should give the title of subcategory
                     self.sub_category.setText(sub_category_title)  # Add this as text to widget
                     in_sub_cat = True  # We are in a sub category now, so this is true
-                elif line == "[END_SUB]":
+                elif line == "[END_SUB]" or line == "":  # maybe redundant?
                     in_sub_cat = False  # At the end of a sub category, so this will be false
                     # Add a couple of white spaces between chunks such as [1.1] & [2.1]
                 else:
