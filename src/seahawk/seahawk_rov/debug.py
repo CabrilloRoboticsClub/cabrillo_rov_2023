@@ -1,11 +1,39 @@
 #!/usr/bin/env python3
+"""
+debug.py
+
+Publish RPi4 Debug info to /debug_info
+
+Copyright (C) 2023-2024 Cabrillo Robotics Club
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Cabrillo Robotics Club
+6500 Soquel Drive Aptos, CA 95003
+cabrillorobotics@gmail.com
+"""
 import rclpy 
 import psutil
+from time import time
 from psutil._common import bytes2human
 from rclpy.node import Node 
 from seahawk_msgs.msg import DebugInfo
 
 class Debug(Node):
+    """
+    Reads system information from RPi4 and publishes it.
+    """
     def __init__(self):
         super().__init__("debug")
         self._publisher = self.create_publisher(DebugInfo, "debug_info", 10)
@@ -38,6 +66,8 @@ class Debug(Node):
 
         msg.net_sent = sent
         msg.net_recv = recv
+
+        msg.time = time()
 
         self._publisher.publish(msg)
 

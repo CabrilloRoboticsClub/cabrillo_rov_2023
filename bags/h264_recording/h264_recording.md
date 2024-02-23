@@ -1,5 +1,5 @@
 # H264 Recording
-The `h264_recording` bag contains a recording of 915 messages from the `/image_raw/h264` topic for a duration of 30 seconds. It's purpose is to replay H264 encoded camera feed to enable remote development without the need for a physical camera.
+The `h264_recording` bag contains a recording of 915 messages from the `/image_raw/h264` topic for a duration of 30 seconds. It's purpose is to replay an H264 encoded camera feed to enable remote development without a physical camera.
 ![Image](/doc/img/h264_recording.gif)
 
 ## Usage
@@ -10,7 +10,7 @@ ros2 bag play bags/h264_recording
 ```
 
 ### RAW messages
-To access raw values from from the recording start by starting the re-publisher.
+To access raw values from the recording start the re-publisher.
 ```console
 ros2 run image_transport republish h264 raw --ros-args -r in/h264:=/image_raw/h264 -r out:=/repub_raw
 ```
@@ -18,10 +18,10 @@ Play the ROS bag.
 ```console
 ros2 bag play bags/h264_recording
 ```
-Messages are published to the `/repub_raw` topic as RGB values.
+Messages are published to the `/repub_raw` topic as `bgr8` values.
 
-### Play in RQT
-Execute the steps described in RAW messages then open rqt with the following command. Note you may need to unset the `GTK_PATH` environment variable if VS Code was installed with Snap.
+### Display in RQT
+Execute the steps described in RAW messages then open RQT with the following command. Note you may need to unset the `GTK_PATH` environment variable if VS Code was installed with Snap.
 ```sh
 rqt
 ```
