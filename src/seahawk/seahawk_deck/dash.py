@@ -173,6 +173,11 @@ class TabWidget(qtw.QWidget):
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
 
+        self.cam_init = True
+        self.cam_height = None
+        self.cam_width = None
+
+
     def update_pilot_tab_input_states(self, state_to_update: str):
         """
         Update gui display of input states
@@ -185,9 +190,15 @@ class TabWidget(qtw.QWidget):
         self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
     
     def update_cam_img(self, cam_msg: Image):
+        # Collect camera geometry if it is the first time opening the camera
+        if self.cam_init:
+            self.cam_height = self.label.height()
+            self.cam_width = self.label.width()
+            self.cam_init = False
+    
         self.bridge = CvBridge()
         try:
-            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8"), (1000, 700))
+            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
         except CvBridgeError as error:
             print(f"update_cam_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
