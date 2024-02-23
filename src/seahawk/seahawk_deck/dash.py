@@ -1,6 +1,7 @@
 import sys
 from os import environ, path
 from threading import Thread
+import cv2
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
@@ -186,7 +187,7 @@ class TabWidget(qtw.QWidget):
     def update_cam_img(self, cam_msg: Image):
         self.bridge = CvBridge()
         try:
-            cv_image = self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8")
+            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8"), (1000, 700))
         except CvBridgeError as error:
             print(f"update_cam_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
