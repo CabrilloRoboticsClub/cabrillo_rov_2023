@@ -29,9 +29,8 @@ setup(
             "pilot_input=seahawk_deck.pilot_input:main",
             "keyboard=seahawk_deck.keyboard:main",
             "rviz_markers=seahawk_deck.rviz_markers:main",
-            "dash=seahawk_deck.dash:main",
             'seahawk_rov = seahawk_rov:main',
-            "debug=seahawk_rov.debug:main",
+            "dash=seahawk_deck.dash:main"
         ],
     },
 )
