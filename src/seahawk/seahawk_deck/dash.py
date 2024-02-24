@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
 from cv_bridge import CvBridge, CvBridgeError
 from PyQt5 import QtGui as qtg
-# from PyQt5 import QtCore as qtc
+from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
@@ -26,6 +26,26 @@ from seahawk_msgs.msg import InputStates, DebugInfo
 
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
+
+# Global messages
+INPUT_STATE_MSG = None
+CAM_MSG = None
+
+
+class RosDashBridge(qtw.QWidget):
+    new_input_state_msg = qtc.pyqtSignal()
+    new_cam_msg = qtc.pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+    def callback_input_states(self, input_state_msg: InputStates):
+        INPUT_STATE_MSG = input_state_msg
+        self.new_input_state_msg.emit()
+
+    def callback_img(self, camera_msg: Image):
+        CAM_MSG = camera_msg
+        self.new_cam_msg.emit()
 
 
 class MainWindow(qtw.QMainWindow):
@@ -75,7 +95,6 @@ class MainWindow(qtw.QMainWindow):
         #     self.pilot_input_set_params.update_params("throttle_curve_choice", data)
         #     self.pilot_input_set_params.send_params()
 
-
     def add_publisher(self, pub: Publisher):
         """
         Adds the keystroke publisher to 'MainWindow'
@@ -108,6 +127,11 @@ class TabWidget(qtw.QWidget):
         """
         super().__init__(parent)
         
+        # Bridge between ros and the dashboard
+        ros_dash_bridge = RosDashBridge()
+        ros_dash_bridge.new_input_state_msg.connect(self.update_pilot_tab_input_states)
+        ros_dash_bridge.new_cam_msg.connect(self.update_cam_img)
+
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
         self.setLayout(layout)
@@ -132,7 +156,7 @@ class TabWidget(qtw.QWidget):
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
-    
+
     def create_pilot_tab(self, tab):
         """
         Creates pilot dash tab with the following widgets:
@@ -173,12 +197,13 @@ class TabWidget(qtw.QWidget):
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
 
+        # Track the camera state. Upon first camera frame, note the dimensions
         self.cam_init = True
         self.cam_height = None
         self.cam_width = None
 
-
-    def update_pilot_tab_input_states(self, state_to_update: str):
+    @qtc.pyqtSlot()
+    def update_pilot_tab_input_states(self):
         """
         Update gui display of input states
 
@@ -186,23 +211,25 @@ class TabWidget(qtw.QWidget):
             feat_state_update: List of values to update for the feature widget
             thrt_crv_update: Updated value for throttle curve
         """
-        self.state_widget.update_state(state_to_update["state_widget"])
-        self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
-    
-    def update_cam_img(self, cam_msg: Image):
+        # self.state_widget.update_state(state_to_update["state_widget"])
+        # self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
+
+    @qtc.pyqtSlot()
+    def update_cam_img(self):
+        print("WHAT IS HAPPENING WHY DO YOU NOT WORK?????????????????????")
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_init:
             self.cam_height = self.label.height()
             self.cam_width = self.label.width()
             self.cam_init = False
-    
+
         self.bridge = CvBridge()
         try:
-            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(cam_msg, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
+            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(CAM_MSG, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
         except CvBridgeError as error:
-            print(f"update_cam_img() failed while trying to convert image from {cam_msg.encoding} to 'bgr8'.\n{error}")
+            print(f"update_cam_img() failed while trying to convert image from {CAM_MSG.encoding} to 'bgr8'.\n{error}")
             sys.exit()
-        
+
         height, width, channel = cv_image.shape
         bytesPerLine = 3 * width
         frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
@@ -220,45 +247,14 @@ class Dash(Node):
         """
         super().__init__("dash")
         self.dash_window = dash_window
+    
+        ros_dash_bridge = RosDashBridge()
 
-        self.create_subscription(InputStates, "input_states", self.callback_input_states, 10)
-        self.create_subscription(DebugInfo, "debug_info", self.callback_debug, 10)
-        self.create_subscription(Image, "repub_raw", self.callback_img, 10)
-
+        self.create_subscription(InputStates, "input_states", ros_dash_bridge.callback_input_states, 10)
+        # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
+        self.create_subscription(Image, "repub_raw", ros_dash_bridge.callback_img, 10)
         dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
         # dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
-
-
-    def callback_input_states(self, input_state_msg: InputStates): 
-        """
-        For every message published to the 'input_states' topic, update the relevant values on the gui 
-
-        Updates dash representation of:
-            - Bambi mode
-            - Claw state 
-            - CoM shift
-            - Throttle curve option
-        Based on values from 'input_states' topic
-
-        Args:
-            input_state_msg: Message from the type 'InputStates' from the 'input_states' topic
-        """
-        # Map the values sent from 'input_states' to feature names
-        input_state_dict = {
-            "state_widget": {
-                "Bambi Mode":   input_state_msg.bambi_mode,
-                "Claw":         input_state_msg.claw_state,
-                "CoM Shift":    input_state_msg.com_shift,
-            },
-            "throttle_curve":   int(input_state_msg.throttle_curve),
-        }
-        self.dash_window.tab_widget.update_pilot_tab_input_states(input_state_dict)
-
-    def callback_img(self, camera_msg: Image):
-        self.dash_window.tab_widget.update_cam_img(camera_msg)
-
-    def callback_debug(self):
-        pass
 
 
 def fix_term():
