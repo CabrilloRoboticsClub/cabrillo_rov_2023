@@ -1,5 +1,5 @@
 # Software Architecture
-Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/seahawk/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses The Robot Operating System (ROS) for its modularity and tools for developing software specifically to robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes preform tasks then communicate messages over topics.
+Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/seahawk/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses The Robot Operating System (ROS) for its modularity and tools for developing software specifically to robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes preform tasks then communicate messages over topics. This document describes the organization of node, their function, and the topics over which they communicate.
 
 ## Graph
 ```mermaid
@@ -13,10 +13,10 @@ flowchart LR
 
     subgraph seahawk_rov
         direction LR
-        id_motor_encoding ---> id(aaaaaaaaaaaaaaaaaaaaa)
+        debug_id(debug)
     end
 
-    subgraph .
+    subgraph external
         direction TB
         id_xbox(Xbox One Controller):::out ---> id_joy_n(joy_node):::out
         id_joy_n(joy_node):::out --- id_joy_t[joy]:::top ---> id_in(pilot_input):::node
