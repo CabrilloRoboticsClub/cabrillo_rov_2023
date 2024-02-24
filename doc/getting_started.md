@@ -64,7 +64,7 @@ If you have Ubuntu 22.04 on your desktop you don't need a dev container because 
 
 You Desktop is now a dev box. 
 
-## Raspberry Pi 4 Setup
+## 2 Raspberry Pi 4 Setup
 
 Start by creating a bootable SD card image: 
 
@@ -112,7 +112,7 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
 
 The `make rov-install` command installs ROS2 and creates user accounts on the Raspberry Pi. After rebooting you should be able to login with your own username. 
 
-## Using vscode to Connect to a Pi
+### Using vscode to Connect to a Pi
 
 The best way to access the Raspberry Pi for software development is using vscode. You can use the access to develop and test nodes that run on the Pi or to just start the ROV during development of deck nodes. Assuming you have your own computer setup per the instructions above, perform the following steps to access the Pi. 
 
