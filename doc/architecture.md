@@ -106,11 +106,11 @@ Additionally, buttons on the controller contribute to the behavior of the robot.
  ros2 run seahawk thrust
 ```
 
-**Description:** Liam do things pls
+**Description:** The `thrust` node converts a `Twist` message specifying the pilot's desired direction ($\pm$ linear/angular x, y, z) and percent of max throttle into the amount of thrust in Newtons each motor should produce.
 
 ---
 
-### ???????????
+### rviz_markers
 - **File:** [`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/architecture/src/seahawk/seahawk_deck/rviz_markers.py)
 - **Subscribes to:** `/motor_values`
 - **Publishes to:** `/motor_debug`
@@ -125,31 +125,26 @@ ros2 run seahawk rviz_markers
 ros2 launch seahawk kinematics_viz.launch.py
 ```
 
-**Description:** [Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. The `????` node uses RViz to visualize water propulsion from the motors.
+**Description:** [Rviz](http://wiki.ros.org/rviz) (ROS Visualization) is a 3D tool which enables developers to view the functionality of a robot virtually. This is useful for software development before the physical robot is completed or for remote work. The `rviz_markers` node uses RViz to visualize water propulsion from the motors.
 
----
-### motor_encoding
-- **File:** DNE
-- **Subscribes to:** `/motor_values`
-- **Publishes to:** uhhhhhh
+--- 
 
-**Run the node:**
-```
-ros2 run seahawk motor_encoding
-```
-
-**Description:** TODO
-
----
 ### debug_node
-- **File:** [debug_node.py](https://github.com/CabrilloRoboticsClub/seahawk/blob/architecture/src/seahawk/seahawk_rov/debug_node.py)
+- **File:** [debug.py](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_rov/debug.py)
 - **Publishes to:** `/debug_info`
 
 **Run the node:**
 ```
-ros2 run seahawk debug_node
+ros2 run seahawk debug
 ```
 
-**Description:** TODO
+**Description:** Publishes diagnostic information from the Raspberry Pi. The message published to `/debug_info` contains the following contents 
+| Type | Name | Description | 
+|:----| :---- | :---------- | 
+| `float64` | `cpu_usage` | The CPU usage in %| 
+| `float64` | `memory_usage` | The memory usage in %| 
+| `float64` | `cpu_temperature` | The CPU temperature in C| 
+| `string` | `net_sent` | The number of bytes sent, string contains denomination| 
+| `string` | `net_recv` | The number of bytes received, string contains denomination | 
+| `float64` | time | The time of when measurements were read | 
 
-Also add microros things here
