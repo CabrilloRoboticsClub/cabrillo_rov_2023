@@ -3,10 +3,11 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-COLOR_CONSTS = DARK_MODE
+# from seahawk_deck.dash_styling.color_palette import DARK_MODE
+# COLOR_CONSTS = DARK_MODE
 
 import re
+import json
 
 
 class CheckList(qtw.QWidget):
@@ -40,54 +41,95 @@ class CheckList(qtw.QWidget):
         inner_layout = qtw.QVBoxLayout(frame)
         frame.setLayout(inner_layout)
 
-        # Variable for title of widget
-        category_title = "ROV TASKS: "
-
-        # Variable for storing sub_cat titles during txt parsing
-        sub_category_title = ""
-
-        # Variable for storing tasks during txt parsing
-        task = ""
-
         # Creating labels for text to be displayed on
-        self.category = qtw.QLabel()
-        self.sub_category = qtw.QLabel()
+        self.title = qtw.QLabel()
+        self.task_titles = qtw.QLabel()
 
         # Giving string values to the created labels
-        self.category.setText(category_title)
+        self.title.setText("COMPETITION TASKS:")
 
         # Add variable for checkBox
         self.checkBox = qtw.QCheckBox()
 
         # Checks if we're in a sub category
         in_sub_cat = False
-        
+
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
 
         # Variable to store points of each task
         points = 0
 
-        # Moves through text file line by line and parses important data
-        with open(task_list_file, 'r') as file:
-            for line in file:
-                if line == "[SUB]":
-                    next(file)  # Move one line in the file
-                    sub_category_title = line  # This should give the title of subcategory
-                    self.sub_category.setText(sub_category_title)  # Add this as text to widget
-                    in_sub_cat = True  # We are in a sub category now, so this is true
-                elif line == "[END_SUB]" or line == "":  # maybe redundant?
-                    in_sub_cat = False  # At the end of a sub category, so this will be false
-                    # Add a couple of white spaces between chunks such as [1.1] & [2.1]
-                else:
-                    task = line
-                    self.checkBox.setText(task)  # is this legal? and is it making and publishing a checkbox?
-                    match = re.search(r'(\d+)pts', line)  # grabs the number before 'pts' in txt file
-                    points = int(match.group(1))  # sets points variable equal to the value grabbed by match
-                    self.task_dict[task] = points  # adds the task with associated pts to dict
+        # Used later to grab point value out of string task
+        point_search = r"(\d+)pts"
+
+        with open('tasks.json', 'r') as file:
+            data_list = json.load(file)
+
+        for part, tasks_dict in data_list.items():
+            for task_title, tasks_list in tasks_dict.items():
+                self.task_titles.setText(task_title)
+                for task in tasks_list:
+                    self.checkBox.setText(task)
+                    match = re.search(point_search, task)
+                    points = int(match.group(1))
+                    self.task_dict[task] = points
 
        
         # Uncomment later when we add the CSS
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # test.py
+
+from os import environ
+import sys
+
+from PyQt5 import QtWidgets as qtw
+from PyQt5 import QtGui as qtg
+from PyQt5 import QtCore as qtc
+
+# It may be either of these depending on how you run it
+# from seahawk_deck.dash_widgets.check_list import CheckList
+# from dash_widgets.check_list import CheckList
+
+class MainWindow(qtw.QMainWindow):
+    """
+    Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
+    provides the main dash window space to overlay widgets
+    """
+
+    def __init__(self):
+        """
+        Set up the 'MainWindow'
+        """
+        super().__init__()
+
+        # Set up main window
+        self.setWindowTitle("Check List Test")
+
+        # task_list = CheckList(self, "dummy_file.csv", "dummy_file.txt")
+        # self.setCentralWidget(task_list)
+
+        # Display window
+        self.showMaximized()
+
+
+def fix_term():
+    """
+    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
+    This is automated in this function
+    """
+    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
+        environ.pop("GTK_PATH")
+
+
+def main():
+    # Setup dashboards
+    fix_term()
+    app = qtw.QApplication([])
+    pilot_dash = MainWindow()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
