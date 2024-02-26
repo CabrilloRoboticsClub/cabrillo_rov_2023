@@ -1,0 +1,42 @@
+<sdf version="1.6">
+
+  <world name="Product Demo Area">
+
+    <!-- Enable physics -->
+    <physics name="1ms" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin
+      filename="ignition-gazebo-physics-system"
+      name="ignition::gazebo::systems::Physics">
+    </plugin>
+
+    <!-- Allow user to interact with the world -->
+    <plugin
+      filename="ignition-gazebo-user-commands-system"
+      name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+    
+    <plugin
+      filename="ignition-gazebo-scene-broadcaster-system"
+      name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+
+    <!-- Buoyancy (uniform fluid density of 1000 kg/m^3)-->
+    <plugin
+      filename="ignition-gazebo-buoyancy-system"
+      name="ignition::gazebo::systems::Buoyancy">
+      <uniform_fluid_density>1000</uniform_fluid_density>
+    </plugin>
+
+    <include>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>seahawk_2_enhanced</uri>
+    </include>
+
+    <!-- TODO: Add MATE props -->
+
+  </world>
+</sdf>
