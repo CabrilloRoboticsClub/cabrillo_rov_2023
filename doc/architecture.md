@@ -1,5 +1,5 @@
 # Software Architecture
-Much its predecessors, [SeaHawk](https://github.com/CabrilloRoboticsClub/seahawk/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses The Robot Operating System (ROS) for its modularity and tools for developing software specifically to robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes preform tasks then communicate messages over topics. This document describes the organization of node, their function, and the topics over which they communicate.
+Much its predecessors, [SeaHawk I](https://github.com/CabrilloRoboticsClub/seahawk/releases/tag/MATEROV-2023) and [Hydrozoa](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2022), SeaHawk II uses the Robot Operating System (ROS) for its modularity and tools for developing software for robotics. Specifically, SeaHawk II uses [ROS2 Humble](https://docs.ros.org/en/humble/index.html). ROS provides a framework in which nodes perform tasks and then communicate messages over topics. This document describes the organization of nodes, their function, and the topics over which they communicate.
 
 ## Graph
 ```mermaid
