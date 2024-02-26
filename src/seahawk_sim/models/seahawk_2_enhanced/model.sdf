@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<sdf version="1.9">
+    <!-- Merge seahawk_2 model with seahawk_2_enhanced -->
+    <model name="seahawk_2">
+        <include merge="true">
+        <uri>seahawk_2</uri>
+        </include>
+    
+        <!--Robot hydrodynamics-->
+        <!--https://gazebosim.org/api/gazebo/5.0/classignition_1_1gazebo_1_1systems_1_1Hydrodynamics.html-->
+        <plugin
+            filename="ignition-gazebo-hydrodynamics-system"
+            name="ignition::gazebo::systems::Hydrodynamics">
+                <link_name>base_link</link_name>
+                <xDotU></xDotU>     <!--Added mass in x direction [kg]-->
+                <yDotV></yDotV>     <!--Added mass in y direction [kg]-->
+                <zDotW></zDotW>     <!--Added mass in z direction [kg]-->
+                <kDotP></kDotP>     <!--Added mass in roll direction [kgm^2]-->
+                <mDotQ></mDotQ>     <!--Added mass in pitch direction [kgm^2]-->
+                <nDotR></nDotR>     <!--Added mass in yaw direction [kgm^2]-->
+                <xUU></xUU>         <!--Stability derivative, 2nd order, x component [kg/m]-->
+                <xU></xU>           <!--Stability derivative, 1st order, x component [kg]-->
+                <yVV></yVV>         <!--Stability derivative, 2nd order, y component [kg/m]-->
+                <yV></yV>           <!--Stability derivative, 1st order, y component [kg]-->
+                <zWW></zWW>         <!--Stability derivative, 2nd order, z component [kg/m]-->
+                <zW></zW>           <!--Stability derivative, 1st order, z component [kg]-->
+                <kPP></kPP>         <!--Stability derivative, 2nd order, roll component [kg/m^2]-->
+                <kP></kP>           <!--Stability derivative, 1st order, roll component [kg/m]-->
+                <mQQ></mQQ>         <!--Stability derivative, 2nd order, pitch component [kg/m^2]-->
+                <mQ></mQ>           <!--Stability derivative, 1st order, pitch component [kg/m]-->
+                <nRR></nRR>         <!--Stability derivative, 2nd order, yaw component [kg/m^2]-->
+                <nR></nR>           <!--Stability derivative, 1st order, yaw component [kg/m]-->
+        </plugin>
+
+    <!--Thrusters-->
+    <!--https://gazebosim.org/api/sim/8/classgz_1_1sim_1_1systems_1_1Thruster.html-->
+    <plugin
+        filename="ignition-gazebo-thruster-system"
+        name="ignition::gazebo::systems::Thruster">
+        <namespace>seahawk_2</namespace>
+        <joint_name>TODO</joint_name>               <!--Joint in the model which corresponds to the propeller. [Required]-->
+        <thrust_coefficient></thrust_coefficient>   <!--See docs above-->
+        <topic><topic>                              <!--Topic to listnen to for motor thrust-->
+        <fluid_density>1000</fluid_density>         <!--Standard density of water-->
+        <propeller_diameter></propeller_diameter>   <!--The diameter of the propeller in meters-->
+    </plugin>
+    
+    </model>
+</sdf>
