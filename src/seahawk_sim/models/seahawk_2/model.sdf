@@ -1,0 +1,3 @@
+<!-- Isaac: Needs thruster joints, which are type revolute -->
+<!-- Isaac: Each propeller should be a separate link -->
+<!-- Steph: Add collisions for restoring moment -->
