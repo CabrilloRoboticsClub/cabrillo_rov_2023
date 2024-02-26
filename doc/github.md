@@ -98,9 +98,9 @@ Once you make some changes you would like to be documented you need to `commit` 
      ```sh
      git commit -m "Message here"
      ```
-     If you want to write a longer commit message use the `-a` flag. This will open a CLI editor.
+     If you want to write a longer commit message use the `-v` flag. This will open a CLI editor.
      ```sh
-     git commit -a
+     git commit -v
      ```
 2. You will receive a short message summarizing the changes
 
