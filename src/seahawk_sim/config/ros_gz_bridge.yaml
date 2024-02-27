@@ -1,0 +1,8 @@
+# Bridge of ROS and Gazebo topics
+# See: https://github.com/gazebosim/ros_gz/tree/humble/ros_gz_bridge
+
+# Bridge /motor_values
+- topic_name: "/motor_values"
+  ros_type_name: "std_msgs/msg/Float32MultiArray"
+  gz_type_name: "ignition.msgs.Float_V"
+  direction: ROS_TO_GZ
