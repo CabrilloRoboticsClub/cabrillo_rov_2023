@@ -32,7 +32,7 @@ INPUT_STATE_MSG = None
 CAM_MSG = None
 
 
-class RosDashBridge(qtw.QWidget):
+class RosQtBridge(qtw.QWidget):
     new_input_state_msg = qtc.pyqtSignal()
     new_cam_msg = qtc.pyqtSignal()
 
@@ -54,7 +54,7 @@ class MainWindow(qtw.QMainWindow):
     provides the main dash window space to overlay widgets
     """
 
-    def __init__(self):
+    def __init__(self, ros_qt_bridge):
         """
         Set up the 'MainWindow', overlay 'TabWidget's for multiple dash views, and display window
         """
@@ -65,7 +65,7 @@ class MainWindow(qtw.QMainWindow):
         self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
 
         # Create tabs
-        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt")
+        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt", ros_qt_bridge)
         self.setCentralWidget(self.tab_widget)
 
         self.keystroke_pub = None
@@ -117,7 +117,7 @@ class TabWidget(qtw.QWidget):
     show a different page by clicking on its tab
     """
 
-    def __init__(self, parent: MainWindow, style_sheet_file: str):
+    def __init__(self, parent: MainWindow, style_sheet_file: str, ros_qt_bridge):
         """
         Initialize tab widget
 
@@ -128,9 +128,8 @@ class TabWidget(qtw.QWidget):
         super().__init__(parent)
         
         # Bridge between ros and the dashboard
-        ros_dash_bridge = RosDashBridge()
-        ros_dash_bridge.new_input_state_msg.connect(self.update_pilot_tab_input_states)
-        ros_dash_bridge.new_cam_msg.connect(self.update_cam_img)
+        ros_qt_bridge.new_input_state_msg.connect(self.update_pilot_tab_input_states)
+        ros_qt_bridge.new_cam_msg.connect(self.update_cam_img)
 
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
@@ -216,16 +215,15 @@ class TabWidget(qtw.QWidget):
 
     @qtc.pyqtSlot()
     def update_cam_img(self):
-        print("WHAT IS HAPPENING WHY DO YOU NOT WORK?????????????????????")
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_init:
             self.cam_height = self.label.height()
             self.cam_width = self.label.width()
             self.cam_init = False
 
-        self.bridge = CvBridge()
+        bridge = CvBridge()
         try:
-            cv_image = cv2.resize(self.bridge.imgmsg_to_cv2(CAM_MSG, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
+            cv_image = cv2.resize(bridge.imgmsg_to_cv2(CAM_MSG, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
         except CvBridgeError as error:
             print(f"update_cam_img() failed while trying to convert image from {CAM_MSG.encoding} to 'bgr8'.\n{error}")
             sys.exit()
@@ -241,18 +239,16 @@ class Dash(Node):
     Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
     """
 
-    def __init__(self, dash_window):
+    def __init__(self, dash_window, ros_qt_bridge):
         """
         Initialize 'dash' node
         """
         super().__init__("dash")
         self.dash_window = dash_window
-    
-        ros_dash_bridge = RosDashBridge()
 
-        self.create_subscription(InputStates, "input_states", ros_dash_bridge.callback_input_states, 10)
+        self.create_subscription(InputStates, "input_states", ros_qt_bridge.callback_input_states, 10)
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
-        self.create_subscription(Image, "repub_raw", ros_dash_bridge.callback_img, 10)
+        self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_img, 10)
         dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
         # dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
 
@@ -272,10 +268,13 @@ def main(args=None):
     fix_term()
 
     app = qtw.QApplication([])
-    pilot_dash = MainWindow()
+
+    bridge = RosQtBridge()
+
+    pilot_dash = MainWindow(bridge)
 
     # Setup node
-    dash_node = Dash(pilot_dash)
+    dash_node = Dash(pilot_dash, bridge)
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for rclpy.spin function so the node spins while the dash is running
