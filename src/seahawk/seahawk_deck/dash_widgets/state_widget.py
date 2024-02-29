@@ -25,11 +25,11 @@ class StateWidget(qtw.QWidget):
         super().__init__(parent)
 
         # Import state images
-        self.__on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
-        self.__off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
+        self.on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
+        self.off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
 
         # Create a dictionary of label objects
-        self.__label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
+        self.label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -44,9 +44,9 @@ class StateWidget(qtw.QWidget):
         frame.setLayout(layout_inner)
 
         # Set text of each label and add to grid
-        for i, (name, labels) in enumerate(self.__label_dict.items()):
+        for i, (name, labels) in enumerate(self.label_dict.items()):
             labels["feat"].setText(name)
-            labels["state"].setPixmap(self.__off_img)
+            labels["state"].setPixmap(self.off_img)
             # Grid layout:
             # (0, 0)    (0, 1)
             # (1, 0)    (1, 1)
@@ -57,7 +57,7 @@ class StateWidget(qtw.QWidget):
         with open(style_sheet_file) as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
 
-    def update_state(self, states: dict[str: bool]):
+    def update(self, msg):
         """
         Update graphical representation of the feature state
 
@@ -65,8 +65,8 @@ class StateWidget(qtw.QWidget):
             Dictionary in which the name of the feature is the key and the state
             to update it to is the value
         """
-        for feature, state_of_feature in states.items():
+        for feature, state_of_feature in msg.items():
             if state_of_feature:
-                self.__label_dict[feature]["state"].setPixmap(self.__on_img)
+                self.label_dict[feature]["state"].setPixmap(self.on_img)
             else:
-                self.__label_dict[feature]["state"].setPixmap(self.__off_img)       
+                self.label_dict[feature]["state"].setPixmap(self.off_img)       

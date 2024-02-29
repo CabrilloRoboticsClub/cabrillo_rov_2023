@@ -27,25 +27,23 @@ from seahawk_msgs.msg import InputStates, DebugInfo
 COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
-# Global messages
-INPUT_STATE_MSG = None
-CAM_MSG = None
-
 
 class RosQtBridge(qtw.QWidget):
-    new_input_state_msg = qtc.pyqtSignal()
-    new_cam_msg = qtc.pyqtSignal()
+    new_input_state_msg_sgl = qtc.pyqtSignal()
+    new_cam_msg_sgl = qtc.pyqtSignal()
 
     def __init__(self):
         super().__init__()
+        self.cam_msg = None 
+        self.input_state_msg = None
 
-    def callback_input_states(self, input_state_msg: InputStates):
-        INPUT_STATE_MSG = input_state_msg
-        self.new_input_state_msg.emit()
+    def callback_input_states(self, msg: InputStates):
+        self.input_state_msg = msg
+        self.new_input_state_msg_sgl.emit()
 
-    def callback_img(self, camera_msg: Image):
-        CAM_MSG = camera_msg
-        self.new_cam_msg.emit()
+    def callback_img(self, msg: Image):
+        self.cam_msg = msg
+        self.new_cam_msg_sgl.emit()
 
 
 class MainWindow(qtw.QMainWindow):
@@ -127,9 +125,10 @@ class TabWidget(qtw.QWidget):
         """
         super().__init__(parent)
         
-        # Bridge between ros and the dashboard
-        ros_qt_bridge.new_input_state_msg.connect(self.update_pilot_tab_input_states)
-        ros_qt_bridge.new_cam_msg.connect(self.update_cam_img)
+        # Bridge between ros and the rt dashboard
+        self.ros_qt_bridge = ros_qt_bridge
+        self.ros_qt_bridge.new_input_state_msg_sgl.connect(self.update_pilot_tab_input_states)
+        self.ros_qt_bridge.new_cam_msg_sgl.connect(self.update_cam_img)
 
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
@@ -205,16 +204,15 @@ class TabWidget(qtw.QWidget):
     def update_pilot_tab_input_states(self):
         """
         Update gui display of input states
-
-        Args:
-            feat_state_update: List of values to update for the feature widget
-            thrt_crv_update: Updated value for throttle curve
         """
         # self.state_widget.update_state(state_to_update["state_widget"])
         # self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
 
     @qtc.pyqtSlot()
     def update_cam_img(self):
+        """
+        Update gui display of camera frame
+        """
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_init:
             self.cam_height = self.label.height()
@@ -223,9 +221,9 @@ class TabWidget(qtw.QWidget):
 
         bridge = CvBridge()
         try:
-            cv_image = cv2.resize(bridge.imgmsg_to_cv2(CAM_MSG, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
+            cv_image = cv2.resize(bridge.imgmsg_to_cv2(self.ros_qt_bridge.cam_msg, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
         except CvBridgeError as error:
-            print(f"update_cam_img() failed while trying to convert image from {CAM_MSG.encoding} to 'bgr8'.\n{error}")
+            print(f"update_cam_img() failed while trying to convert image from {self.ros_qt_bridge.cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
 
         height, width, channel = cv_image.shape
