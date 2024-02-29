@@ -31,11 +31,15 @@ PATH = path.dirname(__file__)
 class RosQtBridge(qtw.QWidget):
     new_input_state_msg_sgl = qtc.pyqtSignal()
     new_cam_msg_sgl = qtc.pyqtSignal()
+    new_publisher_sgl = qtc.pyqtSignal()
+    new_set_params = qtc.pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.cam_msg = None 
         self.input_state_msg = None
+        self.keystroke_pub = None
+        self.pilot_input_set_params = None
 
     def callback_input_states(self, msg: InputStates):
         self.input_state_msg = msg
@@ -44,6 +48,14 @@ class RosQtBridge(qtw.QWidget):
     def callback_img(self, msg: Image):
         self.cam_msg = msg
         self.new_cam_msg_sgl.emit()
+    
+    def add_publisher(self, pub: Publisher):
+        self.keystroke_pub = pub
+        self.new_publisher_sgl.emit()
+    
+    def add_set_params(self, set_param_obj: SetRemoteParams):
+        self.pilot_input_set_params = set_param_obj
+        self.new_set_params.emit()
 
 
 class MainWindow(qtw.QMainWindow):
@@ -58,19 +70,37 @@ class MainWindow(qtw.QMainWindow):
         """
         super().__init__()
 
+        self.ros_qt_bridge = ros_qt_bridge
+        self.ros_qt_bridge.new_publisher_sgl.connect(self.init_publisher)
+        self.ros_qt_bridge.new_set_params.connect(self.init_set_params)
+        self.keystroke_pub = None
+        self.pilot_input_set_params = None
+
         # Set up main window
         self.setWindowTitle("SeaHawk II Dashboard")
         self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
 
         # Create tabs
-        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt", ros_qt_bridge)
+        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt", self.ros_qt_bridge)
         self.setCentralWidget(self.tab_widget)
 
-        self.keystroke_pub = None
-        self.pilot_input_set_params = None
 
         # Display window
         self.showMaximized()
+    
+    @qtc.pyqtSlot()
+    def init_publisher(self):
+        """
+        Adds the keystroke publisher to 'MainWindow'
+        """
+        self.keystroke_pub = self.ros_qt_bridge.keystroke_pub
+
+    @qtc.pyqtSlot()
+    def init_set_params(self):
+        """
+        Adds the pilot input set params object to 'MainWindow'
+        """
+        self.pilot_input_set_params = self.ros_qt_bridge.pilot_input_set_params
 
     def keyPressEvent(self, a0: QKeyEvent) -> None:
         """
@@ -93,18 +123,6 @@ class MainWindow(qtw.QMainWindow):
             self.pilot_input_set_params.update_params("throttle_curve_choice", data)
             self.pilot_input_set_params.send_params()
             self.tab_widget.thrt_crv_widget.update(data)
-
-    def add_publisher(self, pub: Publisher):
-        """
-        Adds the keystroke publisher to 'MainWindow'
-        """
-        self.keystroke_pub = pub
-    
-    def add_set_params(self, set_param_obj: SetRemoteParams):
-        """
-        Adds the pilot input set params object to 'MainWindow'
-        """
-        self.pilot_input_set_params = set_param_obj
 
 
 class TabWidget(qtw.QWidget):
@@ -252,8 +270,10 @@ class Dash(Node):
         self.create_subscription(InputStates, "input_states", ros_qt_bridge.callback_input_states, 10)
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
         self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_img, 10)
-        dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
-        dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
+        ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
+
+        # dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
+        ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
 def fix_term():
