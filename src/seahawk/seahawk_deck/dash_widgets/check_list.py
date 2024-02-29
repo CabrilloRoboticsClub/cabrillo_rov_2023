@@ -48,7 +48,6 @@ class CheckList(qtw.QWidget):
 
         # Creating a label for the tasks done
         self.tasks_done = qtw.QLabel(parent)
-        # self.tasks_done.setText("TASKS COMPLETED: ")
 
         # Creating a label for points earned
         self.points_earned = qtw.QLabel(parent)
@@ -69,8 +68,6 @@ class CheckList(qtw.QWidget):
 
         # Add the scroll area to the outer layout
         outer_layout.addWidget(scroll_area)
-
-
 
         # Creating the progress bar
         self.progress_bar = qtw.QProgressBar(parent)
@@ -101,24 +98,34 @@ class CheckList(qtw.QWidget):
         # Used later to grab point value out of string task
         point_search = r"(\d+)pts"
 
+        # Int variable that stores total tasks
+        self.total_tasks = 0
+
+        # Int variable that keeps track of how many tasks have been done
+        self.current_tasks = 0
+
+        self.was_check_box_called = False
+
         # Open json file and store it as a dictionary of dictionaries of strings and lists
         with open(task_list_file, 'r') as file:
             data_list = json.load(file)
 
         #inner_layout.addSpacing(100)
 
-        inner_layout.addWidget(self.title)
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.points_earned)
+        outer_layout.addWidget(self.progress_bar)
         inner_layout.addWidget(self.tasks_done)
-        inner_layout.addWidget(self.points_earned)
-        inner_layout.addWidget(self.progress_bar)
 
         for part, tasks_dict in data_list.items():
             for task_title, tasks_list in tasks_dict.items():
-                inner_layout.addSpacing(20)  # Space things out by 20 pixels
+                if self.total_tasks != 0:
+                    inner_layout.addSpacing(20)  # Space things out by 20 pixels
                 self.task_titles = qtw.QLabel(parent)  # Create new task title for each task_title
                 self.task_titles.setText(task_title)  # Set the task_title text
                 inner_layout.addWidget(self.task_titles)  # Add the task title as a widget to the inner layout
                 for task in tasks_list:
+                    self.total_tasks += 1
                     spliced_task = task.split('\t')
                     task = f"{spliced_task[0]:.<70}{spliced_task[1]:>10}"
                     self.checkBox = qtw.QCheckBox(parent)  # Create a new check box for each task
@@ -127,26 +134,30 @@ class CheckList(qtw.QWidget):
                     match = re.search(point_search, task)  # Parse the task for its point value
                     self.points = int(match.group(1))  # Add the point value to the points variable
                     self.total_points += self.points
-                    # task.split('\t')
-                    # optimized_task = f"{task[0]:.<40}{task[1]}"
                     self.task_dict[task] = self.points  # Store the task and its point value in a dictionary
                     inner_layout.addSpacing(10)  # Space the check boxes out
                     self.checkBox.stateChanged.connect(self.check_box_state)  # Keep track of each checkbox state
                     self.show()  # Idk what this is but it helped format things good
+                
+        if self.was_check_box_called == False:
+            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}      TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
 
 
     def check_box_state (self, state):
         sender = self.sender()  # Find the checkbox that was pressed
+
+        was_check_box_called = True
         
         if state == qtc.Qt.Checked:  # If the button has been pressed
+            self.current_tasks += 1
             self.current_points += self.task_dict[sender.text()]  # Add to the current score
-            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}")
 
         else:  # If the button has been de-selected
+            self.current_tasks -= 1
             self.current_points -= self.task_dict[sender.text()]  # Remove from the current score
-            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}")
 
+        self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}      TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
         self.prog_par_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
 
