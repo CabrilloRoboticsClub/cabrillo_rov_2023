@@ -49,7 +49,7 @@ class NumericDataWidget(qtw.QWidget):
         with open(style_sheet_file) as style_sheet:
             self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         
-    def update_data(self, data: str):
+    def update(self, data: str):
         """
         Update data displayed by widget
 

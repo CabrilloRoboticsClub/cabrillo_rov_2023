@@ -57,7 +57,7 @@ class ThrtCrvWidget(qtw.QWidget):
             """
         )
 
-    def update_thrt_crv(self, thrt_crv: str):
+    def update(self, thrt_crv: str):
         """
         Update graphical representation of the throttle curves
 
