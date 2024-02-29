@@ -45,14 +45,13 @@ class CheckList(qtw.QWidget):
 
         # Creating labels for text to be displayed on
         self.title = qtw.QLabel(parent)
+        self.title.setAlignment(qtc.Qt.AlignCenter)
 
-        # Creating a label for the tasks done
-        self.tasks_done = qtw.QLabel(parent)
 
         # Creating a label for points earned
         self.points_earned = qtw.QLabel(parent)
-        self.points_earned.move(100,10)
-        self.points_earned.setWordWrap(True)
+        self.points_earned.setAlignment(qtc.Qt.AlignCenter)
+        #self.points_earned.setWordWrap(True)
 
         # Giving string values to the created labels
         self.title.setText("TASKS:")
@@ -104,6 +103,7 @@ class CheckList(qtw.QWidget):
         # Int variable that keeps track of how many tasks have been done
         self.current_tasks = 0
 
+        # Checks if the function check_box_state was called
         self.was_check_box_called = False
 
         # Open json file and store it as a dictionary of dictionaries of strings and lists
@@ -115,7 +115,7 @@ class CheckList(qtw.QWidget):
         outer_layout.addWidget(self.title)
         outer_layout.addWidget(self.points_earned)
         outer_layout.addWidget(self.progress_bar)
-        inner_layout.addWidget(self.tasks_done)
+        
 
         for part, tasks_dict in data_list.items():
             for task_title, tasks_list in tasks_dict.items():
@@ -127,8 +127,9 @@ class CheckList(qtw.QWidget):
                 for task in tasks_list:
                     self.total_tasks += 1
                     spliced_task = task.split('\t')
-                    task = f"{spliced_task[0]:.<70}{spliced_task[1]:>10}"
+                    task = f"{spliced_task[0]:.<70}{spliced_task[1]}"
                     self.checkBox = qtw.QCheckBox(parent)  # Create a new check box for each task
+                    self.checkBox.setStyleSheet("QCheckBox::indicator {width: 20px; height: 20px;}")
                     self.checkBox.setText(task)  # Add the task text
                     inner_layout.addWidget(self.checkBox)  # Add the checkbox widget onto the inner_layout
                     match = re.search(point_search, task)  # Parse the task for its point value
@@ -140,7 +141,7 @@ class CheckList(qtw.QWidget):
                     self.show()  # Idk what this is but it helped format things good
                 
         if self.was_check_box_called == False:
-            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}      TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
+            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
 
 
@@ -157,7 +158,7 @@ class CheckList(qtw.QWidget):
             self.current_tasks -= 1
             self.current_points -= self.task_dict[sender.text()]  # Remove from the current score
 
-        self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}      TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
+        self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
         self.prog_par_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
 
