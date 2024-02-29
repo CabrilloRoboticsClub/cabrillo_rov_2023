@@ -89,9 +89,10 @@ class MainWindow(qtw.QMainWindow):
         self.keystroke_pub.publish(msg)
 
         # Update throttle curve parameter
-        # if data in ["1", "2", "3"]:
-        #     self.pilot_input_set_params.update_params("throttle_curve_choice", data)
-        #     self.pilot_input_set_params.send_params()
+        if data in ["1", "2", "3"]:
+            self.pilot_input_set_params.update_params("throttle_curve_choice", data)
+            self.pilot_input_set_params.send_params()
+            self.tab_widget.thrt_crv_widget.update(data)
 
     def add_publisher(self, pub: Publisher):
         """
@@ -205,8 +206,12 @@ class TabWidget(qtw.QWidget):
         """
         Update gui display of input states
         """
-        # self.state_widget.update_state(state_to_update["state_widget"])
-        # self.thrt_crv_widget.update_thrt_crv(state_to_update["throttle_curve"])
+        input_state_dict = {
+            "Bambi Mode":   self.ros_qt_bridge.input_state_msg.bambi_mode,
+            "Claw":         self.ros_qt_bridge.input_state_msg.claw_state,
+            "CoM Shift":    self.ros_qt_bridge.input_state_msg.com_shift
+        }
+        self.state_widget.update(input_state_dict)
 
     @qtc.pyqtSlot()
     def update_cam_img(self):
@@ -248,7 +253,7 @@ class Dash(Node):
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
         self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_img, 10)
         dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
-        # dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
+        dash_window.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
 def fix_term():
