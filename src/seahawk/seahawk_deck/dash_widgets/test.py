@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, path
 import sys
 
 from PyQt5 import QtWidgets as qtw
@@ -7,7 +7,9 @@ from PyQt5 import QtCore as qtc
 
 # It may be either of these depending on how you run it
 # from seahawk_deck.dash_widgets.check_list import CheckList
-# from dash_widgets.check_list import CheckList
+from check_list import CheckList
+
+PATH = path.dirname(__file__)
 
 class MainWindow(qtw.QMainWindow):
     """
@@ -24,7 +26,10 @@ class MainWindow(qtw.QMainWindow):
         # Set up main window
         self.setWindowTitle("Check List Test")
 
-        task_list = CheckList(self, "tasks.txt", "dummy_file.txt")
+        self.setStyleSheet(f"background-color: #0c0c0f;")
+
+        task_list = CheckList(self, "tasks.json", PATH + "/../dash_styling/check_list.txt")
+        
         self.setCentralWidget(task_list)
 
         # Display window
