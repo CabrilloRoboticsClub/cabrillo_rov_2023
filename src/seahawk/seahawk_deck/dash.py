@@ -260,19 +260,16 @@ class Dash(Node):
     Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
     """
 
-    def __init__(self, dash_window, ros_qt_bridge):
+    def __init__(self, ros_qt_bridge):
         """
         Initialize 'dash' node
         """
         super().__init__("dash")
-        self.dash_window = dash_window
 
         self.create_subscription(InputStates, "input_states", ros_qt_bridge.callback_input_states, 10)
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
         self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_img, 10)
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
-
-        # dash_window.add_publisher(self.create_publisher(String, "keystroke", 10))
         ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
@@ -297,7 +294,7 @@ def main(args=None):
     pilot_dash = MainWindow(bridge)
 
     # Setup node
-    dash_node = Dash(pilot_dash, bridge)
+    dash_node = Dash(bridge)
 
     # Threading allows the process to display the dash and run the node at the same time
     # Create and start a thread for rclpy.spin function so the node spins while the dash is running
