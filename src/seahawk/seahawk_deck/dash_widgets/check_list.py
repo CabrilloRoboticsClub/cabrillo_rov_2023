@@ -41,28 +41,47 @@ class CheckList(qtw.QWidget):
         inner_layout = qtw.QVBoxLayout(frame)
         frame.setLayout(inner_layout)
 
+        inner_layout.addStretch()
+
         # Creating labels for text to be displayed on
         self.title = qtw.QLabel(parent)
-        self.task_titles = qtw.QLabel(parent)
+
+        # Creating a label for the tasks done
+        self.tasks_done = qtw.QLabel(parent)
+        # self.tasks_done.setText("TASKS COMPLETED: ")
+
+        # Creating a label for points earned
+        self.points_earned = qtw.QLabel(parent)
+        self.points_earned.move(100,10)
+        self.points_earned.setWordWrap(True)
 
         # Giving string values to the created labels
         self.title.setText("TASKS:")
 
-        # Need to add a scroll bar on a QListWidget
-        list_widget = qtw.QListWidget()
+        # Create a scroll area template
+        scroll_area = qtw.QScrollArea()
 
-        # Create a scrollbar
-        self.scroll_bar = qtw.QScrollBar()
+        # Make the scroll_area resizeable with window
+        scroll_area.setWidgetResizable(True)
 
-        # Add the scrollbar to the list widget
-        list_widget.setVerticalScrollBar(self.scroll_bar)
+        # Create the scroll area on the main frame
+        scroll_area.setWidget(frame)
+
+        # Add the scroll area to the outer layout
+        outer_layout.addWidget(scroll_area)
+
+
 
         # Creating the progress bar
         self.progress_bar = qtw.QProgressBar(parent)
 
         # Setting dimensions of the progress bar (change this l8r)
-        # (x, y, l, w?)
-        self.progress_bar.setGeometry(500, 40, 400, 25)
+        # (x, y, l, ?)
+        self.progress_bar.setGeometry(25, 60, 200, 60)
+
+        # Changing the dimensions, color, border, and text algnment of progress bar
+        self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
+                                        "QProgressBar::chunk {background-color: #9757f5; width: 30px;}")
 
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
@@ -86,6 +105,13 @@ class CheckList(qtw.QWidget):
         with open(task_list_file, 'r') as file:
             data_list = json.load(file)
 
+        #inner_layout.addSpacing(100)
+
+        inner_layout.addWidget(self.title)
+        inner_layout.addWidget(self.tasks_done)
+        inner_layout.addWidget(self.points_earned)
+        inner_layout.addWidget(self.progress_bar)
+
         for part, tasks_dict in data_list.items():
             for task_title, tasks_list in tasks_dict.items():
                 inner_layout.addSpacing(20)  # Space things out by 20 pixels
@@ -93,12 +119,16 @@ class CheckList(qtw.QWidget):
                 self.task_titles.setText(task_title)  # Set the task_title text
                 inner_layout.addWidget(self.task_titles)  # Add the task title as a widget to the inner layout
                 for task in tasks_list:
+                    spliced_task = task.split('\t')
+                    task = f"{spliced_task[0]:.<70}{spliced_task[1]:>10}"
                     self.checkBox = qtw.QCheckBox(parent)  # Create a new check box for each task
                     self.checkBox.setText(task)  # Add the task text
                     inner_layout.addWidget(self.checkBox)  # Add the checkbox widget onto the inner_layout
                     match = re.search(point_search, task)  # Parse the task for its point value
                     self.points = int(match.group(1))  # Add the point value to the points variable
                     self.total_points += self.points
+                    # task.split('\t')
+                    # optimized_task = f"{task[0]:.<40}{task[1]}"
                     self.task_dict[task] = self.points  # Store the task and its point value in a dictionary
                     inner_layout.addSpacing(10)  # Space the check boxes out
                     self.checkBox.stateChanged.connect(self.check_box_state)  # Keep track of each checkbox state
@@ -111,8 +141,12 @@ class CheckList(qtw.QWidget):
         
         if state == qtc.Qt.Checked:  # If the button has been pressed
             self.current_points += self.task_dict[sender.text()]  # Add to the current score
+            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}")
+
         else:  # If the button has been de-selected
             self.current_points -= self.task_dict[sender.text()]  # Remove from the current score
+            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}")
+
 
         self.prog_par_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
 
@@ -122,56 +156,3 @@ class CheckList(qtw.QWidget):
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
         # test.py
-
-from os import environ
-import sys
-
-from PyQt5 import QtWidgets as qtw
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
-
-# It may be either of these depending on how you run it
-# from seahawk_deck.dash_widgets.check_list import CheckList
-# from dash_widgets.check_list import CheckList
-
-class MainWindow(qtw.QMainWindow):
-    """
-    Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
-    provides the main dash window space to overlay widgets
-    """
-
-    def __init__(self):
-        """
-        Set up the 'MainWindow'
-        """
-        super().__init__()
-
-        # Set up main window
-        self.setWindowTitle("Check List Test")
-
-        # task_list = CheckList(self, "dummy_file.csv", "dummy_file.txt")
-        # self.setCentralWidget(task_list)
-
-        # Display window
-        self.showMaximized()
-
-
-def fix_term():
-    """
-    If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
-    This is automated in this function
-    """
-    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
-        environ.pop("GTK_PATH")
-
-
-def main():
-    # Setup dashboards
-    fix_term()
-    app = qtw.QApplication([])
-    pilot_dash = MainWindow()
-    sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-    main()
