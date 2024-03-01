@@ -2,11 +2,13 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+# from PyQt5.QtMultiMedia import Qsound  # implement sound??? 
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-COLOR_CONSTS = DARK_MODE
+# from seahawk_deck.dash_styling.color_palette import DARK_MODE
+# COLOR_CONSTS = DARK_MODE
 
 import re
+import json
 
 
 class CheckList(qtw.QWidget):
@@ -40,53 +42,144 @@ class CheckList(qtw.QWidget):
         inner_layout = qtw.QVBoxLayout(frame)
         frame.setLayout(inner_layout)
 
-        # Variable for title of widget
-        category_title = "ROV TASKS: "
-
-        # Variable for storing sub_cat titles during txt parsing
-        sub_category_title = ""
-
-        # Variable for storing tasks during txt parsing
-        task = ""
+        inner_layout.addStretch()
 
         # Creating labels for text to be displayed on
-        self.category = qtw.QLabel()
-        self.sub_category = qtw.QLabel()
+        self.title = qtw.QLabel(parent)
+        self.title.setAlignment(qtc.Qt.AlignCenter)
+
+        # Creating a label for points earned
+        self.points_earned = qtw.QLabel(parent)
+        self.points_earned.setAlignment(qtc.Qt.AlignCenter)
+
+        font = self.title.font()
+        font.setPointSize(30)
+        font.setBold(True)
+        self.title.setFont(font)
 
         # Giving string values to the created labels
-        self.category.setText(category_title)
+        self.title.setText("TASKS:")
 
-        # Add variable for checkBox
-        self.checkBox = qtw.QCheckBox()
+        # Create a scroll area template
+        scroll_area = qtw.QScrollArea()
 
-        # Checks if we're in a sub category
-        in_sub_cat = False
-        
+        # Make the scroll_area resizeable with window
+        scroll_area.setWidgetResizable(True)
+
+        # Create the scroll area on the main frame
+        scroll_area.setWidget(frame)
+
+        # Add the scroll area to the outer layout
+        outer_layout.addWidget(scroll_area)
+
+        # Creating the progress bar
+        self.progress_bar = qtw.QProgressBar(parent)
+
+        # Changing the dimensions, color, border, and text algnment of progress bar
+        self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
+                                        "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
+
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
 
         # Variable to store points of each task
-        points = 0
+        self.points = 0
 
-        # Moves through text file line by line and parses important data
+        # Variable for the total points achievable for comp
+        self.total_points = 0
+
+        # Variable for keeping track of current points earned
+        self.current_points = 0
+
+        # Variable for keeping track of progress bar percentage
+        self.prog_par_percent = 0
+
+        # Used later to grab point value out of string task
+        point_search = r"(\d+)pts"
+
+        # Int variable that stores total tasks
+        self.total_tasks = 0
+
+        # Int variable that keeps track of how many tasks have been done
+        self.current_tasks = 0
+
+        # Checks if the function check_box_state was called
+        self.was_check_box_called = False
+
+        # Open json file and store it as a dictionary of dictionaries of strings and lists
         with open(task_list_file, 'r') as file:
-            for line in file:
-                if line == "[SUB]":
-                    next(file)  # Move one line in the file
-                    sub_category_title = line  # This should give the title of subcategory
-                    self.sub_category.setText(sub_category_title)  # Add this as text to widget
-                    in_sub_cat = True  # We are in a sub category now, so this is true
-                elif line == "[END_SUB]" or line == "":  # maybe redundant?
-                    in_sub_cat = False  # At the end of a sub category, so this will be false
-                    # Add a couple of white spaces between chunks such as [1.1] & [2.1]
-                else:
-                    task = line
-                    self.checkBox.setText(task)  # is this legal? and is it making and publishing a checkbox?
-                    match = re.search(r'(\d+)pts', line)  # grabs the number before 'pts' in txt file
-                    points = int(match.group(1))  # sets points variable equal to the value grabbed by match
-                    self.task_dict[task] = points  # adds the task with associated pts to dict
+            data_list = json.load(file)
 
-       
+        # inner_layout.addSpacing(100)
+
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.points_earned)
+        outer_layout.addWidget(self.progress_bar)
+
+        outer_layout.addWidget(scroll_area)
+
+        for part, tasks_dict in data_list.items():
+            for task_title, tasks_list in tasks_dict.items():
+                if self.total_tasks != 0:
+                    inner_layout.addSpacing(20)  # Space things out by 20 pixels
+                self.task_titles = qtw.QLabel(parent)  # Create new task title for each task_title
+                font = self.task_titles.font()
+                font.setFamily("Courier New")
+                font.setBold(True)
+                font.setPointSize(15)
+                self.task_titles.setFont(font)
+                self.task_titles.setText(task_title)  # Set the task_title text
+                inner_layout.addWidget(self.task_titles)  # Add the task title as a widget to the inner layout
+                for task in tasks_list:
+                    self.total_tasks += 1
+                    spliced_task = task.split('\t')
+                    task = f"{spliced_task[0]:.<55}{spliced_task[1]}"
+                    self.checkBox = qtw.QCheckBox(parent)  # Create a new check box for each task
+                    font = self.checkBox.font()
+                    font.setFamily("Courier New")
+                    font.setPointSize(13)
+                    self.checkBox.setFont(font)
+                    self.checkBox.setStyleSheet("QCheckBox::indicator {width: 20px; height: 20px;}")
+                    self.checkBox.setText(task)  # Add the task text
+                    inner_layout.addWidget(self.checkBox)  # Add the checkbox widget onto the inner_layout
+                    match = re.search(point_search, task)  # Parse the task for its point value
+                    self.points = int(match.group(1))  # Add the point value to the points variable
+                    self.total_points += self.points
+                    self.task_dict[task] = self.points  # Store the task and its point value in a dictionary
+                    inner_layout.addSpacing(10)  # Space the check boxes out
+                    self.checkBox.stateChanged.connect(self.check_box_state)  # Keep track of each checkbox state
+                    self.show()  # Idk what this is but it helped format things good
+
+        if self.was_check_box_called == False:
+            self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
+
+
+
+    def check_box_state (self, state):
+        sender = self.sender()  # Find the checkbox that was pressed
+
+        was_check_box_called = True
+
+        if state == qtc.Qt.Checked:  # If the button has been pressed
+            self.current_tasks += 1
+            self.current_points += self.task_dict[sender.text()]  # Add to the current score
+
+        else:  # If the button has been de-selected
+            self.current_tasks -= 1
+            self.current_points -= self.task_dict[sender.text()]  # Remove from the current score
+
+        self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
+
+        self.prog_bar_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
+
+        self.progress_bar.setValue(self.prog_bar_percent)  # Update progress bar to this new percentage
+
+        # if we get sound working:
+        # if self.prog_bar_percent == 100:
+        #     self.sound = QSound("src/seahawk/seahawk_deck/dash_widgets/sound.wav")
+        #     self.sound.play()
+        
+        
         # Uncomment later when we add the CSS
         # with open(style_sheet_file) as style_sheet:
         #     self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))

@@ -4,10 +4,11 @@ import sys
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+# from PyQt5.QtMultiMedia import Qsound
 
 # It may be either of these depending on how you run it
 # from seahawk_deck.dash_widgets.check_list import CheckList
-# from dash_widgets.check_list import CheckList
+from check_list import CheckList
 
 class MainWindow(qtw.QMainWindow):
     """
@@ -24,7 +25,7 @@ class MainWindow(qtw.QMainWindow):
         # Set up main window
         self.setWindowTitle("Check List Test")
 
-        task_list = CheckList(self, "tasks.txt", "dummy_file.txt")
+        task_list = CheckList(self, "tasks.json", "dummy_file.txt")
         self.setCentralWidget(task_list)
 
         # Display window
