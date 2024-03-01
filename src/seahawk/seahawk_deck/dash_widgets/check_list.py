@@ -3,11 +3,15 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 # from PyQt5.QtMultiMedia import Qsound  # implement sound??? 
+# from PyQt5.QtMultiMedia import Qsound  # implement sound??? 
 
+# from seahawk_deck.dash_styling.color_palette import DARK_MODE
+# COLOR_CONSTS = DARK_MODE
 # from seahawk_deck.dash_styling.color_palette import DARK_MODE
 # COLOR_CONSTS = DARK_MODE
 
 import re
+import json
 import json
 
 
@@ -43,8 +47,20 @@ class CheckList(qtw.QWidget):
         frame.setLayout(inner_layout)
 
         inner_layout.addStretch()
+        inner_layout.addStretch()
 
         # Creating labels for text to be displayed on
+        self.title = qtw.QLabel(parent)
+        self.title.setAlignment(qtc.Qt.AlignCenter)
+
+        # Creating a label for points earned
+        self.points_earned = qtw.QLabel(parent)
+        self.points_earned.setAlignment(qtc.Qt.AlignCenter)
+
+        font = self.title.font()
+        font.setPointSize(30)
+        font.setBold(True)
+        self.title.setFont(font)
         self.title = qtw.QLabel(parent)
         self.title.setAlignment(qtc.Qt.AlignCenter)
 
@@ -62,7 +78,22 @@ class CheckList(qtw.QWidget):
 
         # Create a scroll area template
         scroll_area = qtw.QScrollArea()
+        self.title.setText("TASKS:")
 
+        # Create a scroll area template
+        scroll_area = qtw.QScrollArea()
+
+        # Make the scroll_area resizeable with window
+        scroll_area.setWidgetResizable(True)
+
+        # Create the scroll area on the main frame
+        scroll_area.setWidget(frame)
+
+        # Add the scroll area to the outer layout
+        outer_layout.addWidget(scroll_area)
+
+        # Creating the progress bar
+        self.progress_bar = qtw.QProgressBar(parent)
         # Make the scroll_area resizeable with window
         scroll_area.setWidgetResizable(True)
 
@@ -79,12 +110,39 @@ class CheckList(qtw.QWidget):
         self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
                                         "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
 
+        # Changing the dimensions, color, border, and text algnment of progress bar
+        self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
+                                        "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
+
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
 
         # Variable to store points of each task
         self.points = 0
+        self.points = 0
 
+        # Variable for the total points achievable for comp
+        self.total_points = 0
+
+        # Variable for keeping track of current points earned
+        self.current_points = 0
+
+        # Variable for keeping track of progress bar percentage
+        self.prog_par_percent = 0
+
+        # Used later to grab point value out of string task
+        point_search = r"(\d+)pts"
+
+        # Int variable that stores total tasks
+        self.total_tasks = 0
+
+        # Int variable that keeps track of how many tasks have been done
+        self.current_tasks = 0
+
+        # Checks if the function check_box_state was called
+        self.was_check_box_called = False
+
+        # Open json file and store it as a dictionary of dictionaries of strings and lists
         # Variable for the total points achievable for comp
         self.total_points = 0
 

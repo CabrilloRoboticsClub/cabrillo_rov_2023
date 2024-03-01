@@ -1,0 +1,17 @@
+QProgressBar {
+    background: #18181b;
+    border: 2px solid #9172f8;
+    border-radius: 5px;
+    qproperty-alignment: AlignCenter;
+    color: #18181b;
+}
+
+QProgressBar::chunk {
+    background-color: #9172f8;
+    width: 1px;
+}
+
+QCheckBox {
+    color: #fff0f5;
+    font: "Some monospaced font here";
+}
