@@ -70,6 +70,22 @@ class RosQtBridge(qtw.QWidget):
         self.new_set_params.emit()
 
 
+class VideoFrame():
+    """
+    Data needed to display a video frame
+    """
+
+    def __init__(self)
+        """
+        Set up the 'VideoFrame' attributes initial values
+        """
+        self.init = True
+        self.image = None
+        self.width = None
+        self.height = None
+        self.label = qtw.QLabel()
+
+
 class MainWindow(qtw.QMainWindow):
     """
     Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
@@ -99,7 +115,7 @@ class MainWindow(qtw.QMainWindow):
 
         # Display window
         self.showMaximized()
-    
+
     @qtc.pyqtSlot()
     def init_publisher(self):
         """
@@ -159,9 +175,9 @@ class TabWidget(qtw.QWidget):
         # Bridge between ros and the rt dashboard
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_input_state_msg_sgl.connect(self.update_pilot_tab_input_states)
-        self.ros_qt_bridge.new_cam_front_msg_sgl.connect(self.update_cam_img)
-        self.ros_qt_bridge.new_cam_claw_msg_sgl.connect(self.update_cam_img)
-        self.ros_qt_bridge.new_cam_top_msg_sgl.connect(self.update_cam_img)
+        self.ros_qt_bridge.new_cam_front_msg_sgl.connect(self.update_cam_front)
+        self.ros_qt_bridge.new_cam_claw_msg_sgl.connect(self.update_cam_claw)
+        self.ros_qt_bridge.new_cam_top_msg_sgl.connect(self.update_cam_top)
 
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
@@ -221,17 +237,60 @@ class TabWidget(qtw.QWidget):
         vert_widgets_layout.addWidget(self.turn_bank_indicator_widget, stretch=16)
         vert_widgets_layout.addWidget(self.countdown_widget, stretch=20)
 
-        # Temp code for cameras
-        self.label = qtw.QLabel()
-        cam_layout.addWidget(self.label)
+        self.cam_front = VideoFrame()
+        self.cam_claw = VideoFrame()
+        self.cam_top = VideoFrame()
+
+        cam_layout.addWidget(self.cam_front.label)
+        cam_layout.addWidget(self.cam_claw.label)
+        cam_layout.addWidget(self.cam_top.label)
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
 
-        # Track the camera state. Upon first camera frame, note the dimensions
-        self.cam_init = True
-        self.cam_height = None
-        self.cam_width = None
+    @staticmethod
+    def update_cam_img(data, video_frame: VideoFrame):
+        bridge = CvBridge()
+        try:
+            cv_image = cv2.resize(bridge.imgmsg_to_cv2(data, desired_encoding="bgr8"), (video_frame.width, video_frame.height))
+        except CvBridgeError as error:
+            print(f"update_cam_img() failed while trying to convert image from {data.cam_msg.encoding} to 'bgr8'.\n{error}")
+            sys.exit()
+
+        height, width, channel = cv_image.shape
+        bytesPerLine = 3 * width
+        frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
+        video_frame.label.setPixmap(qtg.QPixmap(frame))
+
+    @qtc.pyqtSlot()
+    def update_cam_front(self):
+        # Collect camera geometry if it is the first time opening the camera
+        if self.cam_front.init:
+            self.cam_front.height = self.cam_front.label.height()
+            self.cam_front.width = self.cam_front.label.width()
+            self.cam_front.init = False
+        
+        TabWidget.update_cam_img(self.ros_qt_bridge.cam_front_msg, self.cam_front)
+    
+    @qtc.pyqtSlot()
+    def update_cam_claw(self):
+        # Collect camera geometry if it is the first time opening the camera
+        if self.cam_claw.init:
+            self.cam_claw.height = self.cam_claw.label.height()
+            self.cam_claw.width = self.cam_claw.label.width()
+            self.cam_claw.init = False
+        
+        TabWidget.update_cam_img(self.ros_qt_bridge.cam_claw_msg, self.cam_claw)
+    
+    @qtc.pyqtSlot()
+    def update_cam_front(self):
+        # Collect camera geometry if it is the first time opening the camera
+        if self.cam_top.init:
+            self.cam_top.height = self.cam_top.label.height()
+            self.cam_top.width = self.cam_top.label.width()
+            self.cam_top.init = False
+        
+        TabWidget.update_cam_img(self.ros_qt_bridge.cam_top_msg, self.cam_top)
 
     @qtc.pyqtSlot()
     def update_pilot_tab_input_states(self):
@@ -244,29 +303,6 @@ class TabWidget(qtw.QWidget):
             "CoM Shift":    self.ros_qt_bridge.input_state_msg.com_shift
         }
         self.state_widget.update(input_state_dict)
-
-    @qtc.pyqtSlot()
-    def update_cam_img(self):
-        """
-        Update gui display of camera frame
-        """
-        # Collect camera geometry if it is the first time opening the camera
-        if self.cam_init:
-            self.cam_height = self.label.height()
-            self.cam_width = self.label.width()
-            self.cam_init = False
-
-        bridge = CvBridge()
-        try:
-            cv_image = cv2.resize(bridge.imgmsg_to_cv2(self.ros_qt_bridge.cam_msg, desired_encoding="bgr8"), (self.cam_width, self.cam_height))
-        except CvBridgeError as error:
-            print(f"update_cam_img() failed while trying to convert image from {self.ros_qt_bridge.cam_msg.encoding} to 'bgr8'.\n{error}")
-            sys.exit()
-
-        height, width, channel = cv_image.shape
-        bytesPerLine = 3 * width
-        frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
-        self.label.setPixmap(qtg.QPixmap(frame))
 
 
 class Dash(Node):
