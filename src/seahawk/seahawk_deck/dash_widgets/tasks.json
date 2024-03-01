@@ -3,7 +3,7 @@
         "[1.1] Multi Function Node Tasks:": [
             "Trigger release of multi-func node's recovery float \t 10pts",
             "Visually determine failed recovery float \t 5pts",
-            "Pull pin & release failed recovery float \t 10pts",
+            "Pull pin & release failed recovery float \t. 10pts",
             "Return failed recovery float to surface \t 5pts",
             "Connect recovery line to bale on multi-func node \t 15pts",
             "Manually return multi-func node to surface \t 5pts"

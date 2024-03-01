@@ -2,6 +2,7 @@
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
+# from PyQt5.QtMultiMedia import Qsound  # implement sound??? 
 
 # from seahawk_deck.dash_styling.color_palette import DARK_MODE
 # COLOR_CONSTS = DARK_MODE
@@ -47,11 +48,14 @@ class CheckList(qtw.QWidget):
         self.title = qtw.QLabel(parent)
         self.title.setAlignment(qtc.Qt.AlignCenter)
 
-
         # Creating a label for points earned
         self.points_earned = qtw.QLabel(parent)
         self.points_earned.setAlignment(qtc.Qt.AlignCenter)
-        #self.points_earned.setWordWrap(True)
+
+        font = self.title.font()
+        font.setPointSize(30)
+        font.setBold(True)
+        self.title.setFont(font)
 
         # Giving string values to the created labels
         self.title.setText("TASKS:")
@@ -71,13 +75,9 @@ class CheckList(qtw.QWidget):
         # Creating the progress bar
         self.progress_bar = qtw.QProgressBar(parent)
 
-        # Setting dimensions of the progress bar (change this l8r)
-        # (x, y, l, ?)
-        self.progress_bar.setGeometry(25, 60, 200, 60)
-
         # Changing the dimensions, color, border, and text algnment of progress bar
         self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
-                                        "QProgressBar::chunk {background-color: #9757f5; width: 30px;}")
+                                        "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
 
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
@@ -110,25 +110,35 @@ class CheckList(qtw.QWidget):
         with open(task_list_file, 'r') as file:
             data_list = json.load(file)
 
-        #inner_layout.addSpacing(100)
+        # inner_layout.addSpacing(100)
 
         outer_layout.addWidget(self.title)
         outer_layout.addWidget(self.points_earned)
         outer_layout.addWidget(self.progress_bar)
-        
 
+        outer_layout.addWidget(scroll_area)
+        
         for part, tasks_dict in data_list.items():
             for task_title, tasks_list in tasks_dict.items():
                 if self.total_tasks != 0:
                     inner_layout.addSpacing(20)  # Space things out by 20 pixels
                 self.task_titles = qtw.QLabel(parent)  # Create new task title for each task_title
+                font = self.task_titles.font()
+                font.setFamily("Courier New")
+                font.setBold(True)
+                font.setPointSize(15)
+                self.task_titles.setFont(font)
                 self.task_titles.setText(task_title)  # Set the task_title text
                 inner_layout.addWidget(self.task_titles)  # Add the task title as a widget to the inner layout
                 for task in tasks_list:
                     self.total_tasks += 1
                     spliced_task = task.split('\t')
-                    task = f"{spliced_task[0]:.<70}{spliced_task[1]}"
+                    task = f"{spliced_task[0]:.<55}{spliced_task[1]}"
                     self.checkBox = qtw.QCheckBox(parent)  # Create a new check box for each task
+                    font = self.checkBox.font()
+                    font.setFamily("Courier New")
+                    font.setPointSize(13)
+                    self.checkBox.setFont(font)
                     self.checkBox.setStyleSheet("QCheckBox::indicator {width: 20px; height: 20px;}")
                     self.checkBox.setText(task)  # Add the task text
                     inner_layout.addWidget(self.checkBox)  # Add the checkbox widget onto the inner_layout
@@ -139,7 +149,7 @@ class CheckList(qtw.QWidget):
                     inner_layout.addSpacing(10)  # Space the check boxes out
                     self.checkBox.stateChanged.connect(self.check_box_state)  # Keep track of each checkbox state
                     self.show()  # Idk what this is but it helped format things good
-                
+
         if self.was_check_box_called == False:
             self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
@@ -149,7 +159,7 @@ class CheckList(qtw.QWidget):
         sender = self.sender()  # Find the checkbox that was pressed
 
         was_check_box_called = True
-        
+
         if state == qtc.Qt.Checked:  # If the button has been pressed
             self.current_tasks += 1
             self.current_points += self.task_dict[sender.text()]  # Add to the current score
@@ -160,9 +170,15 @@ class CheckList(qtw.QWidget):
 
         self.points_earned.setText(f"POINTS EARNED: {self.current_points} / {self.total_points}                  TASKS COMPLETED: {self.current_tasks} / {self.total_tasks}")
 
-        self.prog_par_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
+        self.prog_bar_percent = int(100 * (self.current_points/self.total_points))  # Get % of how many points earned
 
-        self.progress_bar.setValue(self.prog_par_percent)  # Update progress bar to this new percentage
+        self.progress_bar.setValue(self.prog_bar_percent)  # Update progress bar to this new percentage
+
+        # if we get sound working:
+        # if self.prog_bar_percent == 100:
+        #     self.sound = QSound("src/seahawk/seahawk_deck/dash_widgets/sound.wav")
+        #     self.sound.play()
+        
         
         # Uncomment later when we add the CSS
         # with open(style_sheet_file) as style_sheet:
