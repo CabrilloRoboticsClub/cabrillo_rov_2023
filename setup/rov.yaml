@@ -79,8 +79,20 @@
   roles:
     - ros
     - common
+  tasks:
+  - name: Install ROS2 desktop packages.
+    apt:
+      name:
+        - automake 
+        - autoconf 
+        - build-essential 
+        - texinfo 
+        - libtool 
+        - libftdi-dev 
+        - libusb-1.0-0-dev
+        - gdb-multiarch
+      state: present
 
-    
 - name: Add user accounts
   hosts: all 
   become: yes
@@ -107,7 +119,7 @@
         name: "{{ item.name }}"
         comment: "{{ item.comment }}"
         shell: /usr/bin/bash
-        groups:  adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,lxd
+        groups:  adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,netdev,lxd,docker
         state: present
       loop: "{{ users }}"
     - name: Import keys from GitHub
