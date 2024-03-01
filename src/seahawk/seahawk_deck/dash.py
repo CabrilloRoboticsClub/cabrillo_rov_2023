@@ -30,14 +30,18 @@ PATH = path.dirname(__file__)
 
 class RosQtBridge(qtw.QWidget):
     new_input_state_msg_sgl = qtc.pyqtSignal()
-    new_cam_msg_sgl = qtc.pyqtSignal()
+    new_cam_front_msg_sgl = qtc.pyqtSignal()
+    new_cam_claw_msg_sgl = qtc.pyqtSignal()
+    new_cam_top_msg_sgl = qtc.pyqtSignal()
     new_publisher_sgl = qtc.pyqtSignal()
     new_set_params = qtc.pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        self.cam_msg = None 
         self.input_state_msg = None
+        self.cam_front_msg = None 
+        self.cam_claw_msg = None
+        self.cam_top_msg = None
         self.keystroke_pub = None
         self.pilot_input_set_params = None
 
@@ -45,10 +49,18 @@ class RosQtBridge(qtw.QWidget):
         self.input_state_msg = msg
         self.new_input_state_msg_sgl.emit()
 
-    def callback_img(self, msg: Image):
-        self.cam_msg = msg
-        self.new_cam_msg_sgl.emit()
-    
+    def callback_cam_front(self, msg: Image):
+        self.cam_front_msg = msg
+        self.new_cam_front_msg_sgl.emit()
+
+    def callback_cam_claw(self, msg: Image):
+        self.cam_claw_msg = msg
+        self.new_cam_claw_msg_sgl.emit()
+
+    def callback_cam_top(self, msg: Image):
+        self.cam_top_msg = msg
+        self.new_cam_top_msg_sgl.emit()
+
     def add_publisher(self, pub: Publisher):
         self.keystroke_pub = pub
         self.new_publisher_sgl.emit()
@@ -72,7 +84,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_publisher_sgl.connect(self.init_publisher)
-        self.ros_qt_bridge.new_set_params.connect(self.init_set_params)
+        # self.ros_qt_bridge.new_set_params.connect(self.init_set_params)
         self.keystroke_pub = None
         self.pilot_input_set_params = None
 
@@ -147,7 +159,9 @@ class TabWidget(qtw.QWidget):
         # Bridge between ros and the rt dashboard
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_input_state_msg_sgl.connect(self.update_pilot_tab_input_states)
-        self.ros_qt_bridge.new_cam_msg_sgl.connect(self.update_cam_img)
+        self.ros_qt_bridge.new_cam_front_msg_sgl.connect(self.update_cam_img)
+        self.ros_qt_bridge.new_cam_claw_msg_sgl.connect(self.update_cam_img)
+        self.ros_qt_bridge.new_cam_top_msg_sgl.connect(self.update_cam_img)
 
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
@@ -268,9 +282,14 @@ class Dash(Node):
 
         self.create_subscription(InputStates, "input_states", ros_qt_bridge.callback_input_states, 10)
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
-        self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_img, 10)
+
+        # Camera subscriptions
+        self.create_subscription(Image, "camera/front/h264", ros_qt_bridge.callback_cam_front, 10)
+        self.create_subscription(Image, "camera/claw/h264", ros_qt_bridge.callback_cam_claw, 10)
+        self.create_subscription(Image, "camera/top/h264", ros_qt_bridge.callback_cam_top, 10)
+
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
-        ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
+        # ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
 def fix_term():
