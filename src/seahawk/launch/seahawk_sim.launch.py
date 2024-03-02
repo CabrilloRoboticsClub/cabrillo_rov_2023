@@ -38,15 +38,15 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(
-                    get_package_share_directory('seahawk_gazebo'),
-                    'launch/gazebo_server.launch.py'))
+                    get_package_share_directory('seahawk'),
+                    'launch/seahawk_sim_server.launch.py'))
         ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(
-                    get_package_share_directory('seahawk_gazebo'),
-                    'launch/gazebo_gui.launch.py'))
+                    get_package_share_directory('seahawk'),
+                    'launch/seahawk_sim_gui.launch.py'))
         ),
 
         # TODO: add joint state bridge
