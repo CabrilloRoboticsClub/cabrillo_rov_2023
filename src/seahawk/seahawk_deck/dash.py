@@ -75,7 +75,7 @@ class VideoFrame():
     Data needed to display a video frame
     """
 
-    def __init__(self)
+    def __init__(self):
         """
         Set up the 'VideoFrame' attributes initial values
         """
@@ -218,7 +218,7 @@ class TabWidget(qtw.QWidget):
         home_window_layout = qtw.QHBoxLayout(tab)
         vert_widgets_layout = qtw.QVBoxLayout()
         vert_widgets_layout.setSpacing(0)
-        cam_layout = qtw.QVBoxLayout()
+        cam_layout = qtw.QGridLayout()
 
         # Create widgets
         self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
@@ -241,15 +241,15 @@ class TabWidget(qtw.QWidget):
         self.cam_claw = VideoFrame()
         self.cam_top = VideoFrame()
 
-        cam_layout.addWidget(self.cam_front.label)
-        cam_layout.addWidget(self.cam_claw.label)
-        cam_layout.addWidget(self.cam_top.label)
+        cam_layout.addWidget(self.cam_front.label, 0, 0)
+        cam_layout.addWidget(self.cam_claw.label, 0, 1)
+        cam_layout.addWidget(self.cam_top.label, 1, 0)
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
 
     @staticmethod
-    def update_cam_img(data, video_frame: VideoFrame):
+    def update_cam_img(data: Image, video_frame: VideoFrame):
         bridge = CvBridge()
         try:
             cv_image = cv2.resize(bridge.imgmsg_to_cv2(data, desired_encoding="bgr8"), (video_frame.width, video_frame.height))
@@ -283,7 +283,7 @@ class TabWidget(qtw.QWidget):
         TabWidget.update_cam_img(self.ros_qt_bridge.cam_claw_msg, self.cam_claw)
     
     @qtc.pyqtSlot()
-    def update_cam_front(self):
+    def update_cam_top(self):
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_top.init:
             self.cam_top.height = self.cam_top.label.height()
