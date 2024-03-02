@@ -13,7 +13,7 @@ from launch.actions import (
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
-PKG_NAME = 'seahawk_sim'
+PKG_NAME = 'seahawk_description'
 PKG_PATH = get_package_share_path(PKG_NAME)
 
 
