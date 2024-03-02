@@ -1,7 +1,7 @@
 # Running the project
 ## 1 Make
 The ROS nodes are built with the `colcon` program. A `makefile` is present so we do not have to remember those commands. This should be ran once per session developing in a separate terminal in the `cabrillo_rov_2023` directory. You will only need to rerun `make` during that session if you modify the launch/setup files.
-```
+```sh
 make
 ```
 The build artifacts are in:
@@ -12,7 +12,7 @@ The build artifacts are in:
 
 Clean the build with:
 
-```console
+```sh
 make clean 
 ```
 
@@ -33,22 +33,22 @@ make clean
 ## 3 Launch Files 
 We've migrated all the launch files to their respective ROS packages. Launch only after completing the steps above in the the `cabrillo_rov_2023` directory.
 
-```console 
+```sh 
 ros2 launch seahawk rov.launch.py  
 ```
 
-```console 
+```sh 
 ros2 launch seahawk deck.launch.py  
 ```
 
 ## 3 Running Individual Nodes
 Nodes can be ran individually using the following syntax, where `pkg_name` is the name of the package (this will usually be `seahawk`) and `node_name` is the name of the node to run. Run nodes only only after completing the steps above in the the `cabrillo_rov_2023` directory.
-```console
+```sh
 ros2 run pkg_name node_name
 ```
 
 **Example:**
-```console
+```sh
 ros2 run seahawk pilot_input
 ```
 

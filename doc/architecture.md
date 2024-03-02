@@ -130,7 +130,7 @@ ros2 launch seahawk kinematics_viz.launch.py
 --- 
 
 ### debug_node
-- **File:** [debug.py](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_rov/debug.py)
+- **File:** [`debug.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_rov/debug.py)
 - **Publishes to:** `/debug_info`
 
 **Run the node:**
@@ -146,5 +146,5 @@ ros2 run seahawk debug
 | `float64` | `cpu_temperature` | The CPU temperature in C| 
 | `string` | `net_sent` | The number of bytes sent, string contains denomination| 
 | `string` | `net_recv` | The number of bytes received, string contains denomination | 
-| `float64` | time | The time of when measurements were read | 
+| `float64` | `time` | The time of when measurements were read | 
 
