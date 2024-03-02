@@ -15,7 +15,7 @@ find_package(ignition-gazebo6 REQUIRED)
 find_package(ignition-math6 REQUIRED)
 find_package(ignition-transport11 REQUIRED)
 
-install(DIRECTORY config launch models worlds
+install(DIRECTORY config models worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
