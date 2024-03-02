@@ -1,64 +1,109 @@
-from os import path, environ
+import os
+from pathlib import Path
 
-from ament_index_python.packages import get_package_share_path
+from ament_index_python.packages import (
+    get_package_share_path,
+    get_package_share_directory
+)
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess
-from launch_ros.actions import Node
-from launch.substitutions import Command, LaunchConfiguration
-from launch_ros.parameter_descriptions import ParameterValue
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+)
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+
+from launch_ros.actions import Node, SetParameter
+
+
+PKG_NAME = 'seahawk_description'
+PKG_PATH = get_package_share_path(PKG_NAME)
+MODEL_PATH = os.path.join(PKG_PATH, f'urdf/{PKG_NAME}.urdf')
+
+ARGUMENTS = [
+    DeclareLaunchArgument(
+        name='model_path',
+        default_value=MODEL_PATH,
+        description=f'The robot model path, the default is {MODEL_PATH}'),
+]
 
 
 def generate_launch_description():
-    # If VS Code was installed with snap, the 'GTK_PATH' variable must be unset.
-    if "GTK_PATH" in environ and "snap" in environ["GTK_PATH"]:
-        environ.pop("GTK_PATH")
-
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    PKG_NAME = 'seahawk_sim'
-    pkg_path = get_package_share_path(PKG_NAME)
-    model_path = path.join(pkg_path, f'urdf/{PKG_NAME}.urdf')
 
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='false',
-            description='Use simulation (Gazebo) clock if true'
+        *ARGUMENTS,
+
+        SetParameter(name='use_sim_time', value=True),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('seahawk_gazebo'),
+                    'launch/gazebo_server.launch.py'))
         ),
 
-        DeclareLaunchArgument(
-            name='model',
-            default_value=model_path
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(
+                    get_package_share_directory('seahawk_gazebo'),
+                    'launch/gazebo_gui.launch.py'))
         ),
 
-        ExecuteProcess(
-            cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so'],
+        # TODO: add joint state bridge
+        Node(
+            name="gz_bridge",
+            package="ros_gz_bridge",
+            executable="parameter_bridge",
+            parameters=[
+                {
+                    'config_file': os.path.join(
+                        get_package_share_directory('seahawk_sim'),
+                        'config/ros_gz_bridge.yaml')
+                }
+            ]
+        ),
+
+        # TODO: Make sure the world argument matches the world you're using above
+        # TODO: You might be able to load the xml from the robot_description topic:
+        #   https://github.com/gazebosim/ros_gz/blob/27f20ffbb2331a5c87685c62053d7eb20544e09a/ros_gz_sim_demos/launch/joint_states.launch.py#L68
+        Node(
+            name='spawn_model',
+            package='ros_gz_sim',
+            executable='create',
+            arguments=[
+                '-file', MODEL_PATH,
+                '-name', 'seahawk 2',
+                '-x', '0',
+                '-y', '0',
+                '-z', '0.1',
+            ]
+        ),
+
+        Node(
+            package='joy',
+            executable='joy_node',
+            name='joy_node',
             output='screen'
         ),
 
         Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}, {'robot_description':  ParameterValue(Command(['xacro ', LaunchConfiguration('model')]), value_type=str)}],
+            package='seahawk_deck',
+            executable='pilot_input',
+            name='pilot_input',
+            output='screen'
         ),
 
         Node(
-            package='joint_state_publisher',
-            executable='joint_state_publisher',
-            name='joint_state_publisher',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}]
+            package='seahawk_deck',
+            executable='thrust',
+            name='thrust',
+            output='screen'
         ),
 
         Node(
-            package='gazebo_ros',
-            executable='spawn_entity.py',
-            name='urdf_spawner',
-            output='screen',
-            arguments=["-topic", "/seahawk_description", "-entity", "seahawk_II"]
-        )
-
+            package='seahawk_deck',
+            executable='thrust_gz_repub',
+            name='thrust_gz_repub',
+            output='screen'
+        ),
     ])
-
-# Referenced: https://answers.ros.org/question/374976/ros2-launch-gazebolaunchpy-from-my-own-launch-file/
