@@ -1,4 +1,4 @@
-# Cabrillo ROV 2023
+# SeaHawk
 
 Cabrillo College Robotics Club repo for the MATE ROV 2023 competition. This README file has information to get you started developing the robot. 
 
@@ -39,8 +39,8 @@ To get the code in this repository on your computer, dev box or RPi you should r
 
     ```console
     cd 
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    cd ~/cabrillo_rov_2023
+    git clone git@github.com:CabrilloRoboticsClub/seahawk.git
+    cd ~/seahawk
     git submodule init 
     git submodule update
     ```
@@ -54,7 +54,7 @@ If you have a Windows or Mac desktop (or Linux that's not Ubuntu 22.04) you can 
 1. [Install vscode](https://code.visualstudio.com/)
 1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
 1. Follow the [Dev Containers Tutorial](https://code.visualstudio.com/docs/devcontainers/tutorial)
-1. In vscode open the `cabrillo_rov_2023` directory that you checked out using the "Checkout the Code" procedure above with the `File -> Open Folder` menu. Vscode will prompt you to create a dev container. Follow the prompts. Building the container could take 10 to 20 minutes but you only have to do it once. 
+1. In vscode open the `seahawk` directory that you checked out using the "Checkout the Code" procedure above with the `File -> Open Folder` menu. Vscode will prompt you to create a dev container. Follow the prompts. Building the container could take 10 to 20 minutes but you only have to do it once. 
 1. Create a Terminal in your vscode window with the `Terminal -> New Terminal` menu. 
 1. Build the software in your dev container: 
 
@@ -67,7 +67,7 @@ If you have a Windows or Mac desktop (or Linux that's not Ubuntu 22.04) you can 
 Alternatively, if you don't want to use the container inside of VSCode, you can run
 ```console
 docker build -t ros2-container:<tag> .devcontainer
-docker run --user vscode -v .:/home/vscode/cabrillo_rov_2023 --network host -it ros2-container:<tag>
+docker run --user vscode -v .:/home/vscode/seahawk --network host -it ros2-container:<tag>
 ```
 
 ## Ubuntu 22.04 Desktop Setup 
@@ -121,8 +121,8 @@ Once you have SSHed into the new Pi image run the ROV specific playbooks:
 1. Check out this repository into your home directory. 
     ```console
     cd 
-    git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git
-    cd ~/cabrillo_rov_2023
+    git clone https://github.com/CabrilloRoboticsClub/seahawk.git
+    cd ~/seahawk
     git submodule init 
     git submodule update
     ```
@@ -175,8 +175,8 @@ The best way to access the Raspberry Pi for software development is using vscode
 
     ```console 
     cd
-    git clone git@github.com:CabrilloRoboticsClub/cabrillo_rov_2023.git
-    cd ~/cabrillo_rov_2023
+    git clone git@github.com:CabrilloRoboticsClub/seahawk.git
+    cd ~/seahawk
     git submodule init 
     git submodule update
     ```
@@ -198,7 +198,7 @@ The best way to access the Raspberry Pi for software development is using vscode
 1. Build the ROS project
 
     ```console 
-    cd ~/cabrillo_rov_2023
+    cd ~/seahawk
     make
     ```
 

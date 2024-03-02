@@ -68,7 +68,7 @@
 - Keep the parameters {`Ix`, `Iy`, `Iz`} as they are and click `export URDF` to proceed.
 
 ### 2 Import files to the project
-Most RViz related files are found in [`seahawk_description`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/main/src/seahawk_description). This is where the files from SolidWorks will be added. Of these files, the majority can remain untouched when updating to a new model. The files which must be updated include `base_link.STL`, `seahawk_description.csv` and `seahawk_description.urdf`, the remaining can and should remain unmodified.
+Most RViz related files are found in [`seahawk_description`](https://github.com/CabrilloRoboticsClub/seahawk/tree/main/src/seahawk_description). This is where the files from SolidWorks will be added. Of these files, the majority can remain untouched when updating to a new model. The files which must be updated include `base_link.STL`, `seahawk_description.csv` and `seahawk_description.urdf`, the remaining can and should remain unmodified.
 
 ![seahawk_description directory](img/seahawk_description_directory.png)
 
@@ -86,7 +86,7 @@ Most RViz related files are found in [`seahawk_description`](https://github.com/
 - Ensure the files retain the names, `seahawk_description.csv` and `seahawk_description.urdf`
 
 ### 3 Update `rviz_markers.py` motor config
-[`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/rviz_markers.py) is responsible for creating [Markers](http://wiki.ros.org/rviz/DisplayTypes/Marker) which display the thrust vectors in RViz. For a new model, the `MOTORS` list must be updated with updated motor positions and rotation.
+[`rviz_markers.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/rviz_markers.py) is responsible for creating [Markers](http://wiki.ros.org/rviz/DisplayTypes/Marker) which display the thrust vectors in RViz. For a new model, the `MOTORS` list must be updated with updated motor positions and rotation.
 ```py
 # Position and angle constants for top motors (0-3)
 X_TOP = 0.2

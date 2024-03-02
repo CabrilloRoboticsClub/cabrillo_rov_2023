@@ -2,8 +2,8 @@
 
 ROV build code:
 
-- `git clone https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023.git`
-- `cd cabrillo_rov_2023`
+- `git clone https://github.com/CabrilloRoboticsClub/seahawk.git`
+- `cd seahawk`
 - `git submodule init`
 - `git submodule update`
 - `sudo rosdep init`

@@ -4,7 +4,7 @@
 ## Usage
 ### Client node
 *The client node is the node which makes a request to update another node's parameters*
-1. Import the `SetRemoteParams` class to any node on the deck with the following syntax. The `SetRemoteParams` class from [`set_remote_params.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/set_remote_params.py) provides functionality for nodes to modify each other's [ROS parameters](https://docs.ros.org/en/humble/Concepts/Basic/About-Parameters.html) using [services](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html). The `SetRemoteParams` class streamlines setting another node's parameters to a user-friendly abstraction to reduce redundancy, creating cleaner code and increased ease-of-use.
+1. Import the `SetRemoteParams` class to any node on the deck with the following syntax. The `SetRemoteParams` class from [`set_remote_params.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/set_remote_params.py) provides functionality for nodes to modify each other's [ROS parameters](https://docs.ros.org/en/humble/Concepts/Basic/About-Parameters.html) using [services](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Services/Understanding-ROS2-Services.html). The `SetRemoteParams` class streamlines setting another node's parameters to a user-friendly abstraction to reduce redundancy, creating cleaner code and increased ease-of-use.
 	```py
 	ffrom seahawk_deck.set_remote_params import SetRemoteParams
 	```
@@ -28,7 +28,7 @@
     from rclpy.parameter import Parameter
     from rcl_interfaces.msg import SetParametersResult
     ```
-2. Within the `__init__()` function declare a parameter. Below is an example from [`thrust.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/thrust.py), additional examples can be found [here](https://roboticsbackend.com/rclpy-params-tutorial-get-set-ros2-params-with-python/#Setup_code_and_declare_ROS2_params_with_rclpy).
+2. Within the `__init__()` function declare a parameter. Below is an example from [`thrust.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/thrust.py), additional examples can be found [here](https://roboticsbackend.com/rclpy-params-tutorial-get-set-ros2-params-with-python/#Setup_code_and_declare_ROS2_params_with_rclpy).
     ```py
     # Parameter name is center_of_mass_offset
     # Its initial value is [0.0, 0.0, 0.0]
@@ -40,7 +40,7 @@
     # it can have any name deemed descriptive
     self.add_on_set_parameters_callback(self.update_center_of_mass)
     ```
-4. Write the function called when a parameter is updated. Add any logic deemed necessary. It is recommended to store the parameter in an attribute which is then accessed by the class if the value is used outside the callback. Below is an example from [`thrust.py`](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/src/seahawk/seahawk_deck/thrust.py).
+4. Write the function called when a parameter is updated. Add any logic deemed necessary. It is recommended to store the parameter in an attribute which is then accessed by the class if the value is used outside the callback. Below is an example from [`thrust.py`](https://github.com/CabrilloRoboticsClub/seahawk/blob/main/src/seahawk/seahawk_deck/thrust.py).
     ```py
     def update_center_of_mass(self, params: list[Parameter]) -> SetParametersResult:
         """
