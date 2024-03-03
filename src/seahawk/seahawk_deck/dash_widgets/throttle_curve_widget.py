@@ -3,10 +3,7 @@ from os import path
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
 
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
 
@@ -16,7 +13,7 @@ class ThrtCrvWidget(qtw.QWidget):
     a visual representation of the current chosen throttle curve
     """
 
-    def __init__(self, parent: qtw.QWidget):
+    def __init__(self, parent: qtw.QWidget, colors):
         """
         Initialize throttle curve widget
         
@@ -48,14 +45,8 @@ class ThrtCrvWidget(qtw.QWidget):
         # Add widget to layout
         layout_inner.addWidget(self.label)
 
-        self.setStyleSheet(
-            f"""
-            QFrame {{
-                background-color: {COLOR_CONSTS['SURFACE_DRK']};
-                border-radius: 8px;
-            }}
-            """
-        )
+        # Apply css styling
+        self.set_colors(colors)
 
     def update(self, thrt_crv: str):
         """
@@ -66,3 +57,13 @@ class ThrtCrvWidget(qtw.QWidget):
         """
         # Grab the specific throttle curve img needed to be displayed on widget
         self.label.setPixmap(self.throttle_crv_imgs[thrt_crv])
+
+    def set_colors(self, new_colors: dict):
+        self.setStyleSheet(
+            f"""
+            QFrame {{
+                background-color: {new_colors['SURFACE_DRK']};
+                border-radius: 8px;
+            }}
+            """
+        )

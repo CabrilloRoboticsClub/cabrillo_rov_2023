@@ -3,28 +3,32 @@ from os import path
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
+
 
 class StateWidget(qtw.QWidget):
     """
     Creates a 'StateWidget' which inherits from the 'qtw.QWidget' class. A 'StateWidget' provides 
-    a visual representation of if a feature is engaged or not
+    a visual representation of if a feature is engaged or not.
     """
 
-    def __init__(self, parent: qtw.QWidget, feature_names: list[str], style_sheet_file: str):
+    def __init__(self, parent: qtw.QWidget, feature_names: list[str], style_sheet_file: str, colors: dict):
         """
-        Initialize feature state widget
+        Initialize feature state widget.
+
         Args:
-            parent: Widget to overlay 'StateWidget' on
-            feature_names: List of feature names
-            style_sheet_file: Style sheet text file formatted as a CSS f-string
+            parent: Widget to overlay 'StateWidget' on.
+            feature_names: List of feature names whose states the widget should display.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            colors: Hex codes to color widget with.
         """
         super().__init__(parent)
 
+        with open(style_sheet_file) as style_sheet:
+            self.style_sheet = style_sheet.read()
+
         # Import state images
+        # TODO: Add these image paths to the colors dictionary
         self.on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
         self.off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
 
@@ -54,8 +58,7 @@ class StateWidget(qtw.QWidget):
             layout_inner.addWidget(labels["state"], i, 1)
 
         # Apply css styling
-        with open(style_sheet_file) as style_sheet:
-            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        self.set_colors(colors)
 
     def update(self, msg):
         """
@@ -69,4 +72,15 @@ class StateWidget(qtw.QWidget):
             if state_of_feature:
                 self.label_dict[feature]["state"].setPixmap(self.on_img)
             else:
-                self.label_dict[feature]["state"].setPixmap(self.off_img)       
+                self.label_dict[feature]["state"].setPixmap(self.off_img)   
+
+    def set_colors(self, new_colors: dict):
+        """
+        Sets widget colors given a dictionary of hex color codes.
+
+        Args:
+            new_colors: Hex codes to color widget with.
+        """
+        self.setStyleSheet(self.style_sheet.format(**new_colors)) 
+
+        # TODO update images 

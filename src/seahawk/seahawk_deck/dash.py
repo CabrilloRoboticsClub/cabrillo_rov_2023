@@ -14,7 +14,7 @@ from rclpy.publisher import Publisher
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
+from seahawk_deck.dash_styling.color_palette import DARK_MODE, LIGHT_MODE
 from seahawk_deck.dash_widgets.countdown_widget import CountdownWidget
 from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
@@ -23,9 +23,9 @@ from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicat
 from seahawk_deck.set_remote_params import SetRemoteParams
 from seahawk_msgs.msg import InputStates, DebugInfo
 
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
+
+DEFAULT_COLORS = DARK_MODE
 
 
 class RosQtBridge(qtw.QWidget):
@@ -161,13 +161,13 @@ class MainWindow(qtw.QMainWindow):
         self.pilot_input_set_params = None
 
         # Set up main window
+        self.colors = DEFAULT_COLORS
         self.setWindowTitle("SeaHawk II Dashboard")
-        self.setStyleSheet(f"background-color: {COLOR_CONSTS['MAIN_WIN_BKG']};")
+        self.setStyleSheet(f"background-color: {self.colors['MAIN_WIN_BKG']};")
 
         # Create tabs
-        self.tab_widget = TabWidget(self, PATH + "/dash_styling/tab_widget.txt", self.ros_qt_bridge)
+        self.tab_widget = TabWidget(self, self.ros_qt_bridge, PATH + "/dash_styling/tab_widget.txt", self.colors)
         self.setCentralWidget(self.tab_widget)
-
 
         # Display window
         self.showMaximized()
@@ -207,7 +207,23 @@ class MainWindow(qtw.QMainWindow):
             self.pilot_input_set_params.update_params("throttle_curve_choice", data)
             self.pilot_input_set_params.send_params()
             self.tab_widget.thrt_crv_widget.update(data)
+        
+        # Change colors mode between light and dark mode
+        if data == "0":
+            if self.colors == DARK_MODE: self.update_colors(LIGHT_MODE)
+            else: self.update_colors(DARK_MODE)
 
+    def update_colors(self, new_colors: dict):
+        self.colors = new_colors
+        self.setStyleSheet(f"background-color: {self.colors['MAIN_WIN_BKG']};")
+        self.tab_widget.set_colors(self.colors)
+        self.tab_widget.state_widget.set_colors(self.colors)
+        self.tab_widget.thrt_crv_widget.set_colors(self.colors)
+        self.tab_widget.temp_widget.set_colors(self.colors)
+        self.tab_widget.depth_widget.set_colors(self.colors)
+        self.tab_widget.turn_bank_indicator_widget.set_colors(self.colors)
+        # self.tab_widget.countdown_widget.set_colors(self.colors)
+        
 
 class TabWidget(qtw.QWidget):
     """
@@ -218,16 +234,20 @@ class TabWidget(qtw.QWidget):
     show a different page by clicking on its tab
     """
 
-    def __init__(self, parent: MainWindow, style_sheet_file: str, ros_qt_bridge: RosQtBridge):
+    def __init__(self, parent: MainWindow, ros_qt_bridge: RosQtBridge, style_sheet_file: str, colors: dict):
         """
         Initialize tab widget.
 
         Args:
             parent: Window where to place tabs.
-            style_sheet_file: Style sheet text file formatted as a CSS f-string.
             ros_qt_bridge: Bridge object for functionality between ROS and Qt.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            colors: Hex codes to color widget with.
         """
         super().__init__(parent)
+    
+        with open(style_sheet_file) as style_sheet:
+            self.style_sheet = style_sheet.read()
         
         # Bridge between ros and the rt dashboard
         self.ros_qt_bridge = ros_qt_bridge
@@ -253,14 +273,22 @@ class TabWidget(qtw.QWidget):
             tabs.addTab(tab, name)
         
         # Apply css styling
-        with open(style_sheet_file) as style_sheet:
-            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        self.set_colors(colors)
         
         # Add tabs to widget
         layout.addWidget(tabs)
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
+    
+    def set_colors(self, new_colors: dict):
+        """
+        Sets widget colors given a dictionary of hex color codes.
+
+        Args:
+            new_colors: Hex codes to color widget with.
+        """
+        self.setStyleSheet(self.style_sheet.format(**new_colors)) 
 
     def create_pilot_tab(self, tab):
         """
@@ -286,11 +314,11 @@ class TabWidget(qtw.QWidget):
         cam_layout = qtw.QGridLayout()
 
         # Create widgets
-        self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt")
-        self.thrt_crv_widget = ThrtCrvWidget(tab)
-        self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt")
-        self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt")
-        self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt")
+        self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt", DEFAULT_COLORS)
+        self.thrt_crv_widget = ThrtCrvWidget(tab, DEFAULT_COLORS)
+        self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
+        self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
+        self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
         self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
 
         # Add widgets to side vertical layout
@@ -323,7 +351,6 @@ class TabWidget(qtw.QWidget):
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
-
 
     @staticmethod
     def update_cam_img(data: Image, video_frame: VideoFrame):
