@@ -29,6 +29,12 @@ PATH = path.dirname(__file__)
 
 
 class RosQtBridge(qtw.QWidget):
+    """
+    Thread safe bridge between ROS and Qt using signals and slots. `RosQtBridge`
+    object instance must be passed to the node and main window class.
+    """
+    
+    # Signals (must be class variables)
     new_input_state_msg_sgl = qtc.pyqtSignal()
     new_cam_front_msg_sgl = qtc.pyqtSignal()
     new_cam_claw_msg_sgl = qtc.pyqtSignal()
@@ -37,7 +43,11 @@ class RosQtBridge(qtw.QWidget):
     new_set_params_sgl = qtc.pyqtSignal()
 
     def __init__(self):
+        """
+        Initialize `RosQtBridge` object.
+        """
         super().__init__()
+        # Variables to transfer data between ROS and Qt
         self.input_state_msg = None
         self.cam_front_msg = None 
         self.cam_claw_msg = None
@@ -46,38 +56,82 @@ class RosQtBridge(qtw.QWidget):
         self.pilot_input_set_params = None
 
     def callback_input_states(self, msg: InputStates):
+        """
+        Called for each time a message is published to the `input_states` topic.
+        Collects the contents of the message sent and emits a `new_input_state_msg_sgl`
+        signal which is received by Qt.
+
+        Args:
+            msg: Message of type `InputStates` from the `input_states` topic.
+        """
         self.input_state_msg = msg
         self.new_input_state_msg_sgl.emit()
 
     def callback_cam_front(self, msg: Image):
+        """
+        Called for each time a message is published to the `camera/front/h264` topic.
+        Collects the contents of the message sent and emits a `new_cam_front_msg_sgl`
+        signal which is received by Qt.
+
+        Args:
+            msg: Message of type `Image` from the `camera/front/h264` topic.
+        """
         self.cam_front_msg = msg
         self.new_cam_front_msg_sgl.emit()
 
     def callback_cam_claw(self, msg: Image):
+        """
+        Called for each time a message is published to the `camera/claw/h264` topic.
+        Collects the contents of the message sent and emits a `new_cam_claw_msg_sgl`
+        signal which is received by Qt.
+
+        Args:
+            msg: Message of type `Image` from the `camera/claw/h264` topic.
+        """
         self.cam_claw_msg = msg
         self.new_cam_claw_msg_sgl.emit()
 
     def callback_cam_top(self, msg: Image):
+        """
+        Called for each time a message is published to the `camera/top/h264` topic.
+        Collects the contents of the message sent and emits a `new_cam_top_msg_sgl`
+        signal which is received by Qt.
+
+        Args:
+            msg: Message of type `Image` from the `camera/top/h264` topic
+        """
         self.cam_top_msg = msg
         self.new_cam_top_msg_sgl.emit()
 
     def add_publisher(self, pub: Publisher):
+        """
+        Gives Qt access to a ROS publisher and emits a `new_publisher_sgl`.
+
+        Args:
+            pub: Publisher to add, publishes to `keystroke` topic.
+        """
         self.keystroke_pub = pub
         self.new_publisher_sgl.emit()
     
     def add_set_params(self, set_param_obj: SetRemoteParams):
+        """
+        Gives Qt access to a `SetRemoteParams` and emits a `pilot_input_set_params`.
+
+        Args:
+            set_param_obj: SetRemoteParams instance to give Qt access to.
+        """
         self.pilot_input_set_params = set_param_obj
         self.new_set_params_sgl.emit()
 
 
 class VideoFrame():
     """
-    Data needed to display a video frame
+    Data needed to display a video frame.
     """
 
     def __init__(self):
         """
-        Set up the 'VideoFrame' attributes initial values
+        Set up the 'VideoFrame' attributes initial values.
         """
         self.init = True
         self.image = None
@@ -89,12 +143,15 @@ class VideoFrame():
 class MainWindow(qtw.QMainWindow):
     """
     Creates a 'MainWindow' which inherits from the 'qtw.QMainWindow' class. 'MainWindow'
-    provides the main dash window space to overlay widgets
+    provides the main dash window space to overlay widgets.
     """
 
-    def __init__(self, ros_qt_bridge):
+    def __init__(self, ros_qt_bridge: RosQtBridge):
         """
-        Set up the 'MainWindow', overlay 'TabWidget's for multiple dash views, and display window
+        Set up the 'MainWindow', overlay 'TabWidget's for multiple dash views, and display window.
+
+        Args:
+            ros_qt_bridge: Bridge object for functionality between ROS and Qt.
         """
         super().__init__()
 
@@ -118,21 +175,21 @@ class MainWindow(qtw.QMainWindow):
     @qtc.pyqtSlot()
     def init_publisher(self):
         """
-        Adds the keystroke publisher to 'MainWindow'
+        Adds the keystroke publisher to `MainWindow`.
         """
         self.keystroke_pub = self.ros_qt_bridge.keystroke_pub
 
     @qtc.pyqtSlot()
     def init_set_params(self):
         """
-        Adds the pilot input set params object to 'MainWindow'
+        Adds the pilot input set params object to `MainWindow`.
         """
         self.pilot_input_set_params = self.ros_qt_bridge.pilot_input_set_params
 
     def keyPressEvent(self, a0: QKeyEvent) -> None:
         """
         Called for each time there is a keystroke. Publishes the code of the key that was
-        pressed or released to the ROS topic 'keystroke' and sets parameters of other nodes
+        pressed or released to the ROS topic `keystroke` and sets parameters of other nodes
         dependant on keystrokes
         """
         try:
@@ -154,25 +211,27 @@ class MainWindow(qtw.QMainWindow):
 
 class TabWidget(qtw.QWidget):
     """
-    Creates a 'TabWidget' which inherits from the 'qtw.QWidget' class. A 'TabWidget' provides 
+    Creates a `TabWidget` which inherits from the `qtw.QWidget` class. A `TabWidget` provides 
     a tab bar and a page area that is used to display pages related to each tab. The tab bar is 
     shown above the page area. Each tab is associated with a different widget called a page. 
     Only the current page is shown in the page area; all the other pages are hidden. The user can 
     show a different page by clicking on its tab
     """
 
-    def __init__(self, parent: MainWindow, style_sheet_file: str, ros_qt_bridge):
+    def __init__(self, parent: MainWindow, style_sheet_file: str, ros_qt_bridge: RosQtBridge):
         """
-        Initialize tab widget
+        Initialize tab widget.
 
         Args:
-            parent: Window where to place tabs
-            style_sheet_file: Style sheet text file formatted as a CSS f-string
+            parent: Window where to place tabs.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            ros_qt_bridge: Bridge object for functionality between ROS and Qt.
         """
         super().__init__(parent)
         
         # Bridge between ros and the rt dashboard
         self.ros_qt_bridge = ros_qt_bridge
+        # Connect signals to slots for thread safe communication between ROS and Qt
         self.ros_qt_bridge.new_input_state_msg_sgl.connect(self.update_pilot_tab_input_states)
         self.ros_qt_bridge.new_cam_front_msg_sgl.connect(self.update_cam_front)
         self.ros_qt_bridge.new_cam_claw_msg_sgl.connect(self.update_cam_claw)
@@ -212,6 +271,13 @@ class TabWidget(qtw.QWidget):
             - Depth:            Displays the depth reading
             - IMU:              Displays the IMU readings as a turn/bank indicator (graphic to help keep constant acceleration)
             - Countdown:        Displays a countdown
+            - Front camera      Displays video feed from front camera
+            - Claw camera       Displays video feed from claw camera
+            - Top camera        Displays video feed from top camera
+            - Product demo map  Displays a static image of the product demo area map
+        
+        Args: 
+            tab: Tab object instance of pilot tab.
         """
         # Setup layouts
         home_window_layout = qtw.QHBoxLayout(tab)
@@ -236,14 +302,20 @@ class TabWidget(qtw.QWidget):
         vert_widgets_layout.addWidget(self.turn_bank_indicator_widget, stretch=16)
         vert_widgets_layout.addWidget(self.countdown_widget, stretch=20)
 
+        # Setup cameras
         self.cam_front = VideoFrame()
         self.cam_claw = VideoFrame()
         self.cam_top = VideoFrame()
+        
+        # Product demo map image
         self.demo_map = qtw.QLabel()
+        # Dynamically sized, endures the image fits any aspect ratio. Will resize image to fit
         self.demo_map.setScaledContents(True)
         self.demo_map.setSizePolicy(qtw.QSizePolicy.Ignored, qtw.QSizePolicy.Ignored)
         self.demo_map.setPixmap(qtg.QPixmap(PATH + "/dash_styling/product_demo_map.png"))
 
+        # (0, 0)    (0, 1)
+        # (1, 0)    (1, 1)
         cam_layout.addWidget(self.cam_front.label, 0, 0)
         cam_layout.addWidget(self.cam_claw.label, 0, 1)
         cam_layout.addWidget(self.cam_top.label, 1, 0)
@@ -255,8 +327,16 @@ class TabWidget(qtw.QWidget):
 
     @staticmethod
     def update_cam_img(data: Image, video_frame: VideoFrame):
+        """
+        Updates the display of the video on the dashboard.
+
+        Args:
+            data: ROS message of type `Image` containing the new image to display.
+            video_frame: `VideoFrame` object to update.
+        """
         bridge = CvBridge()
         try:
+            # Create cv image from ros image then resize it to fit dashboard
             cv_image = cv2.resize(bridge.imgmsg_to_cv2(data, desired_encoding="bgr8"), (video_frame.width, video_frame.height))
         except CvBridgeError as error:
             print(f"update_cam_img() failed while trying to convert image from {data.cam_msg.encoding} to 'bgr8'.\n{error}")
@@ -264,11 +344,16 @@ class TabWidget(qtw.QWidget):
 
         height, width, _ = cv_image.shape
         bytesPerLine = 3 * width
+        # Cv image must be converted to a QImage to be displayed
         frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
         video_frame.label.setPixmap(qtg.QPixmap(frame))
 
     @qtc.pyqtSlot()
     def update_cam_front(self):
+        """
+        Slot which updates front camera image on the dashboard. Also collects sizing data
+        if this is the first frame.
+        """
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_front.init:
             self.cam_front.height = self.cam_front.label.height()
@@ -279,6 +364,10 @@ class TabWidget(qtw.QWidget):
     
     @qtc.pyqtSlot()
     def update_cam_claw(self):
+        """
+        Slot which updates claw camera image on the dashboard. Also collects sizing data
+        if this is the first frame.
+        """
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_claw.init:
             self.cam_claw.height = self.cam_claw.label.height()
@@ -289,6 +378,10 @@ class TabWidget(qtw.QWidget):
     
     @qtc.pyqtSlot()
     def update_cam_top(self):
+        """
+        Slot which updates front top image on the dashboard. Also collects sizing data
+        if this is the first frame.
+        """
         # Collect camera geometry if it is the first time opening the camera
         if self.cam_top.init:
             self.cam_top.height = self.cam_top.label.height()
@@ -300,7 +393,7 @@ class TabWidget(qtw.QWidget):
     @qtc.pyqtSlot()
     def update_pilot_tab_input_states(self):
         """
-        Update gui display of input states
+        Slot which updates gui display of input states.
         """
         input_state_dict = {
             "Bambi Mode":   self.ros_qt_bridge.input_state_msg.bambi_mode,
@@ -312,12 +405,15 @@ class TabWidget(qtw.QWidget):
 
 class Dash(Node):
     """
-    Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics
+    Creates and runs a ROS node which updates the PyQt dashboard with data from ROS topics.
     """
 
-    def __init__(self, ros_qt_bridge):
+    def __init__(self, ros_qt_bridge: RosQtBridge):
         """
         Initialize 'dash' node
+
+        Args:
+            ros_qt_bridge: Bridge object for functionality between ROS and Qt.
         """
         super().__init__("dash")
 
@@ -330,6 +426,8 @@ class Dash(Node):
         self.create_subscription(Image, "camera/top/h264", ros_qt_bridge.callback_cam_top, 10)
 
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
+        
+        # Uncomment only if we want to use params (will crash the dash if the pilot_input node is not running)
         # ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
