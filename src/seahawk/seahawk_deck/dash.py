@@ -34,7 +34,7 @@ class RosQtBridge(qtw.QWidget):
     new_cam_claw_msg_sgl = qtc.pyqtSignal()
     new_cam_top_msg_sgl = qtc.pyqtSignal()
     new_publisher_sgl = qtc.pyqtSignal()
-    new_set_params = qtc.pyqtSignal()
+    new_set_params_sgl = qtc.pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -67,7 +67,7 @@ class RosQtBridge(qtw.QWidget):
     
     def add_set_params(self, set_param_obj: SetRemoteParams):
         self.pilot_input_set_params = set_param_obj
-        self.new_set_params.emit()
+        self.new_set_params_sgl.emit()
 
 
 class VideoFrame():
@@ -100,7 +100,6 @@ class MainWindow(qtw.QMainWindow):
 
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_publisher_sgl.connect(self.init_publisher)
-        # self.ros_qt_bridge.new_set_params.connect(self.init_set_params)
         self.keystroke_pub = None
         self.pilot_input_set_params = None
 
@@ -178,7 +177,7 @@ class TabWidget(qtw.QWidget):
         self.ros_qt_bridge.new_cam_front_msg_sgl.connect(self.update_cam_front)
         self.ros_qt_bridge.new_cam_claw_msg_sgl.connect(self.update_cam_claw)
         self.ros_qt_bridge.new_cam_top_msg_sgl.connect(self.update_cam_top)
-
+    
         # Define layout of tabs
         layout = qtw.QVBoxLayout(self)
         self.setLayout(layout)
@@ -240,13 +239,19 @@ class TabWidget(qtw.QWidget):
         self.cam_front = VideoFrame()
         self.cam_claw = VideoFrame()
         self.cam_top = VideoFrame()
+        self.demo_map = qtw.QLabel()
+        self.demo_map.setScaledContents(True)
+        self.demo_map.setSizePolicy(qtw.QSizePolicy.Ignored, qtw.QSizePolicy.Ignored)
+        self.demo_map.setPixmap(qtg.QPixmap(PATH + "/dash_styling/product_demo_map.png"))
 
         cam_layout.addWidget(self.cam_front.label, 0, 0)
         cam_layout.addWidget(self.cam_claw.label, 0, 1)
         cam_layout.addWidget(self.cam_top.label, 1, 0)
+        cam_layout.addWidget(self.demo_map, 1, 1)
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
+
 
     @staticmethod
     def update_cam_img(data: Image, video_frame: VideoFrame):
@@ -257,7 +262,7 @@ class TabWidget(qtw.QWidget):
             print(f"update_cam_img() failed while trying to convert image from {data.cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
 
-        height, width, channel = cv_image.shape
+        height, width, _ = cv_image.shape
         bytesPerLine = 3 * width
         frame = qtg.QImage(cv_image.data, width, height, bytesPerLine, qtg.QImage.Format_RGB888).rgbSwapped()
         video_frame.label.setPixmap(qtg.QPixmap(frame))
