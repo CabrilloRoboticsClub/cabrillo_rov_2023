@@ -133,11 +133,15 @@ class VideoFrame():
         """
         Set up the 'VideoFrame' attributes initial values.
         """
-        self.init = True
+        # self.init = True
         self.image = None
-        self.width = None
-        self.height = None
+        # self.width = None
+        # self.height = None
+    
         self.label = qtw.QLabel()
+        # Fit video frame to size of label, no need to resize it later
+        self.label.setScaledContents(True)
+        self.label.setSizePolicy(qtw.QSizePolicy.Ignored, qtw.QSizePolicy.Ignored)
 
 
 class MainWindow(qtw.QMainWindow):
@@ -365,7 +369,7 @@ class TabWidget(qtw.QWidget):
         bridge = CvBridge()
         try:
             # Create cv image from ros image then resize it to fit dashboard
-            cv_image = cv2.resize(bridge.imgmsg_to_cv2(data, desired_encoding="bgr8"), (video_frame.width, video_frame.height))
+            cv_image = bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
         except CvBridgeError as error:
             print(f"update_cam_img() failed while trying to convert image from {data.cam_msg.encoding} to 'bgr8'.\n{error}")
             sys.exit()
@@ -379,43 +383,22 @@ class TabWidget(qtw.QWidget):
     @qtc.pyqtSlot()
     def update_cam_front(self):
         """
-        Slot which updates front camera image on the dashboard. Also collects sizing data
-        if this is the first frame.
+        Slot which updates front camera image on the dashboard.
         """
-        # Collect camera geometry if it is the first time opening the camera
-        if self.cam_front.init:
-            self.cam_front.height = self.cam_front.label.height()
-            self.cam_front.width = self.cam_front.label.width()
-            self.cam_front.init = False
-        
         TabWidget.update_cam_img(self.ros_qt_bridge.cam_front_msg, self.cam_front)
     
     @qtc.pyqtSlot()
     def update_cam_claw(self):
         """
-        Slot which updates claw camera image on the dashboard. Also collects sizing data
-        if this is the first frame.
-        """
-        # Collect camera geometry if it is the first time opening the camera
-        if self.cam_claw.init:
-            self.cam_claw.height = self.cam_claw.label.height()
-            self.cam_claw.width = self.cam_claw.label.width()
-            self.cam_claw.init = False
-        
+        Slot which updates claw camera image on the dashboard.
+        """     
         TabWidget.update_cam_img(self.ros_qt_bridge.cam_claw_msg, self.cam_claw)
     
     @qtc.pyqtSlot()
     def update_cam_top(self):
         """
-        Slot which updates front top image on the dashboard. Also collects sizing data
-        if this is the first frame.
+        Slot which updates front top image on the dashboard.
         """
-        # Collect camera geometry if it is the first time opening the camera
-        if self.cam_top.init:
-            self.cam_top.height = self.cam_top.label.height()
-            self.cam_top.width = self.cam_top.label.width()
-            self.cam_top.init = False
-        
         TabWidget.update_cam_img(self.ros_qt_bridge.cam_top_msg, self.cam_top)
 
     @qtc.pyqtSlot()
