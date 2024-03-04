@@ -296,7 +296,7 @@ class TabWidget(qtw.QWidget):
         self.setStyleSheet(self.style_sheet.format(**new_colors))
         self.demo_map.setPixmap(qtg.QPixmap(new_colors["MAP_IMG"]))
 
-    def create_pilot_tab(self, tab):
+    def create_pilot_tab(self, tab: qtw.QWidget):
         """
         Creates pilot dash tab with the following widgets:
             - Feature states:   Displays the states of Bambi Mode (on/off), the claw (closed/open), CoM shift (engaged/not)
@@ -412,6 +412,21 @@ class TabWidget(qtw.QWidget):
             "CoM Shift":    self.ros_qt_bridge.input_state_msg.com_shift
         }
         self.state_widget.update(input_state_dict)
+    
+    def create_debug_tab(self, tab: qtw.QWidget):
+        # Setup layouts
+        debug_layout = qtw.QHBoxLayout(tab)
+        graph_layout = qtw.QGridLayout()
+        term_layout = qtw.QVBoxLayout()
+
+        # Create debug graph instances
+
+        # Add debug graphs to `graph_layout`
+        # (0, 0)    (0, 1)
+        # (1, 0)    (1, 1)
+
+        debug_layout.addLayout(graph_layout, stretch=7)
+        debug_layout.addLayout(term_layout, stretch=3)
 
 
 class Dash(Node):
