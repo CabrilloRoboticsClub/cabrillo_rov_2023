@@ -222,7 +222,7 @@ class MainWindow(qtw.QMainWindow):
         self.tab_widget.temp_widget.set_colors(self.colors)
         self.tab_widget.depth_widget.set_colors(self.colors)
         self.tab_widget.turn_bank_indicator_widget.set_colors(self.colors)
-        # self.tab_widget.countdown_widget.set_colors(self.colors)
+        self.tab_widget.countdown_widget.set_colors(self.colors)
         
 
 class TabWidget(qtw.QWidget):
@@ -245,7 +245,8 @@ class TabWidget(qtw.QWidget):
             colors: Hex codes to color widget with.
         """
         super().__init__(parent)
-    
+
+        self.colors = colors
         with open(style_sheet_file) as style_sheet:
             self.style_sheet = style_sheet.read()
         
@@ -272,14 +273,14 @@ class TabWidget(qtw.QWidget):
         for name, tab in self.tab_dict.items():
             tabs.addTab(tab, name)
         
-        # Apply css styling
-        self.set_colors(colors)
-        
         # Add tabs to widget
         layout.addWidget(tabs)
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
+
+        # Apply css styling
+        self.set_colors(self.colors)
     
     def set_colors(self, new_colors: dict):
         """
@@ -288,7 +289,8 @@ class TabWidget(qtw.QWidget):
         Args:
             new_colors: Hex codes to color widget with.
         """
-        self.setStyleSheet(self.style_sheet.format(**new_colors)) 
+        self.setStyleSheet(self.style_sheet.format(**new_colors))
+        self.demo_map.setPixmap(qtg.QPixmap(new_colors["MAP_IMG"]))
 
     def create_pilot_tab(self, tab):
         """
@@ -314,12 +316,12 @@ class TabWidget(qtw.QWidget):
         cam_layout = qtw.QGridLayout()
 
         # Create widgets
-        self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt", DEFAULT_COLORS)
-        self.thrt_crv_widget = ThrtCrvWidget(tab, DEFAULT_COLORS)
-        self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
-        self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
-        self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt", DEFAULT_COLORS)
-        self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", minutes=15, seconds=0)
+        self.state_widget = StateWidget(tab, ["Bambi Mode", "Claw", "CoM Shift"], PATH + "/dash_styling/state_widget.txt", self.colors)
+        self.thrt_crv_widget = ThrtCrvWidget(tab, self.colors)
+        self.temp_widget = NumericDataWidget(tab, "Temperature", PATH + "/dash_styling/numeric_data_widget.txt", self.colors)
+        self.depth_widget = NumericDataWidget(tab, "Depth", PATH + "/dash_styling/numeric_data_widget.txt", self.colors)
+        self.turn_bank_indicator_widget = TurnBankIndicator(tab, PATH + "/dash_styling/numeric_data_widget.txt", self.colors)
+        self.countdown_widget = CountdownWidget(tab, PATH + "/dash_styling/countdown_widget.txt", self.colors, minutes=15, seconds=0)
 
         # Add widgets to side vertical layout
         # Stretch modifies the ratios of the widgets (must add up to 100)
@@ -340,7 +342,6 @@ class TabWidget(qtw.QWidget):
         # Dynamically sized, endures the image fits any aspect ratio. Will resize image to fit
         self.demo_map.setScaledContents(True)
         self.demo_map.setSizePolicy(qtw.QSizePolicy.Ignored, qtw.QSizePolicy.Ignored)
-        self.demo_map.setPixmap(qtg.QPixmap(PATH + "/dash_styling/product_demo_map.png"))
 
         # (0, 0)    (0, 1)
         # (1, 0)    (1, 1)
