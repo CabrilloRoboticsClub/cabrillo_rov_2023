@@ -4,6 +4,7 @@ import shlex
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
+from PyQt5 import QtGui as qtg
 
 class TermWidget(qtw.QWidget):
     """
@@ -45,8 +46,9 @@ class TermWidget(qtw.QWidget):
         frame.setLayout(layout_inner)
 
         self.cmd_history = []
+        self.cmd_history_tracker = 0
 
-        self.feedback = qtw.QPlainTextEdit()
+        self.feedback = qtw.QTextEdit()
         self.feedback.setReadOnly(True)
         
         self.prompt = qtw.QLabel()
@@ -65,48 +67,53 @@ class TermWidget(qtw.QWidget):
         layout_inner.addWidget(self.cmd_line, stretch=5)
 
         # self.set_colors(colors)
+
     def get_prompt(self):
         self.prompt.setText(str(os.getcwd()))
     
     def del_cmd(self):
         self.cmd_line.setPlainText("")
-        # 11 moves to end of document
-        # TODO: Figure out how to use the enum https://doc.qt.io/qt-5/qtextcursor.html#MoveOperation-enum
-        self.curs.movePosition(self.curs.End, 0)
+        self.curs.movePosition(qtg.QTextCursor.End, 0)
         self.cmd_line.setFocus()
     
     def read_and_display_cmd_feedback(self):
         try:
-            out = str(self.proc.readAll(), encoding = "utf8").strip()
+            text = str(self.proc.readAll(), encoding = "utf8").strip()
         except TypeError:
-            out = str(self.proc.readAll()).strip()
-            self.feedback.moveCursor(self.curs.Start) 
-        self.feedback.appendPlainText(out) 
+            text = str(self.proc.readAll()).strip()
+        self.feedback.append(text)
     
-    def run_cmd(self):
+    def run_cmd(self, command=None):
         self.feedback.setFocus()
-        cmd_txt = self.cmd_line.toPlainText()
+        cmd_txt = command if command else self.cmd_line.toPlainText()
         cmd_list = shlex.split(cmd_txt, posix=False)
         cmd = str(cmd_list[0]).casefold()
         cmd_args = " ".join(cmd_list[1:])
+
+        WARNING     = '<span style="color:#fc3019;">{}</span>'
+        SUCCESS     = '<span style="color:#2e933c;">{}</span>'
+        CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
 
         match (cmd):
             case "exit":
                 sys.exit()
             case "clear":
-                self.feedback.setPlainText("")
+                self.feedback.setText("")
             case "cd":
-                self.feedback.appendPlainText("\n> " + cmd_txt)
+                text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+                self.feedback.append(text)
                 os.chdir(os.path.abspath(cmd_args))
                 self.proc.setWorkingDirectory(os.getcwd())
                 self.get_prompt()
             case _:
                 if qtc.QStandardPaths.findExecutable(cmd):
-                    self.feedback.appendPlainText("\n> " + cmd_txt)
-                    if self.proc.state() != 2:  # 2 for a process is running
+                    text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+                    self.feedback.append(text)
+                    if self.proc.state() != self.proc.Running:
                         self.proc.start(cmd + " " + cmd_args)
                 else:
-                    self.feedback.appendPlainText(f"\nCommand not found: {cmd_txt}")
+                    self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
+        self.cmd_history.append(cmd_txt)
         self.del_cmd()
 
     def eventFilter(self, a0: qtc.QObject, a1: qtc.QEvent) -> bool:
@@ -117,6 +124,7 @@ class TermWidget(qtw.QWidget):
                     return True
                 elif a1.key() == qtc.Qt.Key_Up:
                     # Scroll up in cmd history
+                    self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
                     return True
                 elif a1.key() == qtc.Qt.Key_Down:
                     # Scroll down in cmd history
