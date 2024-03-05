@@ -15,7 +15,7 @@ class TermWidget(qtw.QWidget):
 
     def __init__(self, parent: qtw.QWidget, style_sheet_file: str, colors: dict):
         """
-        Initialize numeric display widget.
+        Initialize terminal widget.
         
         Args:
             parent: Widget to overlay 'NumericDataWidget' on.
