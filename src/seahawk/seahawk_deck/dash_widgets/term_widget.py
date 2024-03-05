@@ -170,6 +170,15 @@ class TermWidget(qtw.QWidget):
         - down-arrow:       Scroll down in cmd history
         - ctrl-c:           Terminate process
         - ctrl-shift-c:     Copy selected text
+        - ctrl-shift-p:     Paste text
+        - ctrl-l:           Clear screen
+        - ctrl-a:           Move to the start of the line
+        - ctrl-e:           Move to the end of the line
+        - ctrl-b:           Move one character backward
+        - ctrl-f:           Move one character forward
+        - ctrl-w:           Delete the word before the cursor
+        - ctrl-u:           Delete from the cursor to the start of the line
+        - ctrl-k:           Delete from the cursor to the end of the line
         """
         if a0 == self.cmd_line: # If the object the event is from is the command line
             if (a1.type() == qtc.QEvent.KeyPress):  # User pressed a key
@@ -205,10 +214,10 @@ class TermWidget(qtw.QWidget):
                 elif seq == qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
                     self.run_cmd("clear")
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
+                elif seq == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line
                     self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
+                elif seq == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line
                     self.move_cursor(qtg.QTextCursor.End, 0)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
@@ -217,13 +226,13 @@ class TermWidget(qtw.QWidget):
                 elif seq == qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
                     self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
+                elif seq == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor
                     self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
+                elif seq == qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line
                     self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
+                elif seq == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line
                     self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
                     return True
                 
