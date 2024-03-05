@@ -6,6 +6,49 @@ from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 
+class CmdHistory():
+    """
+    Simple data structure that emulates cyclic bidirectional iteration
+    of the terminal command line history. 
+    """
+
+    def __init__(self):
+        """
+        Initialize `CmdHistory` object
+        """
+        self.history = []
+        self.i = None
+    
+    def next(self) -> str:
+        """
+        Returns next command
+        """
+        # Wrap around when i is out or range
+        if self.i == len(self.history): self.i = 0
+        try:
+            self.i += 1
+            return self.history[self.i]
+        except IndexError or TypeError:
+            return ""
+
+    def prev(self) -> str:
+        """
+        Returns previous command
+        """
+        # Wrap around when i is out or range
+        if self.i == -1: self.i = len(self.history) - 1
+        try:
+            self.i -= 1
+            return self.history[self.i]
+        except IndexError or TypeError:
+            return ""
+
+    def append(self, cmd: str):
+        """
+        Append a new command to the list of commands ran
+        """
+        self.history.append(cmd)
+        self.i = len(self.history) # Rest the index so it looks at the most recent command
 
 class TermWidget(qtw.QWidget):
     """
@@ -45,9 +88,7 @@ class TermWidget(qtw.QWidget):
         layout_inner = qtw.QVBoxLayout(frame)
         frame.setLayout(layout_inner)
 
-        # For tracking command history
-        self.cmd_history = [] # List of previously ran commands
-        self.cmd_history_tracker = 0
+        self.cmd_history = CmdHistory()
         
         self.copied_text = ""
 
@@ -140,7 +181,7 @@ class TermWidget(qtw.QWidget):
                 self.display_prompt()
             case "history":  # Display previous commands ran in this terminal session with indexes
                 self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
-                for index, token in enumerate(self.cmd_history):
+                for index, token in enumerate(self.cmd_history.history):
                     self.feedback.append(f"{index:<4}{token}")
             case _:
                 if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
@@ -152,7 +193,6 @@ class TermWidget(qtw.QWidget):
                     self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
         # Add command to history
         self.cmd_history.append(cmd_txt)
-        self.cmd_history_tracker = len(self.cmd_history)
         # Delete what is currently in the command line text box to get ready for new command
         self.del_cmd()
     
@@ -197,16 +237,12 @@ class TermWidget(qtw.QWidget):
                         self.run_cmd()
                         return True
                     case qtc.Qt.Key_Up:     # up-arrow: Scroll up in cmd history
-                        self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
-                        self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
+                        self.cmd_line.setPlainText(self.cmd_history.prev())
                         self.move_cursor(qtg.QTextCursor.End)
                         return True
                     case qtc.Qt.Key_Down:   # down-arrow: Scroll down in cmd history
-                        # TODO: Invert logic
-                        self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
-                        self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
-                        # Scroll down in cmd history
-                        return True
+                        self.cmd_line.setPlainText(self.cmd_history.next())
+                        self.move_cursor(qtg.QTextCursor.End)  
                 
                 # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
                 seq = qtg.QKeySequence(a1.key() + int(a1.modifiers())) 
