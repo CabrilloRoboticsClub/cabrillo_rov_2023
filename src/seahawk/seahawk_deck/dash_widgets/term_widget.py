@@ -55,7 +55,7 @@ class TermWidget(qtw.QWidget):
 
         # Displays the path of working directory
         self.prompt = qtw.QLabel()
-        self.get_prompt()
+        self.display_prompt()
 
         # Command line window for the user to enter commands
         self.cmd_line = qtw.QPlainTextEdit()
@@ -72,12 +72,16 @@ class TermWidget(qtw.QWidget):
         # Apply colors
         self.set_colors(colors)
 
-    def get_prompt(self):
+    def display_prompt(self):
         """
         Get current directory path and display it.
         """
         # HTML makes the text highlighted and bold
-        self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">{str(os.getcwd()) + " "}</span>')
+        path = str(os.getcwd())
+        # Find third occurrence of a slash character then splice the string there
+        # The purpose of this is to substitute /home/user/foo with ~/foo
+        simplified_path = path[path.find("/", path.find("/", path.find("/") + 1) + 1):]
+        self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{simplified_path} </span>')
     
     def del_cmd(self):
         """
@@ -133,7 +137,7 @@ class TermWidget(qtw.QWidget):
                 os.chdir(os.path.abspath(cmd_args))
                 self.proc.setWorkingDirectory(os.getcwd())
                 # Update prompt representation of path
-                self.get_prompt()
+                self.display_prompt()
             case "history":  # Display previous commands ran in this terminal session with indexes
                 self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
                 for index, token in enumerate(self.cmd_history):
