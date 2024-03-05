@@ -62,7 +62,6 @@ class TermWidget(qtw.QWidget):
         self.cmd_line.setLineWrapMode(qtw.QPlainTextEdit.NoWrap)
         self.cmd_line.setFocus()
         self.cmd_line.installEventFilter(self)  # Filter command line events (see eventFilter())
-        self.curs = self.cmd_line.textCursor()
 
         # Add widgets to layout
         layout_inner.addWidget(self.feedback, stretch=95)
@@ -88,7 +87,6 @@ class TermWidget(qtw.QWidget):
         Deletes all text present in the `cmd_line` textbox.
         """
         self.cmd_line.setPlainText("")
-        self.curs.movePosition(qtg.QTextCursor.End, 0)
         self.cmd_line.setFocus()
     
     def read_and_display_cmd_feedback(self):
@@ -155,6 +153,12 @@ class TermWidget(qtw.QWidget):
         self.cmd_history_tracker = len(self.cmd_history)
         # Delete what is currently in the command line text box to get ready for new command
         self.del_cmd()
+    
+    def move_cursor(self, pos, operation, delete=False):
+        temp_cursor = self.cmd_line.textCursor();
+        temp_cursor.movePosition(pos, operation);
+        if delete and operation: temp_cursor.removeSelectedText();
+        self.cmd_line.setTextCursor(temp_cursor);
 
     def eventFilter(self, a0: qtc.QObject, a1: qtc.QEvent) -> bool:
         """
@@ -162,26 +166,56 @@ class TermWidget(qtw.QWidget):
 
         Key press:          Functionality:           
         - return/enter:     Run command
-        - up-arrow:         Scroll up through command history
-        - down-arrow:       Scroll down through command history
+        - up-arrow:         Scroll up in cmd history
+        - down-arrow:       Scroll down in cmd history
+        - ctrl-c:           Terminate process
+        - ctrl-shift-c:     Copy selected text
         """
         if a0 == self.cmd_line: # If the object the event is from is the command line
-            if (a1.type() == qtc.QEvent.KeyPress):  # Use pressed return, run command.
-                if a1.key() == qtc.Qt.Key_Return:
-                    self.run_cmd()
+            if (a1.type() == qtc.QEvent.KeyPress):  # User pressed a key
+                match(a1.key()): # Match single key
+                    case qtc.Qt.Key_Return: # return/enter: Run command
+                        self.run_cmd()
+                        return True
+                    case qtc.Qt.Key_Up:     # up-arrow: Scroll up in cmd history
+                        self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
+                        self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
+                        self.move_cursor(qtg.QTextCursor.End, 0)
+                        return True
+                    case qtc.Qt.Key_Down:   # down-arrow: Scroll down in cmd history
+                        # TODO: Invert logic
+                        self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
+                        self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
+                        # Scroll down in cmd history
+                        return True
+                
+                # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
+                if qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+C"):  # ctrl-c: Terminate process
+                    if self.proc.state() == qtc.QProcess.Running:
+                        self.proc.terminate()
+                        self.feedback.append("Process terminated with ctrl-c")
                     return True
-                elif a1.key() == qtc.Qt.Key_Up:     # Scroll up in cmd history
-                    self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
-                    self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
-                    # TODO: Move cursor to end of line
-                    return True
-                elif a1.key() == qtc.Qt.Key_Down:   # Scroll down in cmd history
-                    # TODO: Invert logic
-                    self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
-                    self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
-                    # Scroll down in cmd history
-                    return True
-
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
+                    print("copy")
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
+                    print("paste")
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
+                    self.run_cmd("clear")
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
+                    self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
+                    self.move_cursor(qtg.QTextCursor.End, 0)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
+                    self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
+                    self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
+                    self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
+                    self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
+                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
+                    self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
+                
                 # TODO: Quit process with ctr-c
                 # TODO: Copy with ctrl-shift-c
                 # TODO: Paste with ctrl-shift-p
