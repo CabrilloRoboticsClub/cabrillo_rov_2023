@@ -1,0 +1,14 @@
+QFrame {{
+    background-color: {SURFACE_DRK};
+	border-radius: 8px;
+}}
+
+QTextEdit, QPlainTextEdit {{
+    font-family: Noto Sans Mono; 
+    color: {SECONDARY_TEXT};
+}}
+
+QLabel {{
+    font-family: Noto Sans Mono;
+    color: {ACTIVE_TAB_BKG};
+}}
