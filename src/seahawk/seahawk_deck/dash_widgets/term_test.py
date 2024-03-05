@@ -39,13 +39,13 @@ class MainWindow(qtw.QMainWindow):
         super().__init__()
 
         # Set up main window
-        self.setWindowTitle("Check List Test")
+        self.setWindowTitle("Terminal")
 
         term = TermWidget(self, PATH + "/../dash_styling/term_widget.txt", DARK_MODE)
         self.setCentralWidget(term)
 
         # Display window
-        self.showMaximized()
+        self.show()
 
 
 def fix_term():

@@ -8,6 +8,10 @@ QTextEdit, QPlainTextEdit {{
     color: {SECONDARY_TEXT};
 }}
 
+QPlainTextEdit {{
+    border: 2px solid {ACCENT_LIGHT};
+}}
+
 QLabel {{
     font-family: Noto Sans Mono;
     color: {ACTIVE_TAB_BKG};

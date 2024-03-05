@@ -59,14 +59,14 @@ class TermWidget(qtw.QWidget):
 
         # Command line window for the user to enter commands
         self.cmd_line = qtw.QPlainTextEdit()
-        self.cmd_line.setLineWrapMode(qtw.QPlainTextEdit.NoWrap)
+        self.cmd_line.setLineWrapMode(qtw.QPlainTextEdit.WidgetWidth)
         self.cmd_line.setFocus()
         self.cmd_line.installEventFilter(self)  # Filter command line events (see eventFilter())
 
         # Add widgets to layout
-        layout_inner.addWidget(self.feedback, stretch=95)
+        layout_inner.addWidget(self.feedback, stretch=98)
         layout_inner.addWidget(self.prompt, stretch=1)
-        layout_inner.addWidget(self.cmd_line, stretch=4)
+        layout_inner.addWidget(self.cmd_line, stretch=1)
         
         # Apply colors
         self.set_colors(colors)
