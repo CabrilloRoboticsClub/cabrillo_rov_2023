@@ -48,6 +48,8 @@ class TermWidget(qtw.QWidget):
         # For tracking command history
         self.cmd_history = [] # List of previously ran commands
         self.cmd_history_tracker = 0
+        
+        self.copied_text = ""
 
         # Feedback window for displaying command results
         self.feedback = qtw.QTextEdit()
@@ -154,19 +156,19 @@ class TermWidget(qtw.QWidget):
         # Delete what is currently in the command line text box to get ready for new command
         self.del_cmd()
     
-    def move_cursor(self, pos, operation: int, delete: bool=False):
+    def move_cursor(self, pos, operation: int=0, delete: bool=False):
         """
         Move `cmd_line` cursor to position provided.
 
         Args:
-            pos: Position to move terminal to. Accepts values of the form qtg.QTextCursor.MoveOpp. See https://doc.qt.io/qt-6/qtextcursor.html#MoveOperation-enum
-            operation: If 0 moves cursor to `pos. If 1 the cursor selects the text it moves over.
-            delete: Delete text selected. operation must be set to 1.
+            pos: Position to move terminal to. Accepts values of the form `qtg.QTextCursor.MoveOpp`. See https://doc.qt.io/qt-6/qtextcursor.html#MoveOperation-enum
+            operation: If 0 moves cursor to `pos`. If 1 the cursor selects the text it moves over. (default = 1)
+            delete: Delete text selected. operation must be set to 1. (default = false)
         """
-        temp_cursor = self.cmd_line.textCursor();
-        temp_cursor.movePosition(pos, operation);
-        if delete and operation: temp_cursor.removeSelectedText();
-        self.cmd_line.setTextCursor(temp_cursor);
+        temp_cursor = self.cmd_line.textCursor()
+        temp_cursor.movePosition(pos, operation)
+        if delete and operation: temp_cursor.removeSelectedText()
+        self.cmd_line.setTextCursor(temp_cursor)
 
     def eventFilter(self, a0: qtc.QObject, a1: qtc.QEvent) -> bool:
         """
@@ -178,7 +180,7 @@ class TermWidget(qtw.QWidget):
         - down-arrow:       Scroll down in cmd history
         - ctrl-c:           Terminate process
         - ctrl-shift-c:     Copy selected text
-        - ctrl-shift-p:     Paste text
+        - ctrl-shift-v:     Paste text
         - ctrl-l:           Clear screen
         - ctrl-a:           Move to the start of the line
         - ctrl-e:           Move to the end of the line
@@ -197,7 +199,7 @@ class TermWidget(qtw.QWidget):
                     case qtc.Qt.Key_Up:     # up-arrow: Scroll up in cmd history
                         self.cmd_history_tracker = self.cmd_history_tracker - 1 if self.cmd_history_tracker >= 0 else len(self.cmd_history) - 1
                         self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
-                        self.move_cursor(qtg.QTextCursor.End, 0)
+                        self.move_cursor(qtg.QTextCursor.End)
                         return True
                     case qtc.Qt.Key_Down:   # down-arrow: Scroll down in cmd history
                         # TODO: Invert logic
@@ -214,25 +216,27 @@ class TermWidget(qtw.QWidget):
                         self.feedback.append("Process terminated with ctrl-c")
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
-                    print("copy")
+                    temp_cursor = self.cmd_line.textCursor()
+                    self.copied_text = temp_cursor.selectedText()
                     return True
-                elif seq == qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
-                    print("paste")
+                elif seq == qtg.QKeySequence("Ctrl+Shift+V"):  # ctrl-shift-v: Paste text
+                    self.cmd_line.insertPlainText(self.copied_text)
+                    self.move_cursor(qtg.QTextCursor.End)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
                     self.run_cmd("clear")
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line
-                    self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
+                    self.move_cursor(qtg.QTextCursor.StartOfLine)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line
-                    self.move_cursor(qtg.QTextCursor.End, 0)
+                    self.move_cursor(qtg.QTextCursor.End)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
-                    self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
+                    self.move_cursor(qtg.QTextCursor.PreviousCharacter)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
-                    self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
+                    self.move_cursor(qtg.QTextCursor.NextCharacter)
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor
                     self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
