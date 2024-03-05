@@ -188,44 +188,44 @@ class TermWidget(qtw.QWidget):
                         self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
                         # Scroll down in cmd history
                         return True
-
-                match(qtg.QKeySequence(a1.key() + int(a1.modifiers()))):
-                    # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
-                    case qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
-                        if self.proc.state() == qtc.QProcess.Running:
-                            self.proc.terminate()
-                            self.feedback.append("Process terminated with ctrl-c")
-                        return True
-                    case qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
-                        print("copy")
-                        return True
-                    case qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
-                        print("paste")
-                        return True
-                    case qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
-                        self.run_cmd("clear")
-                        return True
-                    case qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
-                        self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
-                        return True
-                    case qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
-                        self.move_cursor(qtg.QTextCursor.End, 0)
-                        return True
-                    case qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
-                        self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
-                        return True
-                    case qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
-                        self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
-                        return True
-                    case qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
-                        self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
-                        return True
-                    case qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
-                        self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
-                        return True
-                    case qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
-                        self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
-                        return True
+                
+                # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
+                seq = qtg.QKeySequence(a1.key() + int(a1.modifiers())) 
+                if seq == qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
+                    if self.proc.state() == qtc.QProcess.Running:
+                        self.proc.terminate()
+                        self.feedback.append("Process terminated with ctrl-c")
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
+                    print("copy")
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
+                    print("paste")
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
+                    self.run_cmd("clear")
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
+                    self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
+                    self.move_cursor(qtg.QTextCursor.End, 0)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
+                    self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
+                    self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
+                    self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
+                    self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
+                    return True
+                elif seq == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
+                    self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
+                    return True
                 
                 # TODO: Quit process with ctr-c
                 # TODO: Copy with ctrl-shift-c
