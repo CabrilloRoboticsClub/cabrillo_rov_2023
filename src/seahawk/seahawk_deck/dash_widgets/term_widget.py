@@ -154,7 +154,15 @@ class TermWidget(qtw.QWidget):
         # Delete what is currently in the command line text box to get ready for new command
         self.del_cmd()
     
-    def move_cursor(self, pos, operation, delete=False):
+    def move_cursor(self, pos, operation: int, delete: bool=False):
+        """
+        Move `cmd_line` cursor to position provided.
+
+        Args:
+            pos: Position to move terminal to. Accepts values of the form qtg.QTextCursor.MoveOpp. See https://doc.qt.io/qt-6/qtextcursor.html#MoveOperation-enum
+            operation: If 0 moves cursor to `pos. If 1 the cursor selects the text it moves over.
+            delete: Delete text selected. operation must be set to 1.
+        """
         temp_cursor = self.cmd_line.textCursor();
         temp_cursor.movePosition(pos, operation);
         if delete and operation: temp_cursor.removeSelectedText();
@@ -234,13 +242,7 @@ class TermWidget(qtw.QWidget):
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line
                     self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
-                    return True
-                
-                # TODO: Quit process with ctr-c
-                # TODO: Copy with ctrl-shift-c
-                # TODO: Paste with ctrl-shift-p
-                # TODO: Terminal shortcuts (ctrl-u, ctrl-a, ctrl-e...
-                
+                    return True   
         return False
 
 
