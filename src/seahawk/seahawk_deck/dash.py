@@ -276,6 +276,8 @@ class TabWidget(qtw.QWidget):
         # Add tabs
         for name, tab in self.tab_dict.items():
             tabs.addTab(tab, name)
+
+        self.setStyleSheet(self.style_sheet.format(**self.colors))
         
         # Add tabs to widget
         layout.addWidget(tabs)
