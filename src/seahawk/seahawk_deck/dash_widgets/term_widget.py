@@ -188,49 +188,49 @@ class TermWidget(qtw.QWidget):
                         self.cmd_line.setPlainText(self.cmd_history[self.cmd_history_tracker])
                         # Scroll down in cmd history
                         return True
-                
-                # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
-                if qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+C"):  # ctrl-c: Terminate process
-                    if self.proc.state() == qtc.QProcess.Running:
-                        self.proc.terminate()
-                        self.feedback.append("Process terminated with ctrl-c")
-                    return True
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
-                    print("copy")
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
-                    print("paste")
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
-                    self.run_cmd("clear")
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
-                    self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
-                    self.move_cursor(qtg.QTextCursor.End, 0)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
-                    self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
-                    self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
-                    self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
-                    self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
-                elif qtg.QKeySequence(a1.key() + int(a1.modifiers())) == qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
-                    self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
+
+                match(qtg.QKeySequence(a1.key() + int(a1.modifiers()))):
+                    # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
+                    case qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
+                        if self.proc.state() == qtc.QProcess.Running:
+                            self.proc.terminate()
+                            self.feedback.append("Process terminated with ctrl-c")
+                        return True
+                    case qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
+                        print("copy")
+                        return True
+                    case qtg.QKeySequence("Ctrl+Shift+P"):  # ctrl-shift-p: Paste text
+                        print("paste")
+                        return True
+                    case qtg.QKeySequence("Ctrl+L"):        # ctrl-l: Clear screen
+                        self.run_cmd("clear")
+                        return True
+                    case qtg.QKeySequence("Ctrl+A"):        # ctrl-a: Move to the start of the line.
+                        self.move_cursor(qtg.QTextCursor.StartOfLine, 0)
+                        return True
+                    case qtg.QKeySequence("Ctrl+E"):        # ctrl-e: Move to the end of the line.
+                        self.move_cursor(qtg.QTextCursor.End, 0)
+                        return True
+                    case qtg.QKeySequence("Ctrl+B"):        # ctrl-b: Move one character backward
+                        self.move_cursor(qtg.QTextCursor.PreviousCharacter, 0)
+                        return True
+                    case qtg.QKeySequence("Ctrl+F"):        # ctrl-f: Move one character forward
+                        self.move_cursor(qtg.QTextCursor.NextCharacter, 0)
+                        return True
+                    case qtg.QKeySequence("Ctrl+W"):        # ctrl-w: Delete the word before the cursor. 
+                        self.move_cursor(qtg.QTextCursor.PreviousWord, 1, delete=True)
+                        return True
+                    case qtg.QKeySequence("Ctrl+U"):        # ctrl-u: Delete from the cursor to the start of the line.
+                        self.move_cursor(qtg.QTextCursor.StartOfLine, 1, delete=True)
+                        return True
+                    case qtg.QKeySequence("Ctrl+K"):        # ctrl-k: Delete from the cursor to the end of the line.
+                        self.move_cursor(qtg.QTextCursor.End, 1, delete=True)
+                        return True
                 
                 # TODO: Quit process with ctr-c
                 # TODO: Copy with ctrl-shift-c
                 # TODO: Paste with ctrl-shift-p
-                # TODO: Terminal shortcuts (ctrl-u, ctrl-a, ctrl-e...)
-
-                # elif a1.key() == qtc.Qt.Key_C and qtc.Qt.ControlModifier and qtc.Qt.ShiftModifier:  # Copy
-                #     # Copy selected text
-                #     return True
-                # elif qtc.Qt.ControlModifier and a1.key() == qtc.Qt.Key_C:   # Quit process
-                #     print(qtc.Qt.ControlModifier)
-                #     print("quits")
-                #     # Quit process
-                #     if self.proc.state() != qtc.QProcess.Running:
-                #         self.proc.terminate()
-                #     return True 
+                # TODO: Terminal shortcuts (ctrl-u, ctrl-a, ctrl-e...
                 
         return False
 
