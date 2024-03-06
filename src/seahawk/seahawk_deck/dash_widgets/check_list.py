@@ -56,6 +56,17 @@ class CheckList(qtw.QWidget):
         font.setPointSize(30)
         font.setBold(True)
         self.title.setFont(font)
+        self.title = qtw.QLabel(parent)
+        self.title.setAlignment(qtc.Qt.AlignCenter)
+
+        # Creating a label for points earned
+        self.points_earned = qtw.QLabel(parent)
+        self.points_earned.setAlignment(qtc.Qt.AlignCenter)
+
+        font = self.title.font()
+        font.setPointSize(30)
+        font.setBold(True)
+        self.title.setFont(font)
 
         # Giving string values to the created labels
         self.title.setText("TASKS:")
@@ -70,14 +81,18 @@ class CheckList(qtw.QWidget):
         scroll_area.setWidget(frame)
 
         # Add the scroll area to the outer layout
-        outer_layout.addWidget(scroll_area)
+        #outer_layout.addWidget(scroll_area)
 
         # Creating the progress bar
         self.progress_bar = qtw.QProgressBar(parent)
 
+        # Create the scroll area on the main frame
+        # scroll_area.setWidget(frame)
+
         # Changing the dimensions, color, border, and text algnment of progress bar
         self.progress_bar.setStyleSheet("QProgressBar {border: 5px solid grey; border-radius: 10px; text-align: center;} "
-                                        "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
+                                       "QProgressBar::chunk {background-color: #9757f5; width: 10px;}")
+
 
         # Has the task as a key, and a its # of points as value
         self.task_dict = {}
@@ -115,7 +130,6 @@ class CheckList(qtw.QWidget):
         outer_layout.addWidget(self.title)
         outer_layout.addWidget(self.points_earned)
         outer_layout.addWidget(self.progress_bar)
-
         outer_layout.addWidget(scroll_area)
         
         for part, tasks_dict in data_list.items():
