@@ -449,9 +449,12 @@ class Dash(Node):
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
 
         # Camera subscriptions
-        self.create_subscription(Image, "camera/front/h264", ros_qt_bridge.callback_cam_front, 10)
-        self.create_subscription(Image, "camera/claw/h264", ros_qt_bridge.callback_cam_claw, 10)
-        self.create_subscription(Image, "camera/top/h264", ros_qt_bridge.callback_cam_top, 10)
+        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_front, 10)
+        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_claw, 10)
+        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_top, 10)
+        self.create_subscription(Image, "camera/front/image", ros_qt_bridge.callback_cam_front, 10)
+        self.create_subscription(Image, "camera/claw/image", ros_qt_bridge.callback_cam_claw, 10)
+        self.create_subscription(Image, "camera/top/image", ros_qt_bridge.callback_cam_top, 10)
 
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
         
