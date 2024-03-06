@@ -218,14 +218,17 @@ class TermWidget(qtw.QWidget):
         elif cmd == "clear":  # Clear feedback window contents
             self.feedback.setText("")
         elif cmd == "cd":  # Change directories
-            # Format command to string as "❯ cmd cmd-args" with colored text
-            text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-            self.feedback.append(text)
-            # Change directory
-            os.chdir(os.path.abspath(cmd_args))
-            self.proc.setWorkingDirectory(os.getcwd())
-            # Update prompt representation of path
-            self.display_prompt()
+            try:
+                # Change directory
+                os.chdir(os.path.abspath(cmd_args))
+                self.proc.setWorkingDirectory(os.getcwd())
+                # Format command to string as "❯ cmd cmd-args" with colored text
+                text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+                self.feedback.append(text)
+                # Update prompt representation of path
+                self.display_prompt()
+            except FileNotFoundError:
+                self.feedback.append(WARNING.format(u"\n\u276F ") + f"cd: no such file or directory: {cmd_txt.partition(' ')[2]}")
         elif cmd == "history":  # Display previous commands ran in this terminal session with indexes
             self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
             for index, token in enumerate(self.cmd_history.history):
@@ -245,7 +248,7 @@ class TermWidget(qtw.QWidget):
                     else:
                         self.proc.start(f"{cmd} {cmd_args}")
             else:  # Otherwise command is not executable, display error
-                self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
+                self.feedback.append(WARNING.format(u"\n\u276F ") + f"command not found: {cmd_txt}")
         # Add command to history
         self.cmd_history.append(cmd_txt)
         # Delete what is currently in the command line text box to get ready for new command
