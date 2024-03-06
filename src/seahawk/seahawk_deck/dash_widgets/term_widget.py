@@ -50,6 +50,7 @@ class CmdHistory():
         """
         self.history.append(cmd)
         self.i = len(self.history) # Rest the index so it looks at the most recent command
+    
 
 class TermWidget(qtw.QWidget):
     """
@@ -271,6 +272,25 @@ class TermWidget(qtw.QWidget):
             text = str(self.proc.readAll()).strip()
         self.feedback.append(text)
 
+    @staticmethod
+    def path_reduce(max_len, path, factor):
+        """
+        Reduces path to be a certain character length while retaining the most possible information
+
+        Args:
+            max_len: Maximum length the path should be
+            path: Path to reduce
+            factor: Scale to reduce at
+        """
+        if factor == 0:
+            raise Exception("Cannot reduce any further")
+        elif len(path) > max_len:
+            split_path = path.split("/")
+            for i in range(len(split_path) - 1):
+                split_path[i] = split_path[i][:factor]
+            return TermWidget.path_reduce(max_len, "/".join(split_path), factor - 1)
+        return path
+
     def display_prompt(self):
         """
         Get current directory path and display it.
@@ -280,8 +300,15 @@ class TermWidget(qtw.QWidget):
         # Find third occurrence of a slash character then splice the string there
         # The purpose of this is to substitute /home/user/foo with ~/foo
         simplified_path = path[path.find("/", path.find("/", path.find("/") + 1) + 1):]
-        self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{simplified_path} </span>')
-    
+        try:
+            # Reduce the path to be under 65 characters
+            reduced_path = TermWidget.path_reduce(50, simplified_path, 8)
+        except Exception: 
+            # If the path could not be reduced, just display the current directory
+            reduced_path = simplified_path[simplified_path.rfind("/") + 1:]
+        finally:
+            self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{reduced_path} </span>')
+
     def del_cmd(self):
         """
         Deletes all text present in the `cmd_line` textbox.
