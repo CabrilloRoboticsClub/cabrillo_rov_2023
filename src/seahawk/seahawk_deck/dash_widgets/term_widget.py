@@ -114,109 +114,6 @@ class TermWidget(qtw.QWidget):
         # Apply colors
         self.set_colors(colors)
 
-    def display_prompt(self):
-        """
-        Get current directory path and display it.
-        """
-        # HTML makes the text highlighted and bold
-        path = str(os.getcwd())
-        # Find third occurrence of a slash character then splice the string there
-        # The purpose of this is to substitute /home/user/foo with ~/foo
-        simplified_path = path[path.find("/", path.find("/", path.find("/") + 1) + 1):]
-        self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{simplified_path} </span>')
-    
-    def del_cmd(self):
-        """
-        Deletes all text present in the `cmd_line` textbox.
-        """
-        self.cmd_line.setPlainText("")
-        self.cmd_line.setFocus()
-    
-    def read_and_display_cmd_feedback(self):
-        """
-        Reads feedback from command entered in process and appends it to feedback window.
-        """
-        try:
-            text = str(self.proc.readAll(), encoding = "utf8").strip()
-        except TypeError:
-            text = str(self.proc.readAll()).strip()
-        self.feedback.append(text)
-    
-    def run_cmd(self, command=None):
-        """
-        Runs the command provided by the argument or present in the command line. The command
-        ran and its results are appended to the feedback window, with formatting. If the
-        command is not found, the user is notified with a message. Command is appended
-        to the command history list.
-
-        Args:
-            command: Command to run (optional).
-        """
-        self.feedback.setFocus()
-        # If provided an argument, use that, otherwise grab the text from the command line
-        cmd_txt = command if command else self.cmd_line.toPlainText()
-        # Split `cmd_txt` into commands with shell-like syntax
-        cmd_list = shlex.split(cmd_txt, posix=False)
-        cmd = str(cmd_list[0]).casefold()   # First index holds the actual command
-        cmd_args = " ".join(cmd_list[1:])   # The rest of the list contains the arguments
-
-        # HTML formatting strings for colored text
-        WARNING     = '<span style="color:#fc3019;">{}</span>'
-        SUCCESS     = '<span style="color:#2e933c;">{}</span>'
-        CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
-
-        if cmd == "exit":
-            sys.exit()
-        elif cmd == "clear":  # Clear feedback window contents
-            self.feedback.setText("")
-        elif cmd == "cd":  # Change directories
-            # Format command to string as "❯ cmd cmd-args" with colored text
-            text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-            self.feedback.append(text)
-            # Change directory
-            os.chdir(os.path.abspath(cmd_args))
-            self.proc.setWorkingDirectory(os.getcwd())
-            # Update prompt representation of path
-            self.display_prompt()
-        elif cmd == "history":  # Display previous commands ran in this terminal session with indexes
-            self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
-            for index, token in enumerate(self.cmd_history.history):
-                self.feedback.append(f"{index:<4}{token}")
-        elif cmd == "!!":  # Most recent command
-            self.del_cmd()
-            self.cmd_line.setPlainText(self.cmd_history.history[-1])
-            self.move_cursor(qtg.QTextCursor.End)
-            return
-        else:
-            if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
-                text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-                self.feedback.append(text)
-                if self.proc.state() != qtc.QProcess.Running:
-                    if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
-                        self.proc.start(f'sh -c "{cmd} {cmd_args}"')
-                    else:
-                        self.proc.start(f"{cmd} {cmd_args}")
-            else:  # Otherwise command is not executable, display error
-                self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
-        # Add command to history
-        self.cmd_history.append(cmd_txt)
-        # Delete what is currently in the command line text box to get ready for new command
-        self.del_cmd()
-    
-    def move_cursor(self, pos, operation: int=0, delete: bool=False):
-        """
-        Move `cmd_line` cursor to position provided.
-
-        Args:
-            pos: Position to move terminal to. Accepts values of the form `qtg.QTextCursor.MoveOpp`. See https://doc.qt.io/qt-6/qtextcursor.html#MoveOperation-enum
-            operation: If 0 moves cursor to `pos`. If 1 the cursor selects the text it moves over. (default = 1)
-            delete: Delete text selected. operation must be set to 1. (default = false)
-        """
-        temp_cursor = self.cmd_line.textCursor()
-        temp_cursor.movePosition(pos, operation)
-        if delete and operation: temp_cursor.removeSelectedText()
-        self.cmd_line.setTextCursor(temp_cursor)
-
     def eventFilter(self, a0: qtc.QObject, a1: qtc.QEvent) -> bool:
         """
         Filters and handles events. Makes terminal behave as expected when certain keys are pressed.
@@ -293,6 +190,108 @@ class TermWidget(qtw.QWidget):
                     return True   
         return False
 
+    def run_cmd(self, command=None):
+        """
+        Runs the command provided by the argument or present in the command line. The command
+        ran and its results are appended to the feedback window, with formatting. If the
+        command is not found, the user is notified with a message. Command is appended
+        to the command history list.
+
+        Args:
+            command: Command to run (optional).
+        """
+        self.feedback.setFocus()
+        # If provided an argument, use that, otherwise grab the text from the command line
+        cmd_txt = command if command else self.cmd_line.toPlainText()
+        # Split `cmd_txt` into commands with shell-like syntax
+        cmd_list = shlex.split(cmd_txt, posix=False)
+        cmd = str(cmd_list[0]).casefold()   # First index holds the actual command
+        cmd_args = " ".join(cmd_list[1:])   # The rest of the list contains the arguments
+
+        # HTML formatting strings for colored text
+        WARNING     = '<span style="color:#fc3019;">{}</span>'
+        SUCCESS     = '<span style="color:#2e933c;">{}</span>'
+        CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
+
+        if cmd == "exit":
+            sys.exit()
+        elif cmd == "clear":  # Clear feedback window contents
+            self.feedback.setText("")
+        elif cmd == "cd":  # Change directories
+            # Format command to string as "❯ cmd cmd-args" with colored text
+            text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+            self.feedback.append(text)
+            # Change directory
+            os.chdir(os.path.abspath(cmd_args))
+            self.proc.setWorkingDirectory(os.getcwd())
+            # Update prompt representation of path
+            self.display_prompt()
+        elif cmd == "history":  # Display previous commands ran in this terminal session with indexes
+            self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
+            for index, token in enumerate(self.cmd_history.history):
+                self.feedback.append(f"{index:<4}{token}")
+        elif cmd == "!!":  # Most recent command
+            self.del_cmd()
+            self.cmd_line.setPlainText(self.cmd_history.history[-1])
+            self.move_cursor(qtg.QTextCursor.End)
+            return
+        else:
+            if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
+                text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+                self.feedback.append(text)
+                if self.proc.state() != qtc.QProcess.Running:
+                    if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
+                        self.proc.start(f'sh -c "{cmd} {cmd_args}"')
+                    else:
+                        self.proc.start(f"{cmd} {cmd_args}")
+            else:  # Otherwise command is not executable, display error
+                self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
+        # Add command to history
+        self.cmd_history.append(cmd_txt)
+        # Delete what is currently in the command line text box to get ready for new command
+        self.del_cmd()
+    
+    def read_and_display_cmd_feedback(self):
+        """
+        Reads feedback from command entered in process and appends it to feedback window.
+        """
+        try:
+            text = str(self.proc.readAll(), encoding = "utf8").strip()
+        except TypeError:
+            text = str(self.proc.readAll()).strip()
+        self.feedback.append(text)
+
+    def display_prompt(self):
+        """
+        Get current directory path and display it.
+        """
+        # HTML makes the text highlighted and bold
+        path = str(os.getcwd())
+        # Find third occurrence of a slash character then splice the string there
+        # The purpose of this is to substitute /home/user/foo with ~/foo
+        simplified_path = path[path.find("/", path.find("/", path.find("/") + 1) + 1):]
+        self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{simplified_path} </span>')
+    
+    def del_cmd(self):
+        """
+        Deletes all text present in the `cmd_line` textbox.
+        """
+        self.cmd_line.setPlainText("")
+        self.cmd_line.setFocus()
+    
+    def move_cursor(self, pos, operation: int=0, delete: bool=False):
+        """
+        Move `cmd_line` cursor to position provided.
+
+        Args:
+            pos: Position to move terminal to. Accepts values of the form `qtg.QTextCursor.MoveOpp`. See https://doc.qt.io/qt-6/qtextcursor.html#MoveOperation-enum
+            operation: If 0 moves cursor to `pos`. If 1 the cursor selects the text it moves over. (default = 1)
+            delete: Delete text selected. operation must be set to 1. (default = false)
+        """
+        temp_cursor = self.cmd_line.textCursor()
+        temp_cursor.movePosition(pos, operation)
+        if delete and operation: temp_cursor.removeSelectedText()
+        self.cmd_line.setTextCursor(temp_cursor)
 
     def set_colors(self, new_colors: dict):
         """
