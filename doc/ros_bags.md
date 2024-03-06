@@ -4,9 +4,9 @@ ROS bags used to record and the replay messages sent over a topic. This can be u
 ## Project ROS bags 
 | Content | Bag | Documentation | 
 | ----- | ------ | ----- |
-| H264 recording | [h264_recording](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/docs/bags/h264_recording) | [h264_recording.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/docs/bags/h264_recording/h264_recording.md)
+| H264 recording | [h264_recording](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/docs/bags/h264_recording) | [h264_recording.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/bags/h264_recording/h264_recording.md)
 | IMU recording | [imu_recording](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/docs/bags/imu_recording) | None
-| Joystick recording | [joy_recording](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/docs/bags/joy_recording) | [joy_recording.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/docs/bags/h264_recording/h264_recording.md)
+| Joystick recording | [joy_recording](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/tree/docs/bags/joy_recording) | [joy_recording.md](https://github.com/CabrilloRoboticsClub/cabrillo_rov_2023/blob/main/bags/joy_recording/joy_recording.md)
 
 ## Creating a ROS bag
 To create a ROS bag use `ros2 bag record`. Specify the name of the topic (`/topic`) to record and the destination of the recording (`bag_name`) as shown in the following command.
