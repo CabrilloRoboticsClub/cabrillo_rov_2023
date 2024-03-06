@@ -183,12 +183,20 @@ class TermWidget(qtw.QWidget):
                 self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
                 for index, token in enumerate(self.cmd_history.history):
                     self.feedback.append(f"{index:<4}{token}")
+            case "!!":  # Most recent command
+                self.del_cmd()
+                self.cmd_line.setPlainText(self.cmd_history.history[-1])
+                self.move_cursor(qtg.QTextCursor.End)
+                return
             case _:
                 if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
                     text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
                     self.feedback.append(text)
                     if self.proc.state() != qtc.QProcess.Running:
-                        self.proc.start(cmd + " " + cmd_args)
+                        if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
+                            self.proc.start(f'sh -c "{cmd} {cmd_args}"')
+                        else:
+                            self.proc.start(f"{cmd} {cmd_args}")
                 else:  # Otherwise command is not executable, display error
                     self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
         # Add command to history
@@ -242,7 +250,11 @@ class TermWidget(qtw.QWidget):
                         return True
                     case qtc.Qt.Key_Down:   # down-arrow: Scroll down in cmd history
                         self.cmd_line.setPlainText(self.cmd_history.next())
-                        self.move_cursor(qtg.QTextCursor.End)  
+                        self.move_cursor(qtg.QTextCursor.End)
+                    # case qtc.Qt.Key_Tab:
+                    #     print("heree")
+                    #     if self.proc.state() != qtc.QProcess.Running:
+                    #         self.proc.start("\t")
                 
                 # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
                 seq = qtg.QKeySequence(a1.key() + int(a1.modifiers())) 
