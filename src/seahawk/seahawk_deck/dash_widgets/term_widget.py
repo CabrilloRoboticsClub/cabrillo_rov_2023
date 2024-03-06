@@ -54,7 +54,7 @@ class CmdHistory():
 class TermWidget(qtw.QWidget):
     """
     Creates a `TermWidget` which inherits from the `qtw.QWidget` class. A `TermWidget`
-    provides an embedded terminal. Must be put on a thread.
+    provides an embedded terminal.
     """
 
     def __init__(self, parent: qtw.QWidget, style_sheet_file: str, colors: dict):

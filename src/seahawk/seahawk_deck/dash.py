@@ -20,6 +20,7 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_deck.dash_widgets.term_widget import TermWidget
 from seahawk_deck.set_remote_params import SetRemoteParams
 from seahawk_msgs.msg import InputStates, DebugInfo
 
@@ -284,6 +285,7 @@ class TabWidget(qtw.QWidget):
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
+        self.create_debug_tab(self.tab_dict["Debug"])
 
         # Apply css styling
         self.set_colors(self.colors)
@@ -422,10 +424,22 @@ class TabWidget(qtw.QWidget):
         term_layout = qtw.QVBoxLayout()
 
         # Create debug graph instances
+        temp_graph_1 = qtw.QFrame()
+        temp_graph_2 = qtw.QFrame()
+        temp_graph_3 = qtw.QFrame()
+        temp_graph_4 = qtw.QFrame()
 
-        # Add debug graphs to `graph_layout`
         # (0, 0)    (0, 1)
         # (1, 0)    (1, 1)
+        graph_layout.addWidget(temp_graph_1, 0, 0)
+        graph_layout.addWidget(temp_graph_2, 0, 1)
+        graph_layout.addWidget(temp_graph_3, 1, 0)
+        graph_layout.addWidget(temp_graph_4, 1, 1)
+
+
+        term_widget = TermWidget(tab, PATH + "/dash_styling/term_widget.txt", self.colors)
+
+        term_layout.addWidget(term_widget)
 
         debug_layout.addLayout(graph_layout, stretch=7)
         debug_layout.addLayout(term_layout, stretch=3)
