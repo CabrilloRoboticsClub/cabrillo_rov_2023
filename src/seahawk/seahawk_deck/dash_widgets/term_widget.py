@@ -214,9 +214,7 @@ class TermWidget(qtw.QWidget):
         SUCCESS     = '<span style="color:#2e933c;">{}</span>'
         CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
 
-        if cmd == "exit":
-            sys.exit()
-        elif cmd == "clear":  # Clear feedback window contents
+        if cmd == "clear":  # Clear feedback window contents
             self.feedback.setText("")
         elif cmd == "cd":  # Change directories
             try:
