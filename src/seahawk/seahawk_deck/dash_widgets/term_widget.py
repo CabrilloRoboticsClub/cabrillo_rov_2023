@@ -165,40 +165,39 @@ class TermWidget(qtw.QWidget):
         SUCCESS     = '<span style="color:#2e933c;">{}</span>'
         CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
 
-        match (cmd):
-            case "exit":
-                sys.exit()
-            case "clear":  # Clear feedback window contents
-                self.feedback.setText("")
-            case "cd":  # Change directories
-                # Format command to string as "❯ cmd cmd-args" with colored text
+        if cmd == "exit":
+            sys.exit()
+        elif cmd == "clear":  # Clear feedback window contents
+            self.feedback.setText("")
+        elif cmd == "cd":  # Change directories
+            # Format command to string as "❯ cmd cmd-args" with colored text
+            text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
+            self.feedback.append(text)
+            # Change directory
+            os.chdir(os.path.abspath(cmd_args))
+            self.proc.setWorkingDirectory(os.getcwd())
+            # Update prompt representation of path
+            self.display_prompt()
+        elif cmd == "history":  # Display previous commands ran in this terminal session with indexes
+            self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
+            for index, token in enumerate(self.cmd_history.history):
+                self.feedback.append(f"{index:<4}{token}")
+        elif cmd == "!!":  # Most recent command
+            self.del_cmd()
+            self.cmd_line.setPlainText(self.cmd_history.history[-1])
+            self.move_cursor(qtg.QTextCursor.End)
+            return
+        else:
+            if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
                 text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
                 self.feedback.append(text)
-                # Change directory
-                os.chdir(os.path.abspath(cmd_args))
-                self.proc.setWorkingDirectory(os.getcwd())
-                # Update prompt representation of path
-                self.display_prompt()
-            case "history":  # Display previous commands ran in this terminal session with indexes
-                self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
-                for index, token in enumerate(self.cmd_history.history):
-                    self.feedback.append(f"{index:<4}{token}")
-            case "!!":  # Most recent command
-                self.del_cmd()
-                self.cmd_line.setPlainText(self.cmd_history.history[-1])
-                self.move_cursor(qtg.QTextCursor.End)
-                return
-            case _:
-                if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
-                    text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-                    self.feedback.append(text)
-                    if self.proc.state() != qtc.QProcess.Running:
-                        if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
-                            self.proc.start(f'sh -c "{cmd} {cmd_args}"')
-                        else:
-                            self.proc.start(f"{cmd} {cmd_args}")
-                else:  # Otherwise command is not executable, display error
-                    self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
+                if self.proc.state() != qtc.QProcess.Running:
+                    if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
+                        self.proc.start(f'sh -c "{cmd} {cmd_args}"')
+                    else:
+                        self.proc.start(f"{cmd} {cmd_args}")
+            else:  # Otherwise command is not executable, display error
+                self.feedback.append(WARNING.format(u"\n\u276F ") + f"Command not found: {cmd_txt}")
         # Add command to history
         self.cmd_history.append(cmd_txt)
         # Delete what is currently in the command line text box to get ready for new command
@@ -240,23 +239,20 @@ class TermWidget(qtw.QWidget):
         """
         if a0 == self.cmd_line: # If the object the event is from is the command line
             if (a1.type() == qtc.QEvent.KeyPress):  # User pressed a key
-                match(a1.key()): # Match single key
-                    case qtc.Qt.Key_Return: # return/enter: Run command
-                        self.run_cmd()
-                        return True
-                    case qtc.Qt.Key_Up:     # up-arrow: Scroll up in cmd history
-                        self.cmd_line.setPlainText(self.cmd_history.prev())
-                        self.move_cursor(qtg.QTextCursor.End)
-                        return True
-                    case qtc.Qt.Key_Down:   # down-arrow: Scroll down in cmd history
-                        self.cmd_line.setPlainText(self.cmd_history.next())
-                        self.move_cursor(qtg.QTextCursor.End)
-                    # case qtc.Qt.Key_Tab:
-                    #     print("heree")
-                    #     if self.proc.state() != qtc.QProcess.Running:
-                    #         self.proc.start("\t")
+                key = a1.key()
+                # Single key press
+                if key == qtc.Qt.Key_Return:    # return/enter: Run command
+                    self.run_cmd()
+                    return True
+                elif key == qtc.Qt.Key_Up:      # up-arrow: Scroll up in cmd history
+                    self.cmd_line.setPlainText(self.cmd_history.prev())
+                    self.move_cursor(qtg.QTextCursor.End)
+                    return True
+                elif key == qtc.Qt.Key_Down:    # down-arrow: Scroll down in cmd history
+                    self.cmd_line.setPlainText(self.cmd_history.next())
+                    self.move_cursor(qtg.QTextCursor.End)
                 
-                # WHY DO YOU BREAK IN A MATCH STATEMENT?? WTF 
+                # Key sequence
                 seq = qtg.QKeySequence(a1.key() + int(a1.modifiers())) 
                 if seq == qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
                     if self.proc.state() == qtc.QProcess.Running:
