@@ -1,6 +1,7 @@
 import os
 import sys
 import shlex
+from re import search
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
@@ -238,6 +239,14 @@ class TermWidget(qtw.QWidget):
             self.cmd_line.setPlainText(self.cmd_history.history[-1])
             self.move_cursor(qtg.QTextCursor.End)
             return
+        elif search(r"[!][0-9]+", cmd):
+            index = int(cmd[1:])
+            self.del_cmd()
+            try:
+                self.cmd_line.setPlainText(self.cmd_history.history[index])
+                self.move_cursor(qtg.QTextCursor.End)
+            except IndexError or ValueError:
+                self.feedback.append(WARNING.format(u"\n\u276F ") + f"no such event: {index}")
         else:
             if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
                 text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
