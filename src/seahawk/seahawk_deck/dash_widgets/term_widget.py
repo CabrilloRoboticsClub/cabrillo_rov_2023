@@ -2,6 +2,9 @@ import os
 import sys
 import shlex
 from re import search
+from collections import deque
+
+from pprint import pprint
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
@@ -93,6 +96,8 @@ class TermWidget(qtw.QWidget):
         self.cmd_history = CmdHistory()
         
         self.copied_text = ""
+
+        self.feedback_txt = deque([""], maxlen=10)
 
         # Feedback window for displaying command results
         self.feedback = qtw.QTextEdit()
@@ -216,7 +221,8 @@ class TermWidget(qtw.QWidget):
         CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
 
         if cmd == "clear":  # Clear feedback window contents
-            self.feedback.setText("")
+            self.feedback_txt.clear()
+            self.display_feedback()
         elif cmd == "cd":  # Change directories
             try:
                 # Change directory
@@ -224,15 +230,18 @@ class TermWidget(qtw.QWidget):
                 self.proc.setWorkingDirectory(os.getcwd())
                 # Format command to string as "❯ cmd cmd-args" with colored text
                 text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-                self.feedback.append(text)
+                self.feedback_txt.append(text)
                 # Update prompt representation of path
                 self.display_prompt()
             except FileNotFoundError:
-                self.feedback.append(WARNING.format(u"\n\u276F ") + f"cd: no such file or directory: {cmd_txt.partition(' ')[2]}")
+                self.feedback_txt.append(WARNING.format(u"\n\u276F ") + f"cd: no such file or directory: {cmd_txt.partition(' ')[2]}")
+            finally:
+                self.display_feedback()
         elif cmd == "history":  # Display previous commands ran in this terminal session with indexes
-            self.feedback.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
+            self.feedback_txt.append(SUCCESS.format(u"\n\u276F ") + CMD_NAME.format("history"))
             for index, token in enumerate(self.cmd_history.history):
-                self.feedback.append(f"{index:<4}{token}")
+                self.feedback_txt.append(f"{index:<4}{token}")
+            self.display_feedback()
         elif cmd == "!!":  # Most recent command
             self.del_cmd()
             self.cmd_line.setPlainText(self.cmd_history.history[-1])
@@ -245,18 +254,20 @@ class TermWidget(qtw.QWidget):
                 self.cmd_line.setPlainText(self.cmd_history.history[index])
                 self.move_cursor(qtg.QTextCursor.End)
             except IndexError or ValueError:
-                self.feedback.append(WARNING.format(u"\n\u276F ") + f"no such event: {index}")
+                self.feedback_txt.append(WARNING.format(u"\n\u276F ") + f"no such event: {index}")
+                self.display_feedback()
         else:
             if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
                 text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
-                self.feedback.append(text)
+                self.feedback_txt.append(text)
                 if self.proc.state() != qtc.QProcess.Running:
                     if "|" in cmd_args or ">" in cmd_args or "<" in cmd_args:
                         self.proc.start(f'sh -c "{cmd} {cmd_args}"')
                     else:
                         self.proc.start(f"{cmd} {cmd_args}")
             else:  # Otherwise command is not executable, display error
-                self.feedback.append(WARNING.format(u"\n\u276F ") + f"command not found: {cmd_txt}")
+                self.feedback_txt.append(WARNING.format(u"\n\u276F ") + f"command not found: {cmd_txt}")
+                self.display_feedback()
         # Add command to history
         self.cmd_history.append(cmd_txt)
         # Delete what is currently in the command line text box to get ready for new command
@@ -270,7 +281,12 @@ class TermWidget(qtw.QWidget):
             text = str(self.proc.readAll(), encoding = "utf8").strip()
         except TypeError:
             text = str(self.proc.readAll()).strip()
-        self.feedback.append(text)
+        self.feedback_txt.append(text)
+        
+        self.display_feedback()
+    
+    def display_feedback(self):
+        self.feedback.setText("\n".join(self.feedback_txt))
 
     @staticmethod
     def path_reduce(max_len, path, factor):
