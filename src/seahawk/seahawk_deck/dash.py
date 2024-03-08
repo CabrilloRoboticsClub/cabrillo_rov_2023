@@ -132,10 +132,7 @@ class VideoFrame():
         """
         Set up the 'VideoFrame' attributes initial values.
         """
-        # self.init = True
         self.image = None
-        # self.width = None
-        # self.height = None
     
         self.label = qtw.QLabel()
         # Fit video frame to size of label, no need to resize it later
@@ -160,6 +157,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_publisher_sgl.connect(self.init_publisher)
+        self.ros_qt_bridge.new_set_params_sgl.connect(self.add_set_params)
         self.keystroke_pub = None
         self.pilot_input_set_params = None
 
@@ -183,7 +181,7 @@ class MainWindow(qtw.QMainWindow):
         self.keystroke_pub = self.ros_qt_bridge.keystroke_pub
 
     @qtc.pyqtSlot()
-    def init_set_params(self):
+    def add_set_params(self):
         """
         Adds the pilot input set params object to `MainWindow`.
         """
