@@ -1,17 +1,74 @@
-QProgressBar {
-    background: #18181b;
-    border: 2px solid #9172f8;
-    border-radius: 5px;
+QFrame {{
+    background-color: {SURFACE_DRK};
+    border-radius: 10px;
+}}
+
+QProgressBar {{
+    background: {SURFACE_DRK};
+    border: 2px solid {ACCENT_LIGHT};
+    border-radius: 5px; 
     qproperty-alignment: AlignCenter;
-    color: #18181b;
-}
+    color: {SURFACE_DRK};
+    text-align: center;
+}}
 
-QProgressBar::chunk {
-    background-color: #9172f8;
-    width: 1px;
-}
+QProgressBar::chunk {{
+    background-color: {ACCENT_LIGHT};
+    width: 20px;
+}}
 
-QCheckBox {
-    color: #fff0f5;
-    font: "Some monospaced font here";
-}
+QCheckBox {{
+    color: {SECONDARY_TEXT};
+    font-family: "Courier New", Monospace;
+    font-size: 13pt;
+}}
+
+QCheckBox::indicator {{
+    width: 20px;
+    height: 20px;
+}}
+
+QCheckBox::indicator::unchecked:hover {{
+    background-color: solid grey;
+}}
+
+QLabel[accessibleName="title"] {{
+    color: {SECONDARY_TEXT};
+    font-family: "Courier New", Monospace;
+    font-size: 30pt;
+    font-weight: bold;
+}}
+
+QLabel[accessibleName="points_earned"] {{
+    color: {SECONDARY_TEXT};
+    font-family: "Courier New", Monospace;
+    font-size: 15pt;
+    font-weight: bold;
+}}
+
+QLabel[accessibleName="task_titles"] {{
+    color: {SECONDARY_TEXT};
+    font-family: "Courier New", Monospace;
+    font-size: 16pt;
+    font-weight: bold;
+}}
+
+QScrollBar:vertical {{
+    border: none;
+    width: 10px;    
+    margin: 0px 0px 0px 0px;
+}}
+
+QScrollBar::handle:vertical {{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+    stop: 0 {ACCENT_LIGHT}, stop: 0.5 {ACCENT_LIGHT}, stop:1 {ACCENT_LIGHT});
+    min-height: 0px;
+    border-radius: 5px;
+}}
+
+QScrollBar::add-line:vertical {{
+    background: {ACTIVE_TAB_BKG};
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}}

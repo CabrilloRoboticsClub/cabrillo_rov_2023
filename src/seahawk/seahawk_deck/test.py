@@ -7,7 +7,8 @@ from PyQt5 import QtCore as qtc
 
 # It may be either of these depending on how you run it
 # from seahawk_deck.dash_widgets.check_list import CheckList
-from check_list import CheckList
+from dash_widgets.check_list import CheckList
+from dash_styling.color_palette import DARK_MODE
 
 PATH = path.dirname(__file__)
 
@@ -28,7 +29,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.setStyleSheet(f"background-color: #0c0c0f;")
 
-        task_list = CheckList(self, "tasks.json", PATH + "/../dash_styling/check_list.txt")
+        task_list = CheckList(self, PATH + "/dash_widgets/tasks.json", PATH + "/dash_styling/check_list.txt", DARK_MODE)
         
         self.setCentralWidget(task_list)
 
