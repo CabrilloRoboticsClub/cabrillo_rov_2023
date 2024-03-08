@@ -224,6 +224,8 @@ class TermWidget(qtw.QWidget):
         SUCCESS     = '<span style="color:#2e933c;">{}</span>'
         CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
 
+        append_to_history = True
+
         if cmd == "clear":  # Clear feedback window contents
             self.feedback_txt.clear()
             self.display_feedback()
@@ -246,6 +248,8 @@ class TermWidget(qtw.QWidget):
             for index, token in enumerate(self.cmd_history.history):
                 self.feedback_txt.append(f"{index:<4}{token}")
             self.display_feedback()
+            self.del_cmd()
+            return
         elif cmd == "!!":  # Most recent command
             self.del_cmd()
             self.cmd_line.setPlainText(self.cmd_history.history[-1])
@@ -255,11 +259,14 @@ class TermWidget(qtw.QWidget):
             index = int(cmd[1:])
             self.del_cmd()
             try:
-                self.cmd_line.setPlainText(self.cmd_history.history[index])
+                print(self.cmd_history.history[index])
+                self.cmd_line.insertPlainText(self.cmd_history.history[index])
                 self.move_cursor(qtg.QTextCursor.End)
             except IndexError or ValueError:
                 self.feedback_txt.append(WARNING.format(u"\n\u276F ") + f"no such event: {index}")
                 self.display_feedback()
+            finally:
+                return
         else:
             if qtc.QStandardPaths.findExecutable(cmd):  # If command is one of the executable commands
                 text = SUCCESS.format(u"\n\u276F ") + CMD_NAME.format(cmd) + " " + cmd_txt.partition(" ")[2]
@@ -273,7 +280,7 @@ class TermWidget(qtw.QWidget):
                 self.feedback_txt.append(WARNING.format(u"\n\u276F ") + f"command not found: {cmd_txt}")
                 self.display_feedback()
         # Add command to history
-        self.cmd_history.append(cmd_txt)
+        self.cmd_history.append(cmd_txt.strip())
         # Delete what is currently in the command line text box to get ready for new command
         self.del_cmd()
     
