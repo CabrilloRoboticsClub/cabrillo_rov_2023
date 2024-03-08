@@ -1,13 +1,12 @@
 import sys
 from os import environ, path
 from threading import Thread
-import cv2
 
+from PyQt5 import QtCore as qtc
+from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
 from cv_bridge import CvBridge, CvBridgeError
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
@@ -21,7 +20,7 @@ from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_deck.set_remote_params import SetRemoteParams
-from seahawk_msgs.msg import InputStates, DebugInfo
+from seahawk_msgs.msg import InputStates
 
 PATH = path.dirname(__file__)
 
@@ -449,17 +448,14 @@ class Dash(Node):
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
 
         # Camera subscriptions
-        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_front, 10)
-        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_claw, 10)
-        # self.create_subscription(Image, "repub_raw", ros_qt_bridge.callback_cam_top, 10)
         self.create_subscription(Image, "camera/front/image", ros_qt_bridge.callback_cam_front, 10)
         self.create_subscription(Image, "camera/claw/image", ros_qt_bridge.callback_cam_claw, 10)
         self.create_subscription(Image, "camera/top/image", ros_qt_bridge.callback_cam_top, 10)
 
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
         
-        # Uncomment only if we want to use params (will crash the dash if the pilot_input node is not running)
-        # ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
+        # Comment this out if we want to test the dashboard without parameters (will crash if pilot_input is inactive)
+        ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
 def fix_term():
