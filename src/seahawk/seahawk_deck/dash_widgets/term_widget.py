@@ -96,7 +96,11 @@ class TermWidget(qtw.QWidget):
         self.cmd_history = CmdHistory()
         
         self.copied_text = ""
-
+        
+        # Stores previous commands and feedback to display to the terminal. 
+        # Limits number of elements to 10, old elements are discarded.
+        # Initial deque contents have to be set to an empty string so
+        # it actually accepts strings.
         self.feedback_txt = deque([""], maxlen=10)
 
         # Feedback window for displaying command results
@@ -161,7 +165,7 @@ class TermWidget(qtw.QWidget):
                 if seq == qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
                     if self.proc.state() == qtc.QProcess.Running:
                         self.proc.terminate()
-                        self.feedback.append("Process terminated with ctrl-c")
+                        self.append_feedback("Process terminated with ctrl-c")
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
                     temp_cursor = self.cmd_line.textCursor()
@@ -197,7 +201,7 @@ class TermWidget(qtw.QWidget):
                     return True   
         return False
 
-    def run_cmd(self, command=None):
+    def run_cmd(self, command: str=None):
         """
         Runs the command provided by the argument or present in the command line. The command
         ran and its results are appended to the feedback window, with formatting. If the
@@ -281,15 +285,33 @@ class TermWidget(qtw.QWidget):
             text = str(self.proc.readAll(), encoding = "utf8").strip()
         except TypeError:
             text = str(self.proc.readAll()).strip()
-        self.feedback_txt.append(text)
+        self.append_feedback(text)
         
         self.display_feedback()
     
+    def append_feedback(self, text: str):
+        """
+        Appends some text to the deque of feedback text. Replaces all
+        new line characters with `<br>`.
+
+        Args:
+            text: Text to add to the deque.
+        """
+        # Must replace `\n` with `<br>` or else everything ends up on one line
+        self.feedback_txt.append(text.replace("\n", "<br>"))
+
     def display_feedback(self):
-        self.feedback.setText("\n".join(self.feedback_txt))
+        """
+        Display feedback collected in the `self.feedback_txt` deque
+        to the feedback widget.
+        """
+        # Must use HTML format, `\n` does not work
+        self.feedback.setText("<br>".join(self.feedback_txt))
+        # Move scroll bar down, else it gets stuck at the top
+        self.feedback.verticalScrollBar().setValue(self.feedback.verticalScrollBar().maximum())
 
     @staticmethod
-    def path_reduce(max_len, path, factor):
+    def path_reduce(max_len: int, path: str, factor: int) -> str:
         """
         Reduces path to be a certain character length while retaining the most possible information
 
