@@ -1,20 +1,20 @@
 QFrame {{
-    background-color: {SURFACE_DRK};
+    background-color: {SURFACE_PRIMARY};
 	border-radius: 8px;
 }}
 
 QTextEdit, QPlainTextEdit {{
     font-family: Noto Sans Mono; 
-    color: {SECONDARY_TEXT};
+    color: {TEXT};
 }}
 
 QPlainTextEdit {{
-    border: 2px solid {ACCENT_LIGHT};
+    border: 2px solid {ACCENT};
 }}
 
 QLabel {{
     font-family: Noto Sans Mono;
-    color: {ACTIVE_TAB_BKG};
+    color: {TAB_BKG};
 }}
 
 QScrollBar:vertical {{       
@@ -26,13 +26,13 @@ QScrollBar:vertical {{
 
 QScrollBar::handle:vertical {{
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-    stop: 0 {ACCENT_LIGHT}, stop: 0.5 {ACCENT_LIGHT}, stop:1 {ACCENT_LIGHT});
+    stop: 0 {ACCENT}, stop: 0.5 {ACCENT}, stop:1 {ACCENT});
     min-height: 0px;
     border-radius: 5px;
 }}
 
 QScrollBar::add-line:vertical {{
-    background: {ACTIVE_TAB_BKG};
+    background: {TAB_BKG};
     width: 20px;
     subcontrol-position: right;
     subcontrol-origin: margin;
