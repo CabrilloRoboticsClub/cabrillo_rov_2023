@@ -207,7 +207,7 @@ class MainWindow(qtw.QMainWindow):
         if data in ["1", "2", "3"]:
             self.pilot_input_set_params.update_params("throttle_curve_choice", data)
             self.pilot_input_set_params.send_params()
-            self.tab_widget.thrt_crv_widget.update(data)
+            self.tab_widget.thrt_crv_widget.update(int(data))
         
         # Change colors mode between light and dark mode
         if data == "0":
