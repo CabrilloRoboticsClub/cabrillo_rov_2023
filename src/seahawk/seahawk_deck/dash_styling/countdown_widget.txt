@@ -1,7 +1,7 @@
 QLabel[accessibleName="Title"] {{
     qproperty-alignment: AlignCenter;
     padding: 5px;
-    color: {TEXT_EMPH};
+    color: {TEXT};
     max-height: 25px;
 }}
 
@@ -23,18 +23,18 @@ QPushButton {{
     font: bold 14px;
     padding: 6px;
     border-radius: 5px;
-    color: {TEXT_EMPH};
+    color: {TEXT};
     selection-background-color: rgba(0, 0, 0, 0)
 }}
 
 QPushButton::pressed {{
     background-color: {ACCENT};
     border-style: inset;
-    color: {TEXT};
+    color: {TEXT_EMPH};
 }}
 
 QPushButton::hover {{
-    color: {TEXT};
+    color: {TEXT_EMPH};
 }}
 
 QSpinBox {{
@@ -42,7 +42,7 @@ QSpinBox {{
     selection-background-color: {ACCENT};
     padding: 6px; /* make room for the arrows */
     border-radius: 5px;
-    color: {TEXT_EMPH};
+    color: {TEXT};
 }}
 
 QSpinBox::up-arrow {{
