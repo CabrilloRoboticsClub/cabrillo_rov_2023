@@ -22,8 +22,7 @@ class ThrtCrvWidget(qtw.QWidget):
         """
         super().__init__(parent)
 
-        NUM_CURVES = 3
-        self.throttle_crv_imgs = {str(i) : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(1, NUM_CURVES + 1)}
+        self.colors = colors
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -39,14 +38,16 @@ class ThrtCrvWidget(qtw.QWidget):
 
         # Qlabel allows text and images to be displayed as widget
         self.label = qtw.QLabel()
+        # self.label.setScaledContents(True)
+        # self.label.setSizePolicy(qtw.QSizePolicy.Ignored, qtw.QSizePolicy.Ignored)
         # Set default curve as one
-        self.label.setPixmap(self.throttle_crv_imgs["1"])
+        self.cur_crv = 1
 
         # Add widget to layout
         layout_inner.addWidget(self.label)
 
         # Apply css styling
-        self.set_colors(colors)
+        self.set_colors(self.colors)
 
     def update(self, thrt_crv: str):
         """
@@ -56,14 +57,24 @@ class ThrtCrvWidget(qtw.QWidget):
             Key of throttle curve to update
         """
         # Grab the specific throttle curve img needed to be displayed on widget
-        self.label.setPixmap(self.throttle_crv_imgs[thrt_crv])
+        if thrt_crv == 1:
+            img = self.colors["LINEAR_CURVE"]
+        elif thrt_crv == 2:
+            img = self.colors["CUBIC_CURVE"]
+        elif thrt_crv == 3:
+            img = self.colors["FIFTH_DEG_CURVE"]
+        
+        self.label.setPixmap(qtg.QPixmap(img))
+        self.cur_crv = thrt_crv
 
     def set_colors(self, new_colors: dict):
         self.setStyleSheet(
             f"""
             QFrame {{
-                background-color: {new_colors['SURFACE_DRK']};
+                background-color: {new_colors['SURFACE_PRIMARY']};
                 border-radius: 8px;
             }}
             """
         )
+        self.colors = new_colors
+        self.update(self.cur_crv)

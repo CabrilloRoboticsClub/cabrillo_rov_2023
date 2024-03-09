@@ -172,11 +172,11 @@ class CountdownWidget(qtw.QWidget):
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
-                border: 2px solid {self.colors['ACCENT_LIGHT']};
+                border: 2px solid {self.colors['ACCENT']};
             }}
 
             QProgressBar::chunk {{
-                background-color: {self.colors['ACCENT_LIGHT']};
+                background-color: {self.colors['ACCENT']};
             }}
         """)
         self.progress_bar.hide()
@@ -185,7 +185,7 @@ class CountdownWidget(qtw.QWidget):
         self.status = TimerStatus.init
         self.count_status = CountStatus.counting_down
         self.sec_remaining = self.min_spin_box.value() * 60 + self.sec_spin_box.value()
-        self.timer_display.setStyleSheet(f"color: {self.colors['ACCENT_LIGHT']};")
+        self.timer_display.setStyleSheet(f"color: {self.colors['ACCENT']};")
         self.display_time()
 
     def spin_box_edit_event(self):

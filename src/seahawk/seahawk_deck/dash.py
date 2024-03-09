@@ -1,13 +1,12 @@
 import sys
 from os import environ, path
 from threading import Thread
-import cv2
 
+from PyQt5 import QtCore as qtc
+from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
 from PyQt5.QtGui import QKeyEvent
 from cv_bridge import CvBridge, CvBridgeError
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtCore as qtc
 import rclpy
 from rclpy.node import Node 
 from rclpy.publisher import Publisher
@@ -22,7 +21,7 @@ from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
 from seahawk_deck.dash_widgets.term_widget import TermWidget
 from seahawk_deck.set_remote_params import SetRemoteParams
-from seahawk_msgs.msg import InputStates, DebugInfo
+from seahawk_msgs.msg import InputStates
 
 PATH = path.dirname(__file__)
 
@@ -134,10 +133,7 @@ class VideoFrame():
         """
         Set up the 'VideoFrame' attributes initial values.
         """
-        # self.init = True
         self.image = None
-        # self.width = None
-        # self.height = None
     
         self.label = qtw.QLabel()
         # Fit video frame to size of label, no need to resize it later
@@ -162,6 +158,7 @@ class MainWindow(qtw.QMainWindow):
 
         self.ros_qt_bridge = ros_qt_bridge
         self.ros_qt_bridge.new_publisher_sgl.connect(self.init_publisher)
+        self.ros_qt_bridge.new_set_params_sgl.connect(self.add_set_params)
         self.keystroke_pub = None
         self.pilot_input_set_params = None
 
@@ -185,7 +182,7 @@ class MainWindow(qtw.QMainWindow):
         self.keystroke_pub = self.ros_qt_bridge.keystroke_pub
 
     @qtc.pyqtSlot()
-    def init_set_params(self):
+    def add_set_params(self):
         """
         Adds the pilot input set params object to `MainWindow`.
         """
@@ -211,7 +208,7 @@ class MainWindow(qtw.QMainWindow):
         if data in ["1", "2", "3"]:
             self.pilot_input_set_params.update_params("throttle_curve_choice", data)
             self.pilot_input_set_params.send_params()
-            self.tab_widget.thrt_crv_widget.update(data)
+            self.tab_widget.thrt_crv_widget.update(int(data))
         
         # Change colors mode between light and dark mode
         if data == "0":
@@ -463,14 +460,14 @@ class Dash(Node):
         # self.create_subscription(DebugInfo, "debug_info", bridge.callback_debug, 10)
 
         # Camera subscriptions
-        self.create_subscription(Image, "camera/front/h264", ros_qt_bridge.callback_cam_front, 10)
-        self.create_subscription(Image, "camera/claw/h264", ros_qt_bridge.callback_cam_claw, 10)
-        self.create_subscription(Image, "camera/top/h264", ros_qt_bridge.callback_cam_top, 10)
+        self.create_subscription(Image, "camera/front/image", ros_qt_bridge.callback_cam_front, 10)
+        self.create_subscription(Image, "camera/claw/image", ros_qt_bridge.callback_cam_claw, 10)
+        self.create_subscription(Image, "camera/top/image", ros_qt_bridge.callback_cam_top, 10)
 
         ros_qt_bridge.add_publisher(self.create_publisher(String, "keystroke", 10))
         
-        # Uncomment only if we want to use params (will crash the dash if the pilot_input node is not running)
-        # ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
+        # Comment this out if we want to test the dashboard without parameters (will crash if pilot_input is inactive)
+        ros_qt_bridge.add_set_params(SetRemoteParams(self, "pilot_input"))
 
 
 def fix_term():
