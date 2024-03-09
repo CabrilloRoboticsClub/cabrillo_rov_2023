@@ -8,7 +8,7 @@ QProgressBar {{
     border: 2px solid {ACCENT_LIGHT};
     border-radius: 5px; 
     qproperty-alignment: AlignCenter;
-    color: {SURFACE_DRK};
+    color: white;
     text-align: center;
 }}
 
@@ -21,6 +21,7 @@ QCheckBox {{
     color: {SECONDARY_TEXT};
     font-family: "Courier New", Monospace;
     font-size: 13pt;
+    background: {SURFACE_DRK};
 }}
 
 QCheckBox::indicator {{
@@ -28,12 +29,12 @@ QCheckBox::indicator {{
     height: 20px;
 }}
 
-QCheckBox::indicator::unchecked:hover {{
-    background-color: solid grey;
+QCheckBox:hover {{
+    color: white;
 }}
 
 QLabel[accessibleName="title"] {{
-    color: {SECONDARY_TEXT};
+    color: white;
     font-family: "Courier New", Monospace;
     font-size: 30pt;
     font-weight: bold;
@@ -44,10 +45,11 @@ QLabel[accessibleName="points_earned"] {{
     font-family: "Courier New", Monospace;
     font-size: 15pt;
     font-weight: bold;
+    border-radius: 5px; 
 }}
 
 QLabel[accessibleName="task_titles"] {{
-    color: {SECONDARY_TEXT};
+    color: white;
     font-family: "Courier New", Monospace;
     font-size: 16pt;
     font-weight: bold;
