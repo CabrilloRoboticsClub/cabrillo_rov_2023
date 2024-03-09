@@ -1,7 +1,7 @@
 /* Modifies the open tab body style*/
 QTabWidget>QWidget>QWidget{{
-    background: {ACTIVE_TAB_BKG};
-    border: 2px solid {ACCENT_LIGHT};
+    background: {TAB_BKG};
+    border: 2px solid {ACCENT};
     border-top-right-radius:    10px;
     border-bottom-left-radius:  10px;
     border-bottom-right-radius: 10px;
@@ -10,26 +10,26 @@ QTabWidget>QWidget>QWidget{{
 /* Modifies all tab chips */
 QTabBar::tab {{
     border: 2px solid {INACTIVE_TAB_BD};
-    color:  {SECONDARY_TEXT};
+    color:  {TEXT};
     border-top-left-radius:     8px;
     border-top-right-radius:    8px;
 }}
 
 /* Modifies selected tab chip*/
 QTabBar::tab:selected {{
-    background: {ACCENT_LIGHT};
-    border: 2px solid {ACCENT_LIGHT};
-    color:  {PRIMARY_TEXT}
+    background: {ACCENT};
+    border: 2px solid {ACCENT};
+    color:  {TEXT_EMPH}
 }}
 
 /* Modifies unselected selected tabs  */
 QTabBar::tab:!selected {{
-    background: {INACTIVE_TAB_BKG};  
+    background: {TAB_BKG};
 }}
 
 /* Modifies tab when mouse is hovered over it */
 QTabBar::tab:!selected:hover {{
-    color: {PRIMARY_TEXT}
+    color: {TEXT_EMPH}
 }}
 
 /* Makes tab "jump up" when pressed */
@@ -60,5 +60,5 @@ QTabBar::tab:right:selected {{
 }}
 
 QLabel{{
-    background-color: {SURFACE_DRK};
+    background-color: {SURFACE_PRIMARY};
 }}

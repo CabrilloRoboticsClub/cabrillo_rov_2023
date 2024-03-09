@@ -71,7 +71,7 @@ class ThrtCrvWidget(qtw.QWidget):
         self.setStyleSheet(
             f"""
             QFrame {{
-                background-color: {new_colors['SURFACE_DRK']};
+                background-color: {new_colors['SURFACE_PRIMARY']};
                 border-radius: 8px;
             }}
             """
