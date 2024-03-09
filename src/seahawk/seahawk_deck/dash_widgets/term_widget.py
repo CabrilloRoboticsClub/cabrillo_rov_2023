@@ -98,10 +98,10 @@ class TermWidget(qtw.QWidget):
         self.copied_text = ""
         
         # Stores previous commands and feedback to display to the terminal. 
-        # Limits number of elements to 10, old elements are discarded.
+        # Limits number of elements to 200, old elements are discarded.
         # Initial deque contents have to be set to an empty string so
         # it actually accepts strings.
-        self.feedback_txt = deque([""], maxlen=10)
+        self.feedback_txt = deque([""], maxlen=200)
 
         # Feedback window for displaying command results
         self.feedback = qtw.QTextEdit()
@@ -165,7 +165,7 @@ class TermWidget(qtw.QWidget):
                 if seq == qtg.QKeySequence("Ctrl+C"):          # ctrl-c: Terminate process
                     if self.proc.state() == qtc.QProcess.Running:
                         self.proc.terminate()
-                        self.append_feedback("Process terminated with ctrl-c")
+                        self.extend_feedback("Process terminated with ctrl-c")
                     return True
                 elif seq == qtg.QKeySequence("Ctrl+Shift+C"):  # ctrl-shift-c: Copy selected text
                     temp_cursor = self.cmd_line.textCursor()
@@ -222,9 +222,7 @@ class TermWidget(qtw.QWidget):
         # HTML formatting strings for colored text
         WARNING     = '<span style="color:#fc3019;">{}</span>'
         SUCCESS     = '<span style="color:#2e933c;">{}</span>'
-        CMD_NAME    = '<span style="color:#afc97e; font-weight:bold;">{}</span>'
-
-        append_to_history = True
+        CMD_NAME    = '<span style="color:#8dbf55; font-weight:bold;">{}</span>'
 
         if cmd == "clear":  # Clear feedback window contents
             self.feedback_txt.clear()
@@ -292,11 +290,11 @@ class TermWidget(qtw.QWidget):
             text = str(self.proc.readAll(), encoding = "utf8").strip()
         except TypeError:
             text = str(self.proc.readAll()).strip()
-        self.append_feedback(text)
+        self.extend_feedback(text)
         
         self.display_feedback()
     
-    def append_feedback(self, text: str):
+    def extend_feedback(self, text: str):
         """
         Appends some text to the deque of feedback text. Replaces all
         new line characters with `<br>`.
@@ -305,14 +303,14 @@ class TermWidget(qtw.QWidget):
             text: Text to add to the deque.
         """
         # Must replace `\n` with `<br>` or else everything ends up on one line
-        self.feedback_txt.append(text.replace("\n", "<br>"))
+        # print([line + "<br>" for line in text.split("\n")])
+        self.feedback_txt.extend([line for line in text.split("\n")])
 
     def display_feedback(self):
         """
         Display feedback collected in the `self.feedback_txt` deque
         to the feedback widget.
         """
-        # Must use HTML format, `\n` does not work
         self.feedback.setText("<br>".join(self.feedback_txt))
         # Move scroll bar down, else it gets stuck at the top
         self.feedback.verticalScrollBar().setValue(self.feedback.verticalScrollBar().maximum())
@@ -352,7 +350,7 @@ class TermWidget(qtw.QWidget):
             # If the path could not be reduced, just display the current directory
             reduced_path = simplified_path[simplified_path.rfind("/") + 1:]
         finally:
-            self.prompt.setText(f'<span style="background-color:#ff5900; font-weight:bold">~{reduced_path} </span>')
+            self.prompt.setText(f'<span style="background-color:#ff5900; color:#2f2f2f; font-weight:bold">~{reduced_path} </span>')
 
     def del_cmd(self):
         """

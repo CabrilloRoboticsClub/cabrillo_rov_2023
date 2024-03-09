@@ -225,6 +225,7 @@ class MainWindow(qtw.QMainWindow):
         self.tab_widget.depth_widget.set_colors(self.colors)
         self.tab_widget.turn_bank_indicator_widget.set_colors(self.colors)
         self.tab_widget.countdown_widget.set_colors(self.colors)
+        self.tab_widget.term_widget.set_colors(self.colors)
         
 
 class TabWidget(qtw.QWidget):
@@ -434,9 +435,9 @@ class TabWidget(qtw.QWidget):
         graph_layout.addWidget(temp_graph_4, 1, 1)
 
 
-        term_widget = TermWidget(tab, PATH + "/dash_styling/term_widget.txt", self.colors)
+        self.term_widget = TermWidget(tab, PATH + "/dash_styling/term_widget.txt", self.colors)
 
-        term_layout.addWidget(term_widget)
+        term_layout.addWidget(self.term_widget)
 
         debug_layout.addLayout(graph_layout, stretch=7)
         debug_layout.addLayout(term_layout, stretch=3)
