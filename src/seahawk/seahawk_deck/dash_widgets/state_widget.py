@@ -3,33 +3,37 @@ from os import path
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
+
 
 class StateWidget(qtw.QWidget):
     """
     Creates a 'StateWidget' which inherits from the 'qtw.QWidget' class. A 'StateWidget' provides 
-    a visual representation of if a feature is engaged or not
+    a visual representation of if a feature is engaged or not.
     """
 
-    def __init__(self, parent: qtw.QWidget, feature_names: list[str], style_sheet_file: str):
+    def __init__(self, parent: qtw.QWidget, feature_names: list[str], style_sheet_file: str, colors: dict):
         """
-        Initialize feature state widget
+        Initialize feature state widget.
+
         Args:
-            parent: Widget to overlay 'StateWidget' on
-            feature_names: List of feature names
-            style_sheet_file: Style sheet text file formatted as a CSS f-string
+            parent: Widget to overlay 'StateWidget' on.
+            feature_names: List of feature names whose states the widget should display.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            colors: Hex codes to color widget with.
         """
         super().__init__(parent)
 
+        with open(style_sheet_file) as style_sheet:
+            self.style_sheet = style_sheet.read()
+
         # Import state images
-        self.__on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
-        self.__off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
+        # TODO: Add these image paths to the colors dictionary
+        self.on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
+        self.off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
 
         # Create a dictionary of label objects
-        self.__label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
+        self.label_dict = {name: {"feat": qtw.QLabel(), "state": qtw.QLabel()} for name in feature_names}
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -44,9 +48,9 @@ class StateWidget(qtw.QWidget):
         frame.setLayout(layout_inner)
 
         # Set text of each label and add to grid
-        for i, (name, labels) in enumerate(self.__label_dict.items()):
+        for i, (name, labels) in enumerate(self.label_dict.items()):
             labels["feat"].setText(name)
-            labels["state"].setPixmap(self.__off_img)
+            labels["state"].setPixmap(self.off_img)
             # Grid layout:
             # (0, 0)    (0, 1)
             # (1, 0)    (1, 1)
@@ -54,10 +58,9 @@ class StateWidget(qtw.QWidget):
             layout_inner.addWidget(labels["state"], i, 1)
 
         # Apply css styling
-        with open(style_sheet_file) as style_sheet:
-            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        self.set_colors(colors)
 
-    def update_state(self, states: dict[str: bool]):
+    def update(self, msg):
         """
         Update graphical representation of the feature state
 
@@ -65,8 +68,19 @@ class StateWidget(qtw.QWidget):
             Dictionary in which the name of the feature is the key and the state
             to update it to is the value
         """
-        for feature, state_of_feature in states.items():
+        for feature, state_of_feature in msg.items():
             if state_of_feature:
-                self.__label_dict[feature]["state"].setPixmap(self.__on_img)
+                self.label_dict[feature]["state"].setPixmap(self.on_img)
             else:
-                self.__label_dict[feature]["state"].setPixmap(self.__off_img)       
+                self.label_dict[feature]["state"].setPixmap(self.off_img)   
+
+    def set_colors(self, new_colors: dict):
+        """
+        Sets widget colors given a dictionary of hex color codes.
+
+        Args:
+            new_colors: Hex codes to color widget with.
+        """
+        self.setStyleSheet(self.style_sheet.format(**new_colors)) 
+
+        # TODO update images 

@@ -3,11 +3,7 @@ from enum import Enum
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
-from PyQt5 import QtGui as qtg
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
 
@@ -73,17 +69,22 @@ class CountdownWidget(qtw.QWidget):
     with negative values until the user terminates the timer
     """
 
-    def __init__(self, parent: qtw.QWidget, style_sheet_file: str, minutes: int = 0, seconds: int = 0):
+    def __init__(self, parent: qtw.QWidget, style_sheet_file: str, colors: dict,  minutes: int = 0, seconds: int = 0):
         """
-        Initialize countdown widget
+        Initialize countdown widget.
         
         Args:
-            parent: Widget to overlay 'CountdownWidget' on
-            style_sheet_file: Style sheet text file formatted as a CSS f-string
-            minutes: Default number of minutes the timer should start at  (defaults to 0)
-            seconds: Default number of seconds the timer should start at  (defaults to 0)
+            parent: Widget to overlay 'CountdownWidget' on.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            colors: Hex codes to color widget with.
+            minutes: Default number of minutes the timer should start at  (defaults to 0).
+            seconds: Default number of seconds the timer should start at  (defaults to 0).
         """
         super().__init__(parent)
+
+        self.colors = colors
+        with open(style_sheet_file) as style_sheet:
+            self.style_sheet = style_sheet.read()
        
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -152,10 +153,18 @@ class CountdownWidget(qtw.QWidget):
         self.timer.timeout.connect(self.countdown_and_display)
 
         # Apply css styling
-        with open(style_sheet_file) as style_sheet:
-            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        self.set_colors(self.colors)
+
+    def set_colors(self, new_colors: dict):
+        """
+        Sets widget colors given a dictionary of hex color codes.
+
+        Args:
+            new_colors: Hex codes to color widget with.
+        """
+        self.setStyleSheet(self.style_sheet.format(**new_colors)) 
         # Set style of stop button to be red when pressed, could not be included in style sheet
-        self.stop_button.setStyleSheet(f"QPushButton::pressed {{background-color: {COLOR_CONSTS['WARNING']};}}")
+        self.stop_button.setStyleSheet(f"QPushButton::pressed {{background-color: {new_colors['WARNING']};}}")
 
     def timer_init(self):
         # Setup progress bar
@@ -163,11 +172,11 @@ class CountdownWidget(qtw.QWidget):
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(f"""
             QProgressBar {{
-                border: 2px solid {COLOR_CONSTS['ACCENT_LIGHT']};
+                border: 2px solid {self.colors['ACCENT_LIGHT']};
             }}
 
             QProgressBar::chunk {{
-                background-color: {COLOR_CONSTS['ACCENT_LIGHT']};
+                background-color: {self.colors['ACCENT_LIGHT']};
             }}
         """)
         self.progress_bar.hide()
@@ -176,7 +185,7 @@ class CountdownWidget(qtw.QWidget):
         self.status = TimerStatus.init
         self.count_status = CountStatus.counting_down
         self.sec_remaining = self.min_spin_box.value() * 60 + self.sec_spin_box.value()
-        self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['ACCENT_LIGHT']};")
+        self.timer_display.setStyleSheet(f"color: {self.colors['ACCENT_LIGHT']};")
         self.display_time()
 
     def spin_box_edit_event(self):
@@ -240,16 +249,16 @@ class CountdownWidget(qtw.QWidget):
             self.progress_bar.setValue(self.total_time)
             self.progress_bar.setStyleSheet(f"""
                 QProgressBar::chunk {{
-                    background-color: {COLOR_CONSTS['WARNING']};
+                    background-color: {self.colors['WARNING']};
                 }}
                 QProgressBar {{
-                    border: 2px solid {COLOR_CONSTS['WARNING']};
+                    border: 2px solid {self.colors['WARNING']};
                 }}
             """)
             self.progress_bar.setTextVisible(True)
 
             # Change text color to red
-            self.timer_display.setStyleSheet(f"color: {COLOR_CONSTS['WARNING']};")
+            self.timer_display.setStyleSheet(f"color: {self.colors['WARNING']};")
 
         if self.count_status == CountStatus.counting_down:
             self.progress_bar.setValue(self.total_time - self.sec_remaining)

@@ -1,24 +1,24 @@
 from PyQt5 import QtWidgets as qtw
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
-
-COLOR_CONSTS = DARK_MODE
 
 class TurnBankIndicator(qtw.QWidget):
     """
-    Creates a 'NumericDataWidget' which inherits from the 'qtw.QWidget' class. A 'NumericDataWidget'
-    displays numeric data
+    TODO: Write a description of what the widget does.
     """
 
-    def __init__(self, parent: qtw.QWidget, style_sheet_file: str=None):
+    def __init__(self, parent: qtw.QWidget, style_sheet_file: str, colors: dict):
         """
-        Initialize numeric display widget
+        Initialize turn bank indicator widget.
         
         Args:
-            parent: Widget to overlay 'NumericDataWidget' on
-            style_sheet_file: Style sheet text file formatted as a CSS f-string
+            parent: Widget to overlay 'TurnBankIndicator' on.
+            style_sheet_file: Style sheet text file formatted as a CSS f-string.
+            colors: Hex codes to color widget with.
         """
         super().__init__(parent)
+
+        with open(style_sheet_file) as style_sheet:
+            self.style_sheet = style_sheet.read()
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -29,5 +29,13 @@ class TurnBankIndicator(qtw.QWidget):
         layout_outer.addWidget(frame)
 
         # Apply css styling
-        with open(style_sheet_file) as style_sheet:
-            self.setStyleSheet(style_sheet.read().format(**COLOR_CONSTS))
+        self.set_colors(colors)
+
+    def set_colors(self, new_colors: dict):
+        """
+        Sets widget colors given a dictionary of hex color codes.
+
+        Args:
+            new_colors: Hex codes to color widget with.
+        """
+        self.setStyleSheet(self.style_sheet.format(**new_colors)) 

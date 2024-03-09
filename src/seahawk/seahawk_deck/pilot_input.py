@@ -187,7 +187,6 @@ class PilotInput(Node):
         input_states_msg.bambi_mode = bambi_state
         input_states_msg.claw_state = claw_msg.data
         input_states_msg.com_shift = False
-        input_states_msg.throttle_curve = "0"
         self.input_states_pub.publish(input_states_msg)
 
         # If the x-box button is pressed, all settings get reset to default configurations

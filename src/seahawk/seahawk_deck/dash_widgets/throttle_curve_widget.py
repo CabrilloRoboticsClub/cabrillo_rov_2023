@@ -3,10 +3,7 @@ from os import path
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtGui as qtg
 
-from seahawk_deck.dash_styling.color_palette import DARK_MODE
 
-
-COLOR_CONSTS = DARK_MODE
 PATH = path.dirname(__file__)
 
 
@@ -16,17 +13,17 @@ class ThrtCrvWidget(qtw.QWidget):
     a visual representation of the current chosen throttle curve
     """
 
-    def __init__(self, parent: qtw.QWidget):
+    def __init__(self, parent: qtw.QWidget, colors):
         """
-        Initialize feature state widget
+        Initialize throttle curve widget
         
         Args:
-            parent: Widget to overlay 'StateWidget' on
+            parent: Widget to overlay 'ThrtCrvWidget' on
         """
         super().__init__(parent)
 
         NUM_CURVES = 3
-        self.throttle_crv_imgs = {i : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(NUM_CURVES)}
+        self.throttle_crv_imgs = {str(i) : qtg.QPixmap(f"{PATH}/../dash_styling/thrt_crv_img_{i}.svg") for i in range(1, NUM_CURVES + 1)}
 
         # Define layout of frame on parent
         layout_outer = qtw.QVBoxLayout(self)
@@ -42,27 +39,31 @@ class ThrtCrvWidget(qtw.QWidget):
 
         # Qlabel allows text and images to be displayed as widget
         self.label = qtw.QLabel()
-        self.label.setPixmap(self.throttle_crv_imgs[0])
+        # Set default curve as one
+        self.label.setPixmap(self.throttle_crv_imgs["1"])
 
         # Add widget to layout
         layout_inner.addWidget(self.label)
 
-        self.setStyleSheet(
-            f"""
-            QFrame {{
-                background-color: {COLOR_CONSTS['SURFACE_DRK']};
-                border-radius: 8px;
-            }}
-            """
-        )
+        # Apply css styling
+        self.set_colors(colors)
 
-    def update_thrt_crv(self, thrt_crv: int):
+    def update(self, thrt_crv: str):
         """
         Update graphical representation of the throttle curves
 
         Args:
-            Index of throttle curve to update (also the key you press to change it)
+            Key of throttle curve to update
         """
-
         # Grab the specific throttle curve img needed to be displayed on widget
         self.label.setPixmap(self.throttle_crv_imgs[thrt_crv])
+
+    def set_colors(self, new_colors: dict):
+        self.setStyleSheet(
+            f"""
+            QFrame {{
+                background-color: {new_colors['SURFACE_DRK']};
+                border-radius: 8px;
+            }}
+            """
+        )
