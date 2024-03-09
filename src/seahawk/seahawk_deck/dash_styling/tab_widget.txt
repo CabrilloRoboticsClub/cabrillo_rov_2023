@@ -58,3 +58,7 @@ QTabBar::tab:left:selected {{
 QTabBar::tab:right:selected {{
     border-right-color: none;
 }}
+
+QLabel{{
+    background-color: {SURFACE_DRK};
+}}
