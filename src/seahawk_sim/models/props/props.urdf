@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot name="props" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<link name="world">
+    
+    <joint name="fixed" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+    </joint>
+
+    <link
+        name="base_link">
+        <inertial>
+        <origin
+            xyz="0.231502282702517 -0.651118493243743 0.30789284388328"
+            rpy="0 0 0" />
+        <mass
+            value="1649.84438715245" />
+        <inertia
+            ixx="5746.36707312916"
+            ixy="908.369803242604"
+            ixz="908.3602377042"
+            iyy="8998.30692483728"
+            iyz="908.364712288096"
+            izz="9922.98165257725" />
+        </inertial>
+        <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+            <mesh
+            filename="package://props/base_link.STL" />
+        </geometry>
+        <material
+            name="">
+            <color
+            rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+        </visual>
+        <collision>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+            <mesh
+            filename="package://props/base_link.STL" />
+        </geometry>
+        </collision>
+    </link>
+  </link>
+</robot>
