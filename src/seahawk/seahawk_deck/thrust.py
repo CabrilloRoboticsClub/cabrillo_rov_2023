@@ -30,6 +30,7 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float64
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import SetParametersResult
 
@@ -83,6 +84,14 @@ class Thrust(Node):
         self.subscription = self.create_subscription(Twist, "desired_twist", self._callback, 10)
         self.motor_pub = self.create_publisher(Float32MultiArray, "motor_values", 10)
         self.__params = Thrust.__generate_curve_fit_params()
+
+        # Publish motor values to individual topics if running gazebo
+        # The `gazebo` param may be set when running the `thrust` node (as in seahawk_sim.launch.py)
+        # or via the command line with `ros2 param set thrust gazebo True/False`
+        self.declare_parameter("gazebo", False)
+        self.gazebo = self.get_parameter("gazebo").value
+        self.add_on_set_parameters_callback(self.update_gazebo)
+        if self.gazebo: self.init_gazebo()
 
     def get_polynomial_coef(self, mv: list, limit: float) -> list:
         """
@@ -163,6 +172,29 @@ class Thrust(Node):
             return SetParametersResult(successful=False)
         self.motor_config = self.generate_motor_config(center_of_mass_offset)
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
+        return SetParametersResult(successful=True)
+
+    def init_gazebo(self):
+        """
+        Initialize individual motor publishers for gazebo.
+        """
+        self.pubs = [self.create_publisher(Float64, f"motor_values/motor_{i}", 10) for i in range(8)]
+
+    def update_gazebo(self, params: list[Parameter]) -> SetParametersResult:
+        """
+        Callback for updating the `gazebo` parameter. The `gazebo` parameter determines if
+        `thrust` should publish individual motor values for `gazebo`.
+
+        Args:
+            params: List of updated parameters (handles by ROS2)
+
+        Returns:
+            SetParametersResult() which lets ROS2 know if the parameters were set correctly or not
+        """
+        self.gazebo = self.get_parameter("gazebo").value
+        if not isinstance(self.gazebo, bool):
+            return SetParametersResult(successful=False)
+        if self.gazebo: self.init_gazebo()
         return SetParametersResult(successful=True)
 
     def generate_motor_config(self, center_of_mass_offset):
@@ -271,6 +303,13 @@ class Thrust(Node):
         motor_msg.data = [thrust * scalar for thrust in motor_msg.data]
 
         self.motor_pub.publish(motor_msg)
+
+        # Publish values for gazebo if the `gazebo` parameter is set to `True`
+        if self.gazebo:
+            repub_msg = Float64()
+            for motor_val, pub in zip(motor_msg.data, self.pubs):
+                repub_msg.data = motor_val
+                pub.publish(repub_msg)
 
 
 def main(args=None):
