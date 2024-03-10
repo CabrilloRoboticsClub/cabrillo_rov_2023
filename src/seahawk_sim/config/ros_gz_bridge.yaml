@@ -1,8 +1,43 @@
 # Bridge of ROS and Gazebo topics
 # See: https://github.com/gazebosim/ros_gz/tree/humble/ros_gz_bridge
 
-# Bridge /motor_values
-- topic_name: "/motor_values"
-  ros_type_name: "std_msgs/msg/Float32MultiArray"
-  gz_type_name: "ignition.msgs.Float_V"
+# Bridge for each individual motor
+- topic_name: "/motor_values/motor_0"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_1"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_2"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_3"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_4"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_5"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_6"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
+  direction: ROS_TO_GZ
+
+- topic_name: "/motor_values/motor_7"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "ignition.msgs.Double"
   direction: ROS_TO_GZ

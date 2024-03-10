@@ -33,23 +33,24 @@ def generate_launch_description():
     return LaunchDescription([
         *ARGUMENTS,
 
-        SetParameter(name='use_sim_time', value=True),
+        # SetParameter(name='use_sim_time', value=True),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(
-                    get_package_share_directory('seahawk'),
-                    'launch/seahawk_sim_server.launch.py'))
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(
+        #         os.path.join(
+        #             get_package_share_directory('seahawk'),
+        #             'launch/seahawk_sim_server.launch.py'))
+        # ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(
-                    get_package_share_directory('seahawk'),
-                    'launch/seahawk_sim_gui.launch.py'))
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(
+        #         os.path.join(
+        #             get_package_share_directory('seahawk'),
+        #             'launch/seahawk_sim_gui.launch.py'))
+        # ),
 
         # TODO: add joint state bridge
+
         Node(
             name="gz_bridge",
             package="ros_gz_bridge",
@@ -66,18 +67,18 @@ def generate_launch_description():
         # TODO: Make sure the world argument matches the world you're using above
         # TODO: You might be able to load the xml from the robot_description topic:
         #   https://github.com/gazebosim/ros_gz/blob/27f20ffbb2331a5c87685c62053d7eb20544e09a/ros_gz_sim_demos/launch/joint_states.launch.py#L68
-        Node(
-            name='spawn_model',
-            package='ros_gz_sim',
-            executable='create',
-            arguments=[
-                '-file', MODEL_PATH,
-                '-name', 'seahawk 2',
-                '-x', '0',
-                '-y', '0',
-                '-z', '0.1',
-            ]
-        ),
+        # Node(
+        #     name='spawn_model',
+        #     package='ros_gz_sim',
+        #     executable='create',
+        #     arguments=[
+        #         '-file', MODEL_PATH,
+        #         '-name', 'seahawk 2',
+        #         '-x', '0',
+        #         '-y', '0',
+        #         '-z', '0.1',
+        #     ]
+        # ),
 
         Node(
             package='joy',
