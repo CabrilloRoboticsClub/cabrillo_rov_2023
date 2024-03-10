@@ -31,10 +31,12 @@
       <uniform_fluid_density>1000</uniform_fluid_density>
     </plugin>
 
+    <!--
     <include>
       <pose>0 0 0 0 0 0</pose>
       <uri>seahawk_2_enhanced</uri>
     </include>
+    -->
 
     <!-- TODO: Add MATE props -->
 

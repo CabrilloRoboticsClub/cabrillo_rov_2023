@@ -18,7 +18,7 @@ from launch.launch_context import LaunchContext
 
 DESCRIPTION_PKG_PATH = get_package_share_path('seahawk_description')
 GAZEBO_PKG_PATH = get_package_share_path('seahawk_sim')
-DEFAULT_WORLD_PATH = os.path.join(GAZEBO_PKG_PATH, 'worlds/product_demo_area.sdf')
+DEFAULT_WORLD_PATH = os.path.join(GAZEBO_PKG_PATH, 'worlds/product_demo_area.world')
 
 ARGUMENTS = [
     DeclareLaunchArgument(
