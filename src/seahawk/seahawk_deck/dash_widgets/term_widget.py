@@ -293,14 +293,11 @@ class TermWidget(qtw.QWidget):
     
     def extend_feedback(self, text: str):
         """
-        Appends some text to the deque of feedback text. Replaces all
-        new line characters with `<br>`.
+        Appends some text to the deque of feedback text split on new lines.
 
         Args:
             text: Text to add to the deque.
         """
-        # Must replace `\n` with `<br>` or else everything ends up on one line
-        # print([line + "<br>" for line in text.split("\n")])
         self.feedback_txt.extend([line for line in text.split("\n")])
 
     def display_feedback(self):
@@ -308,6 +305,7 @@ class TermWidget(qtw.QWidget):
         Display feedback collected in the `self.feedback_txt` deque
         to the feedback widget.
         """
+        # Must use HTML format, \n does not work
         self.feedback.setText("<br>".join(self.feedback_txt))
         # Move scroll bar down, else it gets stuck at the top
         self.feedback.verticalScrollBar().setValue(self.feedback.verticalScrollBar().maximum())
@@ -326,9 +324,9 @@ class TermWidget(qtw.QWidget):
             raise Exception("Cannot reduce any further")
         elif len(path) > max_len:
             split_path = path.split("/")
-            for i in range(len(split_path) - 1):
-                split_path[i] = split_path[i][:factor]
-            return TermWidget.path_reduce(max_len, "/".join(split_path), factor - 1)
+            return TermWidget.path_reduce(max_len, 
+                                          "/".join(split_path[i][:factor] for i in range(len(split_path))), 
+                                          factor - 1)
         return path
 
     def display_prompt(self):
