@@ -1,10 +1,7 @@
 import os
-import sys
 import shlex
 from re import search
 from collections import deque
-
-from pprint import pprint
 
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import QtCore as qtc
