@@ -87,23 +87,17 @@ def generate_launch_description():
         ),
 
         Node(
-            package='seahawk_deck',
+            package='seahawk',
             executable='pilot_input',
             name='pilot_input',
             output='screen'
         ),
 
         Node(
-            package='seahawk_deck',
+            package='seahawk',
             executable='thrust',
             name='thrust',
-            output='screen'
-        ),
-
-        Node(
-            package='seahawk_deck',
-            executable='thrust_gz_repub',
-            name='thrust_gz_repub',
-            output='screen'
+            output='screen',
+            parameters=[{'gazebo': True}],
         ),
     ])
