@@ -19,6 +19,7 @@ from seahawk_deck.dash_widgets.numeric_data_widget import NumericDataWidget
 from seahawk_deck.dash_widgets.state_widget import StateWidget
 from seahawk_deck.dash_widgets.throttle_curve_widget import ThrtCrvWidget
 from seahawk_deck.dash_widgets.turn_bank_indicator_widget import TurnBankIndicator
+from seahawk_deck.dash_widgets.check_list import CheckList
 from seahawk_deck.set_remote_params import SetRemoteParams
 from seahawk_msgs.msg import InputStates
 
@@ -224,6 +225,7 @@ class MainWindow(qtw.QMainWindow):
         self.tab_widget.depth_widget.set_colors(self.colors)
         self.tab_widget.turn_bank_indicator_widget.set_colors(self.colors)
         self.tab_widget.countdown_widget.set_colors(self.colors)
+        self.tab_widget.checklist_widget.set_colors(self.colors)
         
 
 class TabWidget(qtw.QWidget):
@@ -281,6 +283,8 @@ class TabWidget(qtw.QWidget):
 
         # Create specific tabs
         self.create_pilot_tab(self.tab_dict["Pilot"])
+        self.create_copilot_tab(self.tab_dict["Co-Pilot"])
+
 
         # Apply css styling
         self.set_colors(self.colors)
@@ -355,6 +359,13 @@ class TabWidget(qtw.QWidget):
 
         home_window_layout.addLayout(vert_widgets_layout, stretch=1)
         home_window_layout.addLayout(cam_layout, stretch=9)
+    
+    def create_copilot_tab(self, tab: qtw.QWidget):
+        home_window_layout = qtw.QHBoxLayout(tab)
+        
+        self.checklist_widget = CheckList(tab, PATH + "/dash_widgets/tasks.json", PATH + "/dash_styling/check_list.txt", self.colors)
+
+        home_window_layout.addWidget(self.checklist_widget)
 
     @staticmethod
     def update_cam_img(data: Image, video_frame: VideoFrame):
