@@ -101,10 +101,10 @@ class PilotInput(Node):
         self.__buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
-            # "" :              StickyButton(),     # a
+            "claw_1" :          StickyButton(),     # a
             "bambi_mode":       StickyButton(),     # b
-            "claw":             StickyButton(),     # x
-            # "":               StickyButton(),     # y
+            "claw_2":           StickyButton(),     # x
+            "claw_3":           StickyButton(),     # y
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
         }
@@ -140,10 +140,10 @@ class PilotInput(Node):
             # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            # "":               joy_msg.buttons[0], # a
+            "claw_1":          joy_msg.buttons[0], # a
             "bambi_mode":       joy_msg.buttons[1], # b
-            "claw":             joy_msg.buttons[2], # x
-            # "":               joy_msg.buttons[3], # y
+            "claw_2":          joy_msg.buttons[2], # x
+            "claw_3":          joy_msg.buttons[3], # y
             "pos_angular_x":    joy_msg.buttons[4], # left_bumper
             "neg_angular_x":    joy_msg.buttons[5], # right_bumper
             # "":               joy_msg.buttons[6], # window
