@@ -46,11 +46,11 @@ class Thrust(Node):
         """Initialize this node"""
         super().__init__("thrust")
 
-        self.MAX_FWD_THRUST = 36.3826715 # N
-        self.MAX_REV_THRUST = -28.6354180 # N
+        self.MAX_FWD_THRUST = 36.3826715 / 2 # N
+        self.MAX_REV_THRUST = -28.6354180 / 2 # N
 
-        self.TOTAL_CURRENT_LIMIT = 70 # A
-        self.ESC_CURRENT_LIMIT = 40 # A
+        self.TOTAL_CURRENT_LIMIT = 70 /2 # A
+        self.ESC_CURRENT_LIMIT = 40 / 2 # A
 
         self.motor_positions = [ # [X, Y, Z] positions for each motors
             [ 0.200,  0.130,  0.004], # Motor 0
