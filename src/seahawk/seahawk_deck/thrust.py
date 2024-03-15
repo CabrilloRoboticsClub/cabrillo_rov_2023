@@ -290,7 +290,6 @@ class Thrust(Node):
             PWM value corresponding to the desired thrust
         """
         return (a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f
-        # return 1900 if pwm_unbounded > 1900 else 1100 if pwm_unbounded < 1100 else pwm_unbounded
 
     @staticmethod
     def generate_pwm_fit_params():
@@ -324,6 +323,8 @@ class Thrust(Node):
                 self.pwm_fit_params[3],
                 self.pwm_fit_params[4],
                 self.pwm_fit_params[5]))
+            pwm_values.data[index] = 1900 if pwm_values.data[index] > 1900 else 1100 if pwm_values.data[index] < 1100 else pwm_values.data[index]
+            if newton == 0: pwm_values.data[index] = 1500
         self.pwm_pub.publish(pwm_values)
 
 def main(args=None):
