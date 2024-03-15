@@ -104,10 +104,10 @@ class PilotInput(Node):
         self.buttons = {
             # "" :              StickyButton(),     # left_stick_press
             # "" :              StickyButton(),     # right_stick_press
-            "claw_1" :          StickyButton(),     # a
+            "claw_2" :          StickyButton(),     # a
             "bambi_mode":       StickyButton(),     # b
-            "claw_2":           StickyButton(),     # x
-            "claw_3":           StickyButton(),     # y
+            "main_claw":        StickyButton(),     # x
+            "claw_1":           StickyButton(),     # y
             # "":               StickyButton(),     # window
             # "":               StickyButton(),     # menu
         }
@@ -143,10 +143,10 @@ class PilotInput(Node):
             # "":               int(max(joy_msg.axes[6], 0)),   # dpad_left     
             # "":               int(-min(joy_msg.axes[6], 0)),  # dpad_right
             # Buttons
-            "claw_1":           joy_msg.buttons[0], # a
+            "claw_2":           joy_msg.buttons[0], # a
             "bambi_mode":       joy_msg.buttons[1], # b
-            "claw_2":           joy_msg.buttons[2], # x
-            "claw_3":           joy_msg.buttons[3], # y
+            "main_claw":        joy_msg.buttons[2], # x
+            "claw_1":           joy_msg.buttons[3], # y
             "pos_angular_x":    joy_msg.buttons[4], # left_bumper
             "neg_angular_x":    joy_msg.buttons[5], # right_bumper
             # "":               joy_msg.buttons[6], # window
@@ -177,9 +177,9 @@ class PilotInput(Node):
 
         # Create claw message
         claw_msg = Claws()
+        claw_msg.main_claw = self.buttons["main_claw"].check_state(controller["main_claw"])
         claw_msg.claw_1 = self.buttons["claw_1"].check_state(controller["claw_1"])
         claw_msg.claw_2 = self.buttons["claw_2"].check_state(controller["claw_2"])
-        claw_msg.claw_3 = self.buttons["claw_3"].check_state(controller["claw_3"])
 
         # Publish claw message
         self.claw_pub.publish(claw_msg)
