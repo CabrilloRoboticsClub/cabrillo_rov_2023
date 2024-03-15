@@ -30,6 +30,7 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Int16MultiArray
 from rclpy.parameter import Parameter
 from rcl_interfaces.msg import SetParametersResult
 
@@ -74,15 +75,22 @@ class Thrust(Node):
         ]
 
         self.declare_parameter("center_of_mass_offset", [0.0, 0.0, 0.0])
+        self.declare_parameter("publishing_pwm", True)
 
         self.add_on_set_parameters_callback(self.update_center_of_mass)
 
         self.motor_config = self.generate_motor_config(self.get_parameter("center_of_mass_offset").value)
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
-        self.subscription = self.create_subscription(Twist, "desired_twist", self._callback, 10)
-        self.motor_pub = self.create_publisher(Float32MultiArray, "motor_values", 10)
-        self.__params = Thrust.__generate_curve_fit_params()
+        if self.get_parameter("publishing_pwm").value:
+            self.subscription = self.create_subscription(Twist, "desired_twist", self.pwm_callback, 10)
+            self.pwm_pub = self.create_publisher(Int16MultiArray, "pwm_values", 10)
+        else:
+            self.pwm_fit_params = Thrust.generate_pwm_fit_params()
+            self.thrust_pub = self.create_publisher(Float32MultiArray, "motor_values", 10)
+            self.subscription = self.create_subscription(Twist, "desired_twist", self.thrust_callback, 10)
+
+        self.thrust_fit_params = Thrust.generate_thrust_fit_param()
 
     def get_polynomial_coef(self, mv: list, limit: float) -> list:
         """
@@ -97,13 +105,13 @@ class Thrust(Node):
             A list of the coefficients of a 5th degree polynomial function, where the input of said
             function is the scaling factor and the output is the current (A) draw
         """
-        return [self.__params[0] * sum([thrust**6 for thrust in mv]),
-                self.__params[1] * sum([thrust**5 for thrust in mv]),
-                self.__params[2] * sum([thrust**4 for thrust in mv]),
-                self.__params[3] * sum([thrust**3 for thrust in mv]),
-                self.__params[4] * sum([thrust**2 for thrust in mv]),
-                self.__params[5] * sum(mv),
-                self.__params[6] * len(mv) - limit]
+        return [self.thrust_fit_params[0] * sum([thrust**6 for thrust in mv]),
+                self.thrust_fit_params[1] * sum([thrust**5 for thrust in mv]),
+                self.thrust_fit_params[2] * sum([thrust**4 for thrust in mv]),
+                self.thrust_fit_params[3] * sum([thrust**3 for thrust in mv]),
+                self.thrust_fit_params[4] * sum([thrust**2 for thrust in mv]),
+                self.thrust_fit_params[5] * sum(mv),
+                self.thrust_fit_params[6] * len(mv) - limit]
 
     def get_current_scalar_value(self, mv: list, limit: float) -> float:
         """
@@ -194,7 +202,8 @@ class Thrust(Node):
 
         Args:
             x: Thrust being produced in newtons.
-            a-f: Arbitrary parameters to map thrust to current, see __generate_curve_fit_params()
+            a-f: Arbitrary parameters to map thrust to current, see generate_thrust_fit_params
+()
 
         Returns:
             Current (estimated) to be drawn in amps.
@@ -202,7 +211,7 @@ class Thrust(Node):
         return (a * x**6) + (b * x**5) + (c * x**4) + (d * x**3) + (e * x**2) + (f * x) + (g)
 
     @staticmethod
-    def __generate_curve_fit_params() -> list:
+    def generate_thrust_fit_param() -> list:
         """
         Generates Optimal Parameters for __thrust_to_current() to have a best fit
 
@@ -237,11 +246,11 @@ class Thrust(Node):
                         else float("inf"))
                     for thrust in motor_values])
 
-    def _callback(self, twist_msg):
+    def generate_motor_values(self, twist_msg):
         """Called every time the twist publishes a message."""
 
         # Convert the X,Y,Z,R,P,Y to thrust settings for each motor. 
-        motor_msg = Float32MultiArray()
+        motor_values = []
 
         # Convert Twist to single vector for multiplication
         twist_array = [
@@ -254,24 +263,66 @@ class Thrust(Node):
         ]
 
         if twist_array == [0, 0, 0, 0, 0, 0]:
-            motor_msg.data = [0.0 for motor in range(8)] # No thrust needed
-            self.motor_pub.publish(motor_msg)
-            return
+            return [0.0 for motor in range(8)] # No thrust needed
 
         # Multiply twist with inverse of motor config to get motor effort values
-        motor_msg.data = np.matmul(self.inverse_config, twist_array).tolist()
+        motor_values = np.matmul(self.inverse_config, twist_array).tolist()
 
-        thrust_scalar = self.get_thrust_limit_scalar(motor_msg.data)
-        current_scalar = self.get_minimum_current_scalar(motor_msg.data)
+        thrust_scalar = self.get_thrust_limit_scalar(motor_values.data)
+        current_scalar = self.get_minimum_current_scalar(motor_values.data)
         # Scalar will be the smaller of the two, largest value in twist array
         # will be percentage of that maximum
         scalar = min(thrust_scalar, current_scalar) * max([abs(val) for val in twist_array])
 
-        # scale motor values
-        motor_msg.data = [thrust * scalar for thrust in motor_msg.data]
+        # scale and return motor values
+        return [thrust * scalar for thrust in motor_values]
 
-        self.motor_pub.publish(motor_msg)
+    @staticmethod
+    def newtons_to_pwm(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> int:
+        """
+        Converts desired newtons into its corresponding PWM value
 
+        Args:
+            x: The force in newtons desired
+            a-f: Arbitrary parameters to map newtons to pwm, see __generate_curve_fit_params()
+
+        Returns:
+            PWM value corresponding to the desired thrust
+        """
+        pwm_unbounded = int((a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f)
+        return 1900 if pwm_unbounded > 1900 else 1100 if pwm_unbounded < 1100 else pwm_unbounded
+
+    @staticmethod
+    def generate_pwm_fit_params():
+        x, y = list()
+
+        with open("newtons_to_pwm.tsv", "r") as file:
+            for data_point in file:
+                data = data_point.split("\t")
+                x.append(data[0])
+                y.append(data[1])
+
+        optimal_params, param_covariance = curve_fit(Thrust.newtons_to_pwm, x, y)
+        return optimal_params
+
+    def thrust_callback(self, twist_msg):
+        thrust_msg = Int16MultiArray()
+        thrust_msg.data = self.generate_motor_values(twist_msg)
+        self.thrust_pub.publish(thrust_msg)
+
+    def pwm_callback(self, twist_msg):
+        pwm_values = Int16MultiArray()
+        motor_values = self.generate_motor_values(twist_msg)
+        for index, newton in enumerate(motor_values):
+            pwm_values[index] = Thrust.newtons_to_pwm(
+                newton,
+                self.pwm_fit_params[0],
+                self.pwm_fit_params[1],
+                self.pwm_fit_params[2],
+                self.pwm_fit_params[3],
+                self.pwm_fit_params[4],
+                self.pwm_fit_params[5])
+        self.pwm_pub.publish(pwm_values)
 
 def main(args=None):
     rclpy.init(args=args)

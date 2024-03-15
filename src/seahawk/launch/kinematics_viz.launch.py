@@ -47,4 +47,34 @@ def generate_launch_description():
             executable='joint_state_publisher',
         ),
 
+        Node(
+            package='seahawk',
+            executable='pilot_input',
+            name='pilot_input',
+            output='screen'
+        ),
+
+        Node(
+            package='seahawk',
+            executable='keyboard',
+            name='keyboard',
+            output='screen'
+        ),
+
+        Node(
+            package='joy',
+            executable='joy_node',
+            name='joy_node',
+            output='screen'
+        ),
+
+        Node(
+            package='seahawk',
+            executable='thrust',
+            name='thrust',
+            output='screen',
+            parameters=[{
+                "publishing_pwm": False
+            }],
+        )
     ])
