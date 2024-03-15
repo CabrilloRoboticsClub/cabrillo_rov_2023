@@ -83,10 +83,10 @@ class Thrust(Node):
         self.inverse_config = np.linalg.pinv(self.motor_config, rcond=1e-15, hermitian=False)
 
         if self.get_parameter("publishing_pwm").value:
+            self.pwm_fit_params = Thrust.generate_pwm_fit_params()
             self.subscription = self.create_subscription(Twist, "desired_twist", self.pwm_callback, 10)
             self.pwm_pub = self.create_publisher(Int16MultiArray, "pwm_values", 10)
         else:
-            self.pwm_fit_params = Thrust.generate_pwm_fit_params()
             self.thrust_pub = self.create_publisher(Float32MultiArray, "motor_values", 10)
             self.subscription = self.create_subscription(Twist, "desired_twist", self.thrust_callback, 10)
 
@@ -268,8 +268,8 @@ class Thrust(Node):
         # Multiply twist with inverse of motor config to get motor effort values
         motor_values = np.matmul(self.inverse_config, twist_array).tolist()
 
-        thrust_scalar = self.get_thrust_limit_scalar(motor_values.data)
-        current_scalar = self.get_minimum_current_scalar(motor_values.data)
+        thrust_scalar = self.get_thrust_limit_scalar(motor_values)
+        current_scalar = self.get_minimum_current_scalar(motor_values)
         # Scalar will be the smaller of the two, largest value in twist array
         # will be percentage of that maximum
         scalar = min(thrust_scalar, current_scalar) * max([abs(val) for val in twist_array])
@@ -278,7 +278,7 @@ class Thrust(Node):
         return [thrust * scalar for thrust in motor_values]
 
     @staticmethod
-    def newtons_to_pwm(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> int:
+    def newtons_to_pwm(x: float, a: float, b: float, c: float, d: float, e: float, f: float) -> float:
         """
         Converts desired newtons into its corresponding PWM value
 
@@ -289,14 +289,15 @@ class Thrust(Node):
         Returns:
             PWM value corresponding to the desired thrust
         """
-        pwm_unbounded = int((a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f)
-        return 1900 if pwm_unbounded > 1900 else 1100 if pwm_unbounded < 1100 else pwm_unbounded
+        return (a * x**5) + (b * x**4) + (c * x**3) + (d * x**2) + (e * x) + f
+        # return 1900 if pwm_unbounded > 1900 else 1100 if pwm_unbounded < 1100 else pwm_unbounded
 
     @staticmethod
     def generate_pwm_fit_params():
-        x, y = list()
+        x = []
+        y = []
 
-        with open("newtons_to_pwm.tsv", "r") as file:
+        with open("src/seahawk/seahawk_deck/newtons_to_pwm.tsv", "r") as file:
             for data_point in file:
                 data = data_point.split("\t")
                 x.append(data[0])
@@ -306,22 +307,23 @@ class Thrust(Node):
         return optimal_params
 
     def thrust_callback(self, twist_msg):
-        thrust_msg = Int16MultiArray()
+        thrust_msg = Float32MultiArray()
         thrust_msg.data = self.generate_motor_values(twist_msg)
         self.thrust_pub.publish(thrust_msg)
 
     def pwm_callback(self, twist_msg):
         pwm_values = Int16MultiArray()
+        pwm_values.data = [0] * 8
         motor_values = self.generate_motor_values(twist_msg)
         for index, newton in enumerate(motor_values):
-            pwm_values[index] = Thrust.newtons_to_pwm(
+            pwm_values.data[index] = int(Thrust.newtons_to_pwm(
                 newton,
                 self.pwm_fit_params[0],
                 self.pwm_fit_params[1],
                 self.pwm_fit_params[2],
                 self.pwm_fit_params[3],
                 self.pwm_fit_params[4],
-                self.pwm_fit_params[5])
+                self.pwm_fit_params[5]))
         self.pwm_pub.publish(pwm_values)
 
 def main(args=None):
