@@ -87,9 +87,6 @@ class PilotInput(Node):
         """
         super().__init__("pilot_input")
 
-        # Variable of type string for storing hot keys for throttle curves
-        self.__key_input = ""
-
         # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.__callback, 10)
         self.__twist_pub = self.create_publisher(Twist, "desired_twist", 10)
@@ -99,6 +96,9 @@ class PilotInput(Node):
         # the pilot wants to use named 'throttle_curve_choice'. Defaults to '0'
         self.declare_parameter("throttle_curve_choice", "0")
         self.__throttle_curve_choice = self.get_parameter("throttle_curve_choice").value
+
+        # Variable of type string for storing hot keys for throttle curves
+        self.__key_input = self.get_parameter('throttle_curve_choice').get_parameter_value().string_value
 
         # Button mapping
         self.__buttons = {
