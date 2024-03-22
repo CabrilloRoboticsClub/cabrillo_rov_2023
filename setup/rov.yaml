@@ -91,6 +91,7 @@
         - libftdi-dev 
         - libusb-1.0-0-dev
         - gdb-multiarch
+        - avahi-daemon
       state: present
 
 - name: Install OpenOCD from source
