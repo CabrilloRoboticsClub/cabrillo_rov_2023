@@ -1,7 +1,7 @@
 """
 claws.py
 
-Handle all pilot input
+Drives claws based on pilot input from the controller,
 
 Copyright (C) 2022-2023 Cabrillo Robotics Club
 
@@ -49,8 +49,6 @@ class Claws(Node):
         }
         self.bool_to_mode = {True: GPIO.HIGH, False: GPIO.LOW}
 
-        # Set the way we address the pins, use the pin numbers on the board
-        # GPIO.setmode(GPIO.BOARD)
         # Set claw GPIO pins to out
         GPIO.setup(self.claw_pins["main_claw"], GPIO.OUT)
         GPIO.setup(self.claw_pins["claw_1"],    GPIO.OUT)
