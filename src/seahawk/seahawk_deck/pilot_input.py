@@ -33,7 +33,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool
-from seahawk_msgs.msg import InputStates, Claws
+from seahawk_msgs.msg import InputStates, ClawStates
 
 
 class StickyButton():
@@ -92,7 +92,7 @@ class PilotInput(Node):
         # Create publishers and subscriptions
         self.subscription = self.create_subscription(Joy, "joy", self.callback, 10)
         self.twist_pub = self.create_publisher(Twist, "desired_twist", 10)
-        self.claw_pub = self.create_publisher(Claws, "claws", 10)
+        self.claw_pub = self.create_publisher(ClawStates, "claws", 10)
         self.input_states_pub = self.create_publisher(InputStates, "input_states", 10)
 
         # Create and store parameter which determines which throttle curve
@@ -176,7 +176,7 @@ class PilotInput(Node):
         self.twist_pub.publish(twist_msg)
 
         # Create claw message
-        claw_msg = Claws()
+        claw_msg = ClawStates()
         claw_msg.main_claw = self.buttons["main_claw"].check_state(controller["main_claw"])
         claw_msg.claw_1 = self.buttons["claw_1"].check_state(controller["claw_1"])
         claw_msg.claw_2 = self.buttons["claw_2"].check_state(controller["claw_2"])

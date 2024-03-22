@@ -28,7 +28,7 @@ import rclpy
 from rclpy.node import Node 
 import RPi.GPIO as GPIO
 
-from seahawk_msgs.msg import Claws
+from seahawk_msgs.msg import ClawStates
 
 class Claws(Node):
     """
@@ -50,15 +50,15 @@ class Claws(Node):
         self.bool_to_mode = {True: GPIO.HIGH, False: GPIO.LOW}
 
         # Set the way we address the pins, use the pin numbers on the board
-        GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BOARD)
         # Set claw GPIO pins to out
         GPIO.setup(self.claw_pins["main_claw"], GPIO.OUT)
         GPIO.setup(self.claw_pins["claw_1"],    GPIO.OUT)
         GPIO.setup(self.claw_pins["claw_2"],    GPIO.OUT)
 
-        self.create_subscription(Claws, "claws", self.callback, 10)
+        self.create_subscription(ClawStates, "claws", self.callback, 10)
 
-    def callback(self, claw_msg: Claws):
+    def callback(self, claw_msg: ClawStates):
         """
         Takes in input from the claw message and sets GPIO pins to values.
 
