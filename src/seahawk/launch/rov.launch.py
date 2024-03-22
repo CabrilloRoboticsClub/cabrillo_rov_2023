@@ -9,9 +9,9 @@ from launch.substitutions import FindExecutable
 from launch.event_handlers import OnShutdown
 
 # Camera paths
-claw_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0-video-index2'
-top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.4:1.0-video-index2'
-front_camera_path = None
+claw_camera_path    = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-video-index2'
+top_camera_path     = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'
+front_camera_path   = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.3:1.0-video-index2'
 
 # v4l2_devices = subprocess.run("v4l2-ctl --list-devices", shell=True, stdout=subprocess.PIPE, check=True, encoding='utf-8').stdout
 # if m := re.search(r"mmal.*\n\s*(/dev/video\d)", v4l2_devices) is not None:
@@ -53,7 +53,7 @@ def generate_launch_description():
                 respawn=True,
                 respawn_delay=0,
                 parameters=[{
-                    'input_fn': front_camera_path,
+                    'input_fn': str(pathlib.Path(front_camera_path).resolve()),
                     'fps': 30,
                     'size': '640x480',
                     'frame_id': 'front_camera',
