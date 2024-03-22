@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 from launch.substitutions import FindExecutable
 from launch.event_handlers import OnShutdown
 
-microros_serial_device = None # '/dev/ttyS0'
+microros_serial_device = "/dev/ttyS0"
 
 claw_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index2'
 top_camera_path = '/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-video-index2'
@@ -22,15 +22,12 @@ else:
     print("Front camera not found!")
     front_camera_path = None
 
+subprocess.run('sudo /usr/local/bin/openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg -c "adapter speed 5000" -c "program pico/seahawk.elf verify reset exit"',
+                shell=True,
+                check=True)
 
 def generate_launch_description():
     nodes = [
-        Node(
-            package='seahawk',
-            executable='seahawk_rov',
-            name='seahawk_rov',
-            output='both'
-        ),
         Node(
             package='seahawk',
             executable='debug',
@@ -43,31 +40,6 @@ def generate_launch_description():
             name='claws',
             output='screen'
         ),
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='imu_transform',
-            output='both',
-            arguments=[
-                # Offset from parent frame in meters
-                "--x",      "0.17",
-                "--y",      "0.05",
-                "--z",      "0.07",
-                # # Quaternion rotation. Alternately use --{roll,pitch,yaw} but those probably aren't ideal in the end
-                # "--qx",     "0",
-                # "--qy",     "0",
-                # "--qz",     "0",
-                # "--qw",     "0",
-                # # RPY rotation in radians. This is not ideal, it would be better to use Quaternion rotation
-                # "--roll",   f"{pi}",
-                # "--pitch",  f"0",
-                # "--yaw",    f"{-pi*0.5}",
-                # Parent frame to which the offset is provided
-                "--frame-id", "base_link",
-                # Created frame which is offset from parent frame
-                "--child-frame-id", "logic_tube_bno085",
-            ]
-        )
     ]
 
     if front_camera_path is not None and pathlib.Path(front_camera_path).exists():
