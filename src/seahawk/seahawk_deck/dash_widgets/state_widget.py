@@ -28,7 +28,6 @@ class StateWidget(qtw.QWidget):
             self.style_sheet = style_sheet.read()
 
         # Import state images
-        # TODO: Add these image paths to the colors dictionary
         self.on_img   = qtg.QPixmap(PATH + "/../dash_styling/on_img.svg")
         self.off_img  = qtg.QPixmap(PATH + "/../dash_styling/off_img.svg")
 
