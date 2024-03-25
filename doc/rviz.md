@@ -9,7 +9,7 @@
 Launch RViz.
 
 ```sh
-ros2 launch seahawk kinematics_viz.launch.py
+ros2 launch seahawk rviz.launch.py
 ```
 
 A window with the RViz simulation should open automatically.
