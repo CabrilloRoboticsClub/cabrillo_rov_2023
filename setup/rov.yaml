@@ -97,6 +97,38 @@
     community.general.pipx:
       name: uv
 
+- name: Install OpenOCD from source
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create temporary directory
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: openocd_build_
+      register: build_temp_dir
+    - name: build OpenOCD for the RPi from source
+      block:
+        - name: Compile OpenOCD from source.
+          ansible.builtin.shell:         
+            chdir: "{{ build_temp_dir.path }}"
+            creates: /usr/local/bin/openocd
+            cmd: |
+              set -e
+              git clone https://github.com/raspberrypi/openocd.git --branch rpi-common --depth=1
+              cd openocd
+              ./bootstrap  
+              ./configure --enable-sysfsgpio --enable-bcm2835gpio --disable-werror
+              make -j4  
+              make install
+              cd .. 
+              rm -rf openocd
+      always:
+        - name: Cleanup 
+          ansible.builtin.file: 
+            path: "{{ build_temp_dir.path }}"
+            state: absent
+          when: build_temp_dir.path is defined
+
 - name: Add user accounts
   hosts: all 
   become: yes
