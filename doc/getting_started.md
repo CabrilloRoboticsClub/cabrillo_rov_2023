@@ -95,16 +95,16 @@ The Pi will boot, then reboot. Give it 10 minutes or so. The hostname and passwo
     git submodule init 
     git submodule update
     ```
-1. Install make and Ansible command
+1. Install the `make`, `ansible-playbook` and `pipx` commands
     ```sh
-    sudo apt install make ansible
+    sudo apt install make ansible pipx
+    pipx ensurepath
     ```
 1. Use `make` to install ROS2 and all the necessary packages. 
     ```sh 
     make rov-install
     ```
     **This could take a long, long time!** up to 30 minutes. 
-
 1. Reboot the Pi 
     ```sh
     sudo reboot

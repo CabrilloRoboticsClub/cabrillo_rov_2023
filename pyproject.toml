@@ -1,0 +1,36 @@
+[project]
+name = "cabrillo-rov-2023"
+version = "0.1.0"
+description = "Python setup for Seahawk II"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "adafruit-blinka>=10.2.0",
+    "adafruit-circuitpython-bme280>=2.6.32",
+    "adafruit-circuitpython-bno08x>=1.3.3",
+    "adafruit-circuitpython-busdevice>=5.2.17",
+    "adafruit-circuitpython-motor>=3.5.0",
+    "adafruit-circuitpython-motorkit>=1.6.21",
+    "adafruit-circuitpython-pca9685>=3.4.22",
+    "adafruit-circuitpython-register>=1.13.0",
+    "adafruit-circuitpython-requests>=4.1.18",
+    "adafruit-circuitpython-servokit>=1.3.24",
+    "adafruit-circuitpython-typing>=1.13.0",
+    "adafruit-platformdetect>=3.90.0",
+    "adafruit-pureio>=1.1.12",
+    "adafruit-python-shell>=1.14.0",
+    "args>=0.1.0",
+    "clint>=0.5.1",
+    "hidapi>=0.15.0",
+    "pyftdi>=0.57.2",
+    "pyserial>=3.5",
+    "pyusb>=1.3.1",
+    "rpi-gpio>=0.7.1",
+    "setuptools>=84.2.1",
+    "typing-extensions>=4.16.0",
+    "wheel>=0.48.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
