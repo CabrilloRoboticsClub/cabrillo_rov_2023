@@ -93,6 +93,11 @@
         - gdb-multiarch
         - avahi-daemon
       state: present
+
+- name: Install UV
+  hosts: all 
+  become: no
+  tasks:
   - name: Install uv
     community.general.pipx:
       name: uv
