@@ -90,4 +90,4 @@
       - ros-lyrical-ros-core
       - ros-lyrical-rclpy
     state: present
-    cache_valid_time: 86400
+    update_cache: yes
