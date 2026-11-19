@@ -3,25 +3,44 @@
 {
 	"name": "SeahawkTank",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "ghcr.io/cabrilloroboticsclub/cabrillo_rov_2023:devcontainer",
-	// "build": { "dockerfile": "Dockerfile" },
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "make devbox-install"
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root",
-
-	//"runArgs": [
-	//	"--network=host", "-v", "/dev/shm:/dev/shm"
-	//]
+	//"image": "ghcr.io/cabrilloroboticsclub/cabrillo_rov_2023:devcontainer",
+	"build": { 
+		"dockerfile": "Dockerfile", 
+		"context": "../setup",
+        "args": {
+            "USERNAME": "robot"
+        }
+	},
+    "privileged": true,
+    "remoteUser": "robot",
+    "customizations": {
+        "vscode": {
+            "extensions":[
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-themes",
+                "ms-vscode.cmake-tools",
+                "ranch-hand-robotics.rde-pack",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.vscode-python-envs",
+				"charliermarsh.ruff"
+            ]
+        }
+    },
+    "containerEnv": {
+        "DISPLAY": "unix:0",
+        "ROS_LOCALHOST_ONLY": "1",
+        "ROS_DOMAIN_ID": "42"
+    },
+    "runArgs": [
+        "--net=host",
+        "--pid=host",
+        "--ipc=host",
+        "-e", "DISPLAY=${env:DISPLAY}"
+    ],
+    "mounts": [
+       "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+       "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached"
+    ],
+    "postCreateCommand": "rosdep update"
 }
