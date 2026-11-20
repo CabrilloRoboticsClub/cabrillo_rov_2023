@@ -133,11 +133,13 @@
           when: build_temp_dir.path is defined
 
 - name: Add user accounts
-  hosts: all 
+  hosts: all
   become: yes
   vars:
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
+      - { name: 'rowan', comment: 'Rowan Delander', ghuser: 'Rowan-D' }
+      - { name: 'sami', comment: 'Sami Joseph', ghuser: 'myrccar' }
   tasks:
     - name: Add user
       ansible.builtin.user:
