@@ -98,41 +98,48 @@
   hosts: all
   become: yes
   tasks:
-  - ansible.builtin.shell: 
-      chdir: /tmp
-      creates: /usr/local/bin/openocd
-      cmd: |
-        set -e
-        git clone https://github.com/raspberrypi/openocd.git --branch rp2040-v0.12.0 --depth=1
-        cd openocd
-        ./bootstrap  
-        ./configure --enable-sysfsgpio --enable-bcm2835gpio
-        make -j4  
-        make install
-        cd .. 
-        rm -rf openocd
+    - name: Install dependencies 
+      ansible.builtin.apt:
+        name:
+          - jimsh 
+          - libjim-dev
+        state: present
+    - name: Create temporary directory
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: openocd_build_
+      register: build_temp_dir
+    - name: build OpenOCD for the RPi from source
+      block:
+        - name: Compile OpenOCD from source.
+          ansible.builtin.shell:         
+            chdir: "{{ build_temp_dir.path }}"
+            creates: /usr/local/bin/openocd
+            cmd: |
+              set -e
+              git clone https://github.com/raspberrypi/openocd.git --branch rpi-common --depth=1
+              cd openocd
+              ./bootstrap  
+              ./configure --enable-sysfsgpio --enable-bcm2835gpio --disable-werror
+              make -j4  
+              make install
+              cd .. 
+              rm -rf openocd
+      always:
+        - name: Cleanup 
+          ansible.builtin.file: 
+            path: "{{ build_temp_dir.path }}"
+            state: absent
+          when: build_temp_dir.path is defined
 
 - name: Add user accounts
-  hosts: all 
+  hosts: all
   become: yes
   vars:
     users:
       - { name: 'mmatera', comment: 'Mike Matera', ghuser: 'mike-matera' }
-      - { name: 'liam', comment: 'Liam Gilligan', ghuser: 'liamgilligan' }
-      - { name: 'taschnell', comment: 'Teo Schnell', ghuser: 'taschnell' }
-      - { name: 'steph', comment: "Stephanie L'Heureux", ghuser: 'steph1111' }
-      - { name: 'cjbf', comment: 'CJ Bridgman-Ford', ghuser: 'cjikaika' }
-      - { name: 'michaelatobias', comment: 'Michael Tobias', ghuser: 'michaelatobias' }
-      - { name: 'katew', comment: 'Kate Wolsfeld', ghuser: 'Katewolsfeld10' }
-      - { name: 'akcarney', comment: 'Ava Carney', ghuser: 'akcarney' }
-      - { name: 'orion', comment: 'Orion Ellefson', ghuser: 'OrionOth' }
-      - { name: 'massimo', comment: 'Massimo Ginella', ghuser: 'tinymassi' }
-      - { name: 'wwb', comment: 'Weston Brown', ghuser: 'onwest' }
-      - { name: 'katerosep', comment: 'Kate Rosenbloom Pohl', ghuser: 'katerosep' }
-      - { name: 'theo', comment: 'Theo Paris', ghuser: 'theoparis'}
-      - { name: 'whitlockmcorbett', comment: 'Corbett Whitlock', ghuser: 'whitlockmcorbett'}
-      - { name: 'daniel', comment: 'Daniel Bledsoe', ghuser: 'epic-coding-23' }
-      - { name: 'rowan', comment: 'Rowan Garties', ghuser: 'Ronin2837'}
+      - { name: 'rowan', comment: 'Rowan Delander', ghuser: 'Rowan-D' }
+      - { name: 'sami', comment: 'Sami Joseph', ghuser: 'myrccar' }
   tasks:
     - name: Add user
       ansible.builtin.user:

@@ -58,10 +58,17 @@
     mode: 0644
   when: ros_repos is failed
 
-- name: Add ROS2 Humble/Iron apt repo
+- name: Add ROS2 Resolute/Lyrical apt repo
   become: true
-  ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
+  ansible.builtin.deb822_repository:
+    name: ros2
+    types: deb
+    uris: http://packages.ros.org/ros2/ubuntu
+    suites: resolute
+    components:
+      - main
+    architectures: amd64,arm64
+    signed_by: /usr/share/keyrings/ros-archive-keyring.gpg
   when: ros_repos is failed
 
 - name: Install ROS2 base packages
@@ -77,10 +84,10 @@
       - python3-flake8-quotes 
       - python3-pytest-repeat 
       - python3-pytest-rerunfailures
-      - ros-humble-ros-core
-      - ros-humble-rclpy
-      - python3-rosdep2
       - python3-colcon-common-extensions
-      - ros-humble-ros2bag 
+      - python3-rosdep
+      - ros-lyrical-ros2bag 
+      - ros-lyrical-ros-core
+      - ros-lyrical-rclpy
     state: present
-    cache_valid_time: 86400
+    update_cache: yes

@@ -13,7 +13,7 @@ This procedure is how the downloadable image was generated. The process assumes 
 1. Download the installer ISO. 
 
     ```console
-    $ wget https://releases.ubuntu.com/22.04.3/ubuntu-22.04.3-desktop-amd64.iso
+    $ wget https://releases.ubuntu.com/26.04.1/ubuntu-26.04.1-desktop-amd64.iso
     ```
 
 1. Create a VM using the installer. 
@@ -23,16 +23,21 @@ This procedure is how the downloadable image was generated. The process assumes 
     --boot uefi \
     --vcpus=4 \
     --memory=8192 \
-    --cdrom=./ubuntu-22.04.3-desktop-amd64.iso \
+    --cdrom=./ubuntu-26.04.1-desktop-amd64.iso \
     --disk ./devbox.qcow2,size=16,sparse,format=qcow2 \
-    --os-variant=ubuntu22.04 
+    --osinfo detect=on,name=ubuntu24.04
+    --qemu-commandline="-machine q35,smm=on -global driver=cfi.pflash01,property=secure,value=on -device uefi-vars-x64,jsonfile=vars.json"
     ```
 
+    **Note: The `osinfo` is advisory. Setting it to 24.04 means you can do 
+    this procedure on an earlier version of Ubuntu** 
+    
 1. Bootstrap the image with the following settings:
-    1. Minimal image 
-    1. Default partitioning 
-    1. No extra drivers, no 3-rd party software
-    1. User: `student`
+    1. Interactive Installation
+    1. Default Selection
+    1. Enable third party drivers
+    1. Enable multimedia
+    1. User: `robot`
     1. Password: *Funny Cabrillo* 
     
 1. On first boot:
@@ -79,7 +84,8 @@ Make sure the device is unmounted after you plug it in:
 $ sudo umount /dev/sdX 
 ```
 
-The `qcow2` image format is sparse. Burning it onto a flash drive can't be done with `dd`. You have to use `qemu-img` to convert it as it copies. 
+The `qcow2` image format is sparse. Burning it onto a flash drive can't be done
+with `dd`. You have to use `qemu-img` to convert it as it copies. 
 
 ```console 
 sudo qemu-img convert -f qcow2 -O raw devbox.qcow2 /dev/sdX
@@ -95,4 +101,6 @@ $ sudo qemu-system-x86_64 \
     -boot c
 ```
 
-The image should automatically expand to fit the whole disk. The DOS partition on the imaged disk exposes the `cloud-init` files. A user could customize them before first boot if they wanted to. 
+The image should automatically expand to fit the whole disk. The DOS partition
+on the imaged disk exposes the `cloud-init` files. A user could customize them
+before first boot if they wanted to. 

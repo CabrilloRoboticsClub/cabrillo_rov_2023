@@ -18,7 +18,10 @@ rov-install:
 		--connection=local \
 		--inventory 127.0.0.1, \
 		--limit 127.0.0.1 rov.yaml
-
+	pipx install uv
+	uv venv --clear --system-site-packages
+	uv sync 
+	
 rov:
 	. ./install/local_setup.sh && \
 		ros2 launch seahawk rov.launch.py
