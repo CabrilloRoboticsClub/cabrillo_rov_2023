@@ -36,7 +36,7 @@ on your computer.
 1. [Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
 1. Follow the [Dev Containers Tutorial](https://code.visualstudio.com/docs/devcontainers/tutorial)
 1. In vscode open the `cabrillo_rov_2023` directory that you checked out using
-   the "1 Checkout the code" procedure above with the `File -> Open Folder`
+   the "Checkout the Code" procedure above with the `File -> Open Folder`
    menu. Vscode will prompt you to create a dev container. Follow the prompts.
    Building the container could take 10 to 20 minutes but you only have to do it
    once. 
@@ -63,8 +63,8 @@ on your computer.
 If you have Ubuntu 26.04 on your desktop you don't need a dev container because
 you can run everything natively. Only Ubuntu machines will be able to use
 hardware and communicate with other machines in the ROS2 network. These
-instructions assume you have already cloned the repository by following the "1
-Checkout the code" procedure above.
+instructions assume you have already cloned the repository by following the
+"Checkout the Code" procedure above.
 
 1. Install the necessary software packages
 
@@ -100,7 +100,7 @@ You Desktop is now a dev box.
 1. On your local computer download and install [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 1. Attach a Micro SD card to your local computer
 1. Open Raspberry Pi Imager
-    * `CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 24.04 LTS (64-bit)`
+    * `CHOOSE OS` > `Other general-purpose OS` > `Ubuntu` > `Ubuntu Server 26.04 LTS (64-bit)`
     * Choose the Micro SD card as the storage and hit `WRITE`
     ![Pi imager options](/doc/img/pi_imager.png)
     * Do not apply any OS customization settings

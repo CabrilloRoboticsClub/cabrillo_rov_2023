@@ -29,6 +29,9 @@ This procedure is how the downloadable image was generated. The process assumes 
     --qemu-commandline="-machine q35,smm=on -global driver=cfi.pflash01,property=secure,value=on -device uefi-vars-x64,jsonfile=vars.json"
     ```
 
+    **Note: The `osinfo` is advisory. Setting it to 24.04 means you can do 
+    this procedure on an earlier version of Ubuntu** 
+    
 1. Bootstrap the image with the following settings:
     1. Interactive Installation
     1. Default Selection
