@@ -225,7 +225,7 @@ wheels = [
 [[package]]
 name = "cabrillo-rov-2023"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "adafruit-blinka" },
     { name = "adafruit-circuitpython-bme280" },

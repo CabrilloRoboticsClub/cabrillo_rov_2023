@@ -94,18 +94,16 @@
         - avahi-daemon
       state: present
 
-- name: Install UV
-  hosts: all 
-  become: no
-  tasks:
-  - name: Install uv
-    community.general.pipx:
-      name: uv
-
 - name: Install OpenOCD from source
   hosts: all
   become: yes
   tasks:
+    - name: Install dependencies 
+      ansible.builtin.apt:
+        name:
+          - jimsh 
+          - libjim-dev
+        state: present
     - name: Create temporary directory
       ansible.builtin.tempfile:
         state: directory
